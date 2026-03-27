@@ -203,7 +203,7 @@ footer strong{color:var(--white);}
 .res-name{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;}
 .res-meta{font-size:0.78rem;opacity:0.5;margin-top:0.2rem;}
 .res-status{padding:0.3rem 0.8rem;border-radius:100px;font-size:0.7rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;white-space:nowrap;}
-.res-status.confirmed{background:#dcfce7;color:#15803d;}
+.res-status.confirmed{background:#dcfce7;color:#15803d;} .res-status.rejected{background:#fee2e2;color:#b91c1c;}
 .res-status.pending{background:#fef9c3;color:#854d0e;}
 .res-status.cancelled{background:#fee2e2;color:#b91c1c;}
 .res-status.approved{background:#dbeafe;color:#1d4ed8;}
@@ -867,9 +867,9 @@ tr:hover td{background:rgba(15,31,61,0.02);}
         </div>
         <div style="overflow-x:auto">
           <table>
-            <thead><tr><th>Student</th><th>Date</th><th>Time</th><th>Duration</th><th>Persons</th><th>Price</th><th>Status</th></tr></thead>
+            <thead><tr><th>Student</th><th>Date</th><th>Time</th><th>Duration</th><th>Persons</th><th>Price</th><th>Status</th><th>Action</th></tr></thead>
             <tbody id="ownerResBody">
-              <tr><td colspan="7" style="text-align:center;opacity:0.4;padding:2rem">Loading reservations...</td></tr>
+              <tr><td colspan="8" style="text-align:center;opacity:0.4;padding:2rem">Loading reservations...</td></tr>
             </tbody>
           </table>
         </div>
@@ -1373,7 +1373,7 @@ async function confirmReservation(){
     const data = await res.json();
     if(!res.ok){showToast(data.error || 'Reservation failed.','error');return;}
     closeResModal();
-    showToast(`✅ Reserved at ${pendingPlace.name}!`);
+    showToast(`✅ Reservation sent! Waiting for owner confirmation.`);
     showUserDash();
   } catch(e) {
     // fallback: save locally
@@ -1388,7 +1388,7 @@ async function confirmReservation(){
     };
     reservations.push(r);
     closeResModal();
-    showToast(`✅ Reserved at ${pendingPlace.name}!`);
+    showToast(`✅ Reservation sent! Waiting for owner confirmation.`);
     showUserDash();
   }
 }
@@ -1965,16 +1965,21 @@ async function loadOwnerReservations() {
   if(!ownerSpace) return;
   const token = localStorage.getItem('studify_token');
   const tbody = document.getElementById('ownerResBody');
-  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;opacity:0.4;padding:2rem">Loading...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;opacity:0.4;padding:2rem">Loading...</td></tr>';
   try {
     const res = await fetch(`${API}/api/reservations/space/${ownerSpace.id}`, {
       headers: {'Authorization': `Bearer ${token}`}
     });
-    if(!res.ok){ tbody.innerHTML='<tr><td colspan="7" style="text-align:center;opacity:0.4;padding:2rem">Could not load reservations.</td></tr>'; return; }
+    if(!res.ok){ tbody.innerHTML='<tr><td colspan="8" style="text-align:center;opacity:0.4;padding:2rem">Could not load reservations.</td></tr>'; return; }
     const data = await res.json();
-    if(!data.length){ tbody.innerHTML='<tr><td colspan="7" style="text-align:center;opacity:0.4;padding:2rem">No reservations yet for your space.</td></tr>'; return; }
+    if(!data.length){ tbody.innerHTML='<tr><td colspan="8" style="text-align:center;opacity:0.4;padding:2rem">No reservations yet for your space.</td></tr>'; return; }
     tbody.innerHTML = data.slice().reverse().map(r => {
       const d = new Date(r.date+'T12:00:00').toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+      const actions = r.status==='pending' ? `
+        <div class="tbl-actions">
+          <button class="btn-tbl btn-tbl-approve" onclick="ownerConfirmRes(${r.id})">✅ Confirm</button>
+          <button class="btn-tbl btn-tbl-cancel"  onclick="ownerRejectRes(${r.id})">❌ Reject</button>
+        </div>` : `<span class="tbl-status ${r.status}">${r.status}</span>`;
       return `<tr>
         <td><strong>${r.userName}</strong></td>
         <td>${d}</td>
@@ -1983,11 +1988,36 @@ async function loadOwnerReservations() {
         <td>${r.persons||1} person${(r.persons||1)!==1?'s':''}</td>
         <td>${r.totalPrice||'Free'}</td>
         <td><span class="tbl-status ${r.status}">${r.status}</span></td>
+        <td>${actions}</td>
       </tr>`;
     }).join('');
   } catch(e) {
-    tbody.innerHTML='<tr><td colspan="7" style="text-align:center;opacity:0.4;padding:2rem">Could not connect to server.</td></tr>';
+    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;opacity:0.4;padding:2rem">Could not connect to server.</td></tr>';
   }
+}
+
+async function ownerConfirmRes(resId) {
+  const token = localStorage.getItem('studify_token');
+  try {
+    const res = await fetch(`${API}/api/reservations/${resId}/confirm`, {
+      method: 'PATCH',
+      headers: {'Authorization': `Bearer ${token}`}
+    });
+    if(res.ok){ showToast('✅ Reservation confirmed! Email sent to student.'); loadOwnerReservations(); }
+    else showToast('Could not confirm reservation.','error');
+  } catch(e){ showToast('Could not connect to server.','error'); }
+}
+
+async function ownerRejectRes(resId) {
+  const token = localStorage.getItem('studify_token');
+  try {
+    const res = await fetch(`${API}/api/reservations/${resId}/reject`, {
+      method: 'PATCH',
+      headers: {'Authorization': `Bearer ${token}`}
+    });
+    if(res.ok){ showToast('❌ Reservation rejected. Student notified.','warn'); loadOwnerReservations(); }
+    else showToast('Could not reject reservation.','error');
+  } catch(e){ showToast('Could not connect to server.','error'); }
 }
 
 function openBulkModal(mode) {
@@ -2085,14 +2115,28 @@ async function loadSpaces() {
   const params = new URLSearchParams();
   if (activeCat !== 'all') params.set('category', activeCat);
   if (minStar) params.set('minRating', minStar);
-  try {
-    const res = await fetch(`${API}/api/spaces?${params}`);
-    const spaces = await res.json();
-    PLACES = spaces;
-    applyAllFilters();
-  } catch(e) {
-    console.error('Could not load spaces:', e);
-    renderPlaces(); // fall back to local data
+  // Show loading state
+  const grid = document.getElementById('placesGrid');
+  if(grid) grid.innerHTML = '<div class="no-results" style="opacity:0.5">⏳ Loading spaces...</div>';
+  // Retry up to 3 times (handles Render cold start)
+  for(let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const res = await fetch(`${API}/api/spaces?${params}`, {signal: AbortSignal.timeout(15000)});
+      if(!res.ok) throw new Error('Server error');
+      const spaces = await res.json();
+      PLACES = spaces;
+      applyAllFilters();
+      return;
+    } catch(e) {
+      console.error(`Load spaces attempt ${attempt} failed:`, e);
+      if(attempt < 3) {
+        if(grid) grid.innerHTML = `<div class="no-results" style="opacity:0.5">⏳ Connecting... (attempt ${attempt}/3)</div>`;
+        await new Promise(r => setTimeout(r, 3000)); // wait 3s before retry
+      } else {
+        console.error('Could not load spaces after 3 attempts, using local data');
+        applyAllFilters(); // fall back to local PLACES array
+      }
+    }
   }
 }
 
@@ -2114,31 +2158,43 @@ try {
 (async function restoreSession() {
   const savedUser  = localStorage.getItem('studify_user');
   const savedToken = localStorage.getItem('studify_token');
-  if(savedUser && savedToken) {
+  if(!savedUser || !savedToken) return;
+  try {
+    currentUser = JSON.parse(savedUser); // restore immediately from localStorage
+    updateNav(); // show nav right away
+    // Then verify token in background
     try {
-      // Verify token is still valid by calling the API
       const res = await fetch(`${API}/api/auth/me`, {
-        headers: {'Authorization': `Bearer ${savedToken}`}
+        headers: {'Authorization': `Bearer ${savedToken}`},
+        signal: AbortSignal.timeout(8000)
       });
       if(res.ok) {
         const data = await res.json();
         currentUser = data;
         localStorage.setItem('studify_user', JSON.stringify(data));
-      } else {
-        // Token expired — use saved user data but flag as restored
-        currentUser = JSON.parse(savedUser);
+        updateNav();
+      }
+      // If not ok, token expired — clear and redirect to home
+      else if(res.status === 401 || res.status === 422) {
+        currentUser = null;
+        localStorage.removeItem('studify_user');
+        localStorage.removeItem('studify_token');
+        updateNav();
+        return;
       }
     } catch(e) {
-      // API offline — restore from localStorage
-      currentUser = JSON.parse(savedUser);
+      // API offline — keep using localStorage data
     }
-    updateNav();
     // Redirect to correct dashboard
+    if(!currentUser) return;
     const isAdmin = currentUser.role === 'admin';
     const isOwner = currentUser.role === 'owner';
     if(isAdmin) showAdminDash();
     else if(isOwner) showOwnerDash();
     else showUserDash();
+  } catch(e) {
+    localStorage.removeItem('studify_user');
+    localStorage.removeItem('studify_token');
   }
 })();
 
