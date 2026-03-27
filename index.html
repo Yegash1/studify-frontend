@@ -1977,8 +1977,8 @@ async function loadOwnerReservations() {
       const d = new Date(r.date+'T12:00:00').toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
       const actions = r.status==='pending' ? `
         <div class="tbl-actions">
-          <button class="btn-tbl btn-tbl-approve" onclick="ownerConfirmRes(${r.id})">✅ Confirm</button>
-          <button class="btn-tbl btn-tbl-cancel"  onclick="ownerRejectRes(${r.id})">❌ Reject</button>
+          <button class="btn-tbl btn-tbl-approve" data-res-id="${r.id}" onclick="ownerConfirmRes(${r.id})">✅ Confirm</button>
+          <button class="btn-tbl btn-tbl-cancel"  data-res-id="${r.id}" onclick="ownerRejectRes(${r.id})">❌ Reject</button>
         </div>` : `<span class="tbl-status ${r.status}">${r.status}</span>`;
       return `<tr>
         <td><strong>${r.userName}</strong></td>
@@ -1997,26 +1997,30 @@ async function loadOwnerReservations() {
 }
 
 async function ownerConfirmRes(resId) {
+  // Disable both buttons immediately to prevent duplicate requests
+  document.querySelectorAll('[data-res-id="'+resId+'"]').forEach(b => { b.disabled=true; b.style.opacity='0.4'; });
   const token = localStorage.getItem('studify_token');
   try {
     const res = await fetch(`${API}/api/reservations/${resId}/confirm`, {
       method: 'PATCH',
       headers: {'Authorization': `Bearer ${token}`}
     });
-    if(res.ok){ showToast('✅ Reservation confirmed! Email sent to student.'); loadOwnerReservations(); }
-    else showToast('Could not confirm reservation.','error');
+    if(res.ok){ showToast('✅ Reservation confirmed!'); loadOwnerReservations(); }
+    else { showToast('Could not confirm reservation.','error'); loadOwnerReservations(); }
   } catch(e){ showToast('Could not connect to server.','error'); }
 }
 
 async function ownerRejectRes(resId) {
+  // Disable both buttons immediately to prevent duplicate requests
+  document.querySelectorAll('[data-res-id="'+resId+'"]').forEach(b => { b.disabled=true; b.style.opacity='0.4'; });
   const token = localStorage.getItem('studify_token');
   try {
     const res = await fetch(`${API}/api/reservations/${resId}/reject`, {
       method: 'PATCH',
       headers: {'Authorization': `Bearer ${token}`}
     });
-    if(res.ok){ showToast('❌ Reservation rejected. Student notified.','warn'); loadOwnerReservations(); }
-    else showToast('Could not reject reservation.','error');
+    if(res.ok){ showToast('❌ Reservation rejected.'); loadOwnerReservations(); }
+    else { showToast('Could not reject reservation.','error'); loadOwnerReservations(); }
   } catch(e){ showToast('Could not connect to server.','error'); }
 }
 
