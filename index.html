@@ -1357,7 +1357,7 @@ async function confirmReservation(){
   if(!date){showToast('Please select a date.','error');return;}
   const token = localStorage.getItem('studify_token');
   try {
-    const res = await fetch(`${API}/api/reservations`, {
+    const res = await fetch(`${API}/api/reservations/`, {
       method: 'POST',
       headers: {'Content-Type':'application/json', 'Authorization':`Bearer ${token}`},
       body: JSON.stringify({
@@ -1432,7 +1432,7 @@ async function renderUserDash(){
         ${notes?`<div class="res-meta">📝 ${notes}</div>`:''}
       </div>
       <span class="res-status ${r.status}">${r.status}</span>
-      ${r.status==='confirmed'?`<button class="btn-cancel-res" onclick="cancelMyRes(${r.id})">Cancel</button>`:''}
+      ${(r.status==='confirmed'||r.status==='pending')?`<button class="btn-cancel-res" onclick="cancelMyRes(${r.id})">Cancel</button>`:''}
       ${r.status==='confirmed'?`<button class="btn-rate" onclick="openRatingModal(${r.placeId||r.space_id},'${(r.placeName||r.place_name||'').replace(/'/g,"\'")}','${(r.placeLoc||r.place_loc||'').replace(/'/g,"\'")}')">⭐ Rate</button>`:''}
       ${r.status==='cancelled'&&r.userRating?`<span class="rated-badge">⭐ Rated ${r.userRating}/5</span>`:''}
     </div>`;
