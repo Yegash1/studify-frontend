@@ -276,13 +276,13 @@ tr:hover td{background:rgba(15,31,61,0.02);}
 /* RESERVATION MODAL */
 .res-overlay{position:fixed;inset:0;z-index:998;background:rgba(10,16,32,0.6);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s;}
 .res-overlay.open{opacity:1;pointer-events:all;}
-.res-modal{background:var(--white);border-radius:24px;width:100%;max-width:480px;margin:1rem;box-shadow:0 32px 80px rgba(10,16,32,0.25);transform:translateY(24px) scale(0.97);transition:transform 0.3s;position:relative;overflow:hidden;}
+.res-modal{background:var(--white);border-radius:24px;width:100%;max-width:480px;margin:1rem;box-shadow:0 32px 80px rgba(10,16,32,0.25);transform:translateY(24px) scale(0.97);transition:transform 0.3s;position:relative;overflow:hidden;max-height:90vh;display:flex;flex-direction:column;}
 .res-overlay.open .res-modal{transform:translateY(0) scale(1);}
 .res-modal-header{background:var(--navy);padding:1.8rem 2rem;color:white;position:relative;}
 .res-modal-header h3{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:white;}
 .res-modal-header p{font-size:0.85rem;opacity:0.6;margin-top:0.3rem;}
 .res-modal-close{position:absolute;top:1.2rem;right:1.4rem;background:rgba(255,255,255,0.15);border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;color:white;font-size:0.9rem;display:grid;place-items:center;}
-.res-modal-body{padding:1.8rem 2rem;}
+.res-modal-body{padding:1.8rem 2rem;overflow-y:auto;flex:1;}
 .res-form-group{margin-bottom:1.2rem;}
 .res-form-group label{display:block;font-size:0.75rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;opacity:0.55;margin-bottom:0.4rem;}
 .res-form-group input,.res-form-group select{width:100%;padding:0.75rem 1rem;border:1.5px solid rgba(15,31,61,0.14);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--navy);background:var(--bg);outline:none;transition:border-color 0.2s;}
@@ -2166,36 +2166,43 @@ try {
   try {
     currentUser = JSON.parse(savedUser); // restore immediately from localStorage
     updateNav(); // show nav right away
-    // Then verify token in background
+
+    // Go to dashboard immediately — don't wait for API
+    const isAdminLocal  = currentUser.role === 'admin';
+    const isOwnerLocal  = currentUser.role === 'owner';
+    if(isAdminLocal) showAdminDash();
+    else if(isOwnerLocal) showOwnerDash();
+    else showUserDash();
+
+    // Then verify token in background silently
     try {
       const res = await fetch(`${API}/api/auth/me`, {
         headers: {'Authorization': `Bearer ${savedToken}`},
-        signal: AbortSignal.timeout(8000)
+        signal: AbortSignal.timeout(10000)
       });
       if(res.ok) {
         const data = await res.json();
         currentUser = data;
         localStorage.setItem('studify_user', JSON.stringify(data));
         updateNav();
-      }
-      // If not ok, token expired — clear and redirect to home
-      else if(res.status === 401 || res.status === 422) {
+        // Re-render dashboard with fresh data
+        const isAdmin = currentUser.role === 'admin';
+        const isOwner = currentUser.role === 'owner';
+        if(isAdmin) renderAdminDash();
+        else if(isOwner) showOwnerDash();
+        else renderUserDash();
+      } else if(res.status === 401 || res.status === 422) {
+        // Token truly expired — log out
         currentUser = null;
         localStorage.removeItem('studify_user');
         localStorage.removeItem('studify_token');
         updateNav();
-        return;
+        showPage('homePage');
       }
     } catch(e) {
-      // API offline — keep using localStorage data
+      // API offline or slow — stay on dashboard with localStorage data
+      console.log('Session verify skipped:', e.message);
     }
-    // Redirect to correct dashboard
-    if(!currentUser) return;
-    const isAdmin = currentUser.role === 'admin';
-    const isOwner = currentUser.role === 'owner';
-    if(isAdmin) showAdminDash();
-    else if(isOwner) showOwnerDash();
-    else showUserDash();
   } catch(e) {
     localStorage.removeItem('studify_user');
     localStorage.removeItem('studify_token');
