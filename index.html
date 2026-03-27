@@ -1468,8 +1468,8 @@ async function renderAdminDash(){
   try {
     const [spacesRes, resRes, usersRes] = await Promise.all([
       fetch(`${API}/api/spaces`),
-      fetch(`${API}/api/reservations`, {headers:{'Authorization':`Bearer ${token}`}}),
-      fetch(`${API}/api/users`, {headers:{'Authorization':`Bearer ${token}`}})
+      fetch(`${API}/api/reservations/`, {headers:{'Authorization':`Bearer ${token}`}}),
+      fetch(`${API}/api/auth/users`, {headers:{'Authorization':`Bearer ${token}`}})
     ]);
     if(spacesRes.ok) PLACES = await spacesRes.json();
     if(resRes.ok) reservations = await resRes.json();
@@ -2164,17 +2164,17 @@ try {
   const savedToken = localStorage.getItem('studify_token');
   if(!savedUser || !savedToken) return;
   try {
-    currentUser = JSON.parse(savedUser); // restore immediately from localStorage
-    updateNav(); // show nav right away
+    currentUser = JSON.parse(savedUser);
+    updateNav();
 
-    // Go to dashboard immediately — don't wait for API
-    const isAdminLocal  = currentUser.role === 'admin';
-    const isOwnerLocal  = currentUser.role === 'owner';
+    // Show dashboard immediately — don't wait for API
+    const isAdminLocal = currentUser.role === 'admin';
+    const isOwnerLocal = currentUser.role === 'owner';
     if(isAdminLocal) showAdminDash();
     else if(isOwnerLocal) showOwnerDash();
     else showUserDash();
 
-    // Then verify token in background silently
+    // Verify token in background silently
     try {
       const res = await fetch(`${API}/api/auth/me`, {
         headers: {'Authorization': `Bearer ${savedToken}`},
@@ -2185,14 +2185,11 @@ try {
         currentUser = data;
         localStorage.setItem('studify_user', JSON.stringify(data));
         updateNav();
-        // Re-render dashboard with fresh data
-        const isAdmin = currentUser.role === 'admin';
-        const isOwner = currentUser.role === 'owner';
-        if(isAdmin) renderAdminDash();
-        else if(isOwner) showOwnerDash();
+        // Refresh dashboard data with verified user
+        if(currentUser.role === 'admin') renderAdminDash();
+        else if(currentUser.role === 'owner') showOwnerDash();
         else renderUserDash();
       } else if(res.status === 401 || res.status === 422) {
-        // Token truly expired — log out
         currentUser = null;
         localStorage.removeItem('studify_user');
         localStorage.removeItem('studify_token');
@@ -2200,7 +2197,6 @@ try {
         showPage('homePage');
       }
     } catch(e) {
-      // API offline or slow — stay on dashboard with localStorage data
       console.log('Session verify skipped:', e.message);
     }
   } catch(e) {
