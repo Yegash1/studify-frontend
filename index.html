@@ -724,7 +724,7 @@ tr:hover td{background:rgba(15,31,61,0.02);}
         </div>
         <div style="overflow-x:auto">
           <table id="adminResTable">
-            <thead><tr><th>Space</th><th>User</th><th>Date</th><th>Time</th><th>Duration</th><th>Status</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Space</th><th>User</th><th>Date</th><th>Time</th><th>Duration</th><th>Persons</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody id="adminResBody"></tbody>
           </table>
         </div>
@@ -1482,31 +1482,59 @@ async function renderAdminDash(){
   document.getElementById('aStatPlaces').textContent=PLACES.length;
   document.getElementById('aStatUsers').textContent=userCount;
   document.getElementById('aStatRes').textContent=reservations.length;
-  document.getElementById('aStatPending').textContent=reservations.filter(r=>r.status==='confirmed').length;
+  document.getElementById('aStatPending').textContent=reservations.filter(r=>r.status==='pending').length;
   renderAdminRes(); renderAdminSpaces(); renderAdminUsers(); renderSeatsPanel();
 }
 
 function renderAdminRes(){
-  const q=(document.getElementById('resSearch').value||'').toLowerCase();
-  const rows=reservations.filter(r=>
-    r.placeName.toLowerCase().includes(q)||r.userName.toLowerCase().includes(q)||r.date.includes(q)
-  );
+  const q=(document.getElementById('resSearch')?.value||'').toLowerCase();
+  const rows=reservations.filter(r=>{
+    const name  = (r.placeName||r.place_name||'').toLowerCase();
+    const user  = (r.userName||r.user_name||'').toLowerCase();
+    const date  = (r.date||'');
+    return !q || name.includes(q) || user.includes(q) || date.includes(q);
+  });
   document.getElementById('adminResBody').innerHTML=rows.length
-    ? rows.slice().reverse().map(r=>`<tr>
-        <td>${r.placeEmoji} ${r.placeName}</td>
-        <td>${r.userName}</td>
-        <td>${r.date}</td>
-        <td>${r.start}</td>
-        <td>${r.duration}hr${r.duration!==1?'s':''}</td>
-        <td><span class="tbl-status ${r.status}">${r.status}</span></td>
-        <td><div class="tbl-actions">
-          ${r.status==='confirmed'?`<button class="btn-tbl btn-tbl-cancel" onclick="adminCancelRes(${r.id})">Cancel</button>`:''}
-          ${r.status==='cancelled'?`<button class="btn-tbl btn-tbl-approve" onclick="adminApproveRes(${r.id})">Restore</button>`:''}
-        </div></td>
-      </tr>`).join('')
-    : '<tr><td colspan="7" style="text-align:center;opacity:0.4;padding:2rem">No reservations found.</td></tr>';
+    ? rows.slice().reverse().map(r=>{
+        const name    = r.placeName||r.place_name||'Unknown Space';
+        const emoji   = r.placeEmoji||r.place_emoji||'📍';
+        const user    = r.userName||r.user_name||'Unknown User';
+        const start   = r.start||r.start_time||'—';
+        const dur     = r.duration||r.duration_hrs||1;
+        const persons = r.persons||1;
+        const price   = r.totalPrice||r.total_price||'Free';
+        return `<tr>
+          <td>${emoji} ${name}</td>
+          <td>${user}</td>
+          <td>${r.date||'—'}</td>
+          <td>${start}</td>
+          <td>${dur}hr${dur!==1?'s':''}</td>
+          <td>${persons} person${persons!==1?'s':''}</td>
+          <td>${price}</td>
+          <td><span class="tbl-status ${r.status}">${r.status}</span></td>
+          <td><div class="tbl-actions">
+            ${r.status==='pending'?`<button class="btn-tbl btn-tbl-approve" onclick="adminConfirmRes(${r.id})">Confirm</button>`:''}
+            ${r.status==='confirmed'?`<button class="btn-tbl btn-tbl-cancel" onclick="adminCancelRes(${r.id})">Cancel</button>`:''}
+            ${r.status==='cancelled'||r.status==='rejected'?`<button class="btn-tbl btn-tbl-approve" onclick="adminApproveRes(${r.id})">Restore</button>`:''}
+          </div></td>
+        </tr>`;
+      }).join('')
+    : '<tr><td colspan="9" style="text-align:center;opacity:0.4;padding:2rem">No reservations found.</td></tr>';
 }
-function adminCancelRes(id){const r=reservations.find(r=>r.id===id);if(r){r.status='cancelled';renderAdminDash();showToast('Reservation cancelled.','warn');}}
+async function adminCancelRes(id){
+  const token=localStorage.getItem('studify_token');
+  try{
+    const res=await fetch(`${API}/api/reservations/${id}/cancel`,{method:'PATCH',headers:{'Authorization':`Bearer ${token}`}});
+    if(res.ok){renderAdminDash();showToast('Reservation cancelled.','warn');}
+  }catch(e){const r=reservations.find(r=>r.id===id);if(r){r.status='cancelled';renderAdminDash();showToast('Cancelled.','warn');}}
+}
+async function adminConfirmRes(id){
+  const token=localStorage.getItem('studify_token');
+  try{
+    const res=await fetch(`${API}/api/reservations/${id}/confirm`,{method:'PATCH',headers:{'Authorization':`Bearer ${token}`}});
+    if(res.ok){renderAdminDash();showToast('Reservation confirmed!');}
+  }catch(e){const r=reservations.find(r=>r.id===id);if(r){r.status='confirmed';renderAdminDash();showToast('Confirmed!');}}
+}
 function adminApproveRes(id){const r=reservations.find(r=>r.id===id);if(r){r.status='confirmed';renderAdminDash();showToast('Reservation restored.');}}
 
 function renderAdminSpaces(){
