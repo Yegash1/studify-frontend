@@ -1469,7 +1469,7 @@ async function renderAdminDash(){
     const [spacesRes, resRes, usersRes] = await Promise.all([
       fetch(`${API}/api/spaces`),
       fetch(`${API}/api/reservations`, {headers:{'Authorization':`Bearer ${token}`}}),
-      fetch(`${API}/api/users`, {headers:{'Authorization':`Bearer ${token}`}})
+      fetch(`${API}/api/auth/users`, {headers:{'Authorization':`Bearer ${token}`}})
     ]);
     if(spacesRes.ok) PLACES = await spacesRes.json();
     if(resRes.ok) reservations = await resRes.json();
