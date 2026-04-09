@@ -410,6 +410,43 @@ tr:hover td{background:rgba(15,31,61,0.02);}
 .owner-section.active{display:block;}
 
 /* TOAST */
+/* PAYMENT MODAL */
+.payment-overlay{position:fixed;inset:0;z-index:999;background:rgba(10,16,32,0.65);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+.payment-overlay.open{opacity:1;pointer-events:all;}
+.payment-modal{background:var(--white);border-radius:24px;width:100%;max-width:420px;margin:1rem;box-shadow:0 32px 80px rgba(10,16,32,0.28);transform:translateY(20px) scale(0.97);transition:transform 0.3s;overflow:hidden;}
+.payment-overlay.open .payment-modal{transform:translateY(0) scale(1);}
+.payment-header{background:var(--navy);padding:1.5rem 2rem;color:white;position:relative;}
+.payment-header h3{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:white;}
+.payment-header p{font-size:0.82rem;opacity:0.6;margin-top:0.3rem;}
+.payment-close{position:absolute;top:1.1rem;right:1.3rem;background:rgba(255,255,255,0.15);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;color:white;font-size:0.9rem;display:grid;place-items:center;}
+.payment-body{padding:1.6rem 2rem 2rem;}
+.payment-amount-box{background:linear-gradient(135deg,var(--teal),#1a6a6a);border-radius:14px;padding:1.2rem 1.5rem;text-align:center;margin-bottom:1.5rem;color:white;}
+.payment-amount-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;opacity:0.8;margin-bottom:0.3rem;}
+.payment-amount-val{font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;}
+.payment-amount-sub{font-size:0.75rem;opacity:0.7;margin-top:0.2rem;}
+.payment-methods{display:flex;flex-direction:column;gap:0.7rem;margin-bottom:1.5rem;}
+.payment-method-btn{display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;background:rgba(15,31,61,0.04);border:2px solid rgba(15,31,61,0.1);border-radius:14px;cursor:pointer;transition:all 0.2s;text-align:left;width:100%;font-family:'DM Sans',sans-serif;}
+.payment-method-btn:hover{background:rgba(26,138,138,0.06);border-color:rgba(26,138,138,0.3);}
+.payment-method-btn.selected{background:rgba(26,138,138,0.1);border-color:var(--teal);}
+.payment-method-icon{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;font-size:1.4rem;flex-shrink:0;}
+.pm-gcash .payment-method-icon{background:#007bff1a;}
+.pm-maya .payment-method-icon{background:#2ecc711a;}
+.pm-cash .payment-method-icon{background:#f39c121a;}
+.payment-method-name{font-weight:700;font-size:0.92rem;color:var(--navy);}
+.payment-method-desc{font-size:0.75rem;color:var(--navy);opacity:0.5;margin-top:0.1rem;}
+.payment-method-check{margin-left:auto;width:22px;height:22px;border-radius:50%;border:2px solid rgba(15,31,61,0.2);display:grid;place-items:center;flex-shrink:0;transition:all 0.2s;}
+.payment-method-btn.selected .payment-method-check{background:var(--teal);border-color:var(--teal);color:white;font-size:0.75rem;}
+.payment-ref-box{display:none;background:rgba(15,31,61,0.04);border:1.5px solid rgba(15,31,61,0.1);border-radius:12px;padding:1rem 1.2rem;margin-bottom:1.2rem;}
+.payment-ref-box.show{display:block;}
+.payment-ref-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;opacity:0.5;font-weight:600;margin-bottom:0.4rem;}
+.payment-ref-num{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--teal);letter-spacing:0.08em;}
+.payment-ref-note{font-size:0.72rem;opacity:0.5;margin-top:0.3rem;}
+.payment-ref-input{width:100%;margin-top:0.7rem;padding:0.6rem 0.9rem;border:1.5px solid rgba(15,31,61,0.15);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--navy);background:white;}
+.payment-ref-input:focus{outline:none;border-color:var(--teal);}
+.btn-pay-confirm{width:100%;padding:0.95rem;background:var(--teal);color:white;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-pay-confirm:hover{background:var(--navy);transform:translateY(-1px);}
+.btn-pay-confirm:disabled{background:rgba(15,31,61,0.2);cursor:not-allowed;transform:none;}
+@media(max-width:600px){.payment-overlay{align-items:flex-end;}.payment-modal{border-radius:24px 24px 0 0;margin:0;max-width:100%;}}
 .toast{position:fixed;bottom:2rem;right:2rem;background:var(--navy);color:white;padding:1rem 1.5rem;border-radius:14px;font-size:0.88rem;font-weight:500;z-index:9999;transform:translateY(100px);opacity:0;transition:all 0.4s;max-width:320px;box-shadow:0 8px 32px rgba(10,16,32,0.3);}
 .toast.show{transform:translateY(0);opacity:1;}
 .toast.success{background:var(--teal);}
@@ -637,7 +674,7 @@ tr:hover td{background:rgba(15,31,61,0.02);}
       </div>
     </div>
     <div class="location-search-wrap">
-      <input class="location-search" id="locationSearch" placeholder="🔍  Search by location name (e.g. Angeles, Dau, San Fernando…)" oninput="applyAllFilters()">
+      <input class="location-search" id="locationSearch" placeholder="🔍  Search by location (e.g. Malolos, Bocaue, Balagtas, Meycauayan…)" oninput="applyAllFilters()">
       <button class="btn-gps" id="gpsBtn" onclick="findNearest()">📍 Nearest to Me</button>
     </div>
     <div class="places-count" id="placesCount">Showing 12 spaces</div>
@@ -1013,7 +1050,7 @@ tr:hover td{background:rgba(15,31,61,0.02);}
       </div>
       <div class="res-form-group"><label>Notes (optional)</label><input type="text" id="resNotes" placeholder="e.g. Need outlet near window"></div>
       <div class="res-summary" id="resSummary"></div>
-      <button class="btn-confirm-res" onclick="confirmReservation()">✓ Confirm Reservation</button>
+      <button class="btn-confirm-res" onclick="confirmReservation()">Proceed to Payment →</button>
     </div>
   </div>
 </div>
@@ -1057,6 +1094,60 @@ tr:hover td{background:rgba(15,31,61,0.02);}
   </div>
 </div>
 
+<!-- PAYMENT MODAL -->
+<div class="payment-overlay" id="paymentOverlay">
+  <div class="payment-modal">
+    <div class="payment-header">
+      <button class="payment-close" onclick="closePaymentModal()">✕</button>
+      <h3>Complete Payment</h3>
+      <p id="paymentSpaceName">Choose how you'll pay for your reservation.</p>
+    </div>
+    <div class="payment-body">
+      <div class="payment-amount-box">
+        <div class="payment-amount-label">Total Amount Due</div>
+        <div class="payment-amount-val" id="paymentAmountVal">Free</div>
+        <div class="payment-amount-sub" id="paymentAmountSub"></div>
+      </div>
+      <div class="payment-methods">
+        <button class="payment-method-btn pm-gcash" onclick="selectPayment('gcash', this)">
+          <div class="payment-method-icon">💙</div>
+          <div>
+            <div class="payment-method-name">GCash</div>
+            <div class="payment-method-desc">Pay via GCash e-wallet</div>
+          </div>
+          <div class="payment-method-check"></div>
+        </button>
+        <button class="payment-method-btn pm-maya" onclick="selectPayment('maya', this)">
+          <div class="payment-method-icon">💚</div>
+          <div>
+            <div class="payment-method-name">Maya</div>
+            <div class="payment-method-desc">Pay via Maya (PayMaya)</div>
+          </div>
+          <div class="payment-method-check"></div>
+        </button>
+        <button class="payment-method-btn pm-cash" onclick="selectPayment('cash', this)">
+          <div class="payment-method-icon">💵</div>
+          <div>
+            <div class="payment-method-name">Pay on Arrival</div>
+            <div class="payment-method-desc">Cash payment when you arrive</div>
+          </div>
+          <div class="payment-method-check"></div>
+        </button>
+      </div>
+      <!-- Reference box for GCash / Maya -->
+      <div class="payment-ref-box" id="paymentRefBox">
+        <div class="payment-ref-label" id="paymentRefLabel">Send payment to</div>
+        <div class="payment-ref-num" id="paymentRefNum">09XX-XXX-XXXX</div>
+        <div class="payment-ref-note" id="paymentRefNote">Send the exact amount then enter your reference number below.</div>
+        <input class="payment-ref-input" type="text" id="paymentRefInput" placeholder="Enter GCash/Maya reference number">
+      </div>
+      <button class="btn-pay-confirm" id="btnPayConfirm" onclick="finalizeReservation()" disabled>
+        Confirm &amp; Reserve →
+      </button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1064,18 +1155,25 @@ tr:hover td{background:rgba(15,31,61,0.02);}
 // DATA
 // ═══════════════════════════════════════════════════════════
 let PLACES = [
-  {id:1,cat:'study',name:'University Central Library',loc:'Main Campus, Building A',rating:5,reviews:128,avail:'open',seats:14,tags:['Quiet Zone','Free WiFi','Air-Conditioned','Power Outlets'],hours:'Open until 9:00 PM',emoji:'📖',bg:'linear-gradient(135deg,#c8e6e6,#a8d5d5)',price:'Free'},
-  {id:2,cat:'study',name:'Greenfield Study Hub',loc:'Greenfield Ave., 2nd Floor',rating:4,reviews:87,avail:'busy',seats:3,tags:['Group Rooms','Whiteboards','Printing'],hours:'Open until 8:00 PM',emoji:'🏫',bg:'linear-gradient(135deg,#d4e8c8,#b8d8a0)',price:'Free'},
-  {id:3,cat:'study',name:"Scholar's Den Learning Center",loc:'Rizal St., Near City Hall',rating:4,reviews:54,avail:'open',seats:22,tags:['Private Booths','Free WiFi','Locker Storage'],hours:'Open 24 Hours',emoji:'🎓',bg:'linear-gradient(135deg,#e8e0f8,#d0c0f0)',price:'Free'},
-  {id:4,cat:'study',name:'Barangay Public Reading Room',loc:'Barangay Hall, Santos St.',rating:3,reviews:21,avail:'open',seats:8,tags:['Free Entry','Quiet'],hours:'Open until 5:00 PM',emoji:'📚',bg:'linear-gradient(135deg,#fde8c8,#f8d0a0)',price:'Free'},
-  {id:5,cat:'computer',name:'TechZone Internet Café',loc:'MacArthur Highway, Dau',rating:5,reviews:203,avail:'open',seats:10,tags:['Fast Internet','Gaming PCs','Headsets','Printing'],hours:'₱25/hour',emoji:'💻',bg:'linear-gradient(135deg,#c8d8f8,#a8c0f0)',price:'₱25/hr'},
-  {id:6,cat:'computer',name:'CyberPoint Study & Print',loc:'Friendship, Angeles City',rating:4,reviews:66,avail:'busy',seats:2,tags:['Printing','Scanning','MS Office','Air-Con'],hours:'₱20/hour',emoji:'🖥️',bg:'linear-gradient(135deg,#d8f0f8,#b0e0f0)',price:'₱20/hr'},
-  {id:7,cat:'computer',name:'PixelHub Internet Lounge',loc:'Balibago, Angeles City',rating:4,reviews:91,avail:'open',seats:18,tags:['500 Mbps WiFi','Webcam','Quiet Area'],hours:'₱30/hour',emoji:'🖱️',bg:'linear-gradient(135deg,#e0e8f8,#c8d8f0)',price:'₱30/hr'},
-  {id:8,cat:'computer',name:'NetKing Budget Shop',loc:'Sto. Rosario, Pampanga',rating:3,reviews:38,avail:'full',seats:0,tags:['Budget-Friendly','Printing'],hours:'₱15/hour',emoji:'⌨️',bg:'linear-gradient(135deg,#e8e8e8,#d8d8d8)',price:'₱15/hr'},
-  {id:9,cat:'cafe',name:'Brewed Minds Coffee Co.',loc:'Nepo Quad, Angeles City',rating:5,reviews:312,avail:'open',seats:9,tags:['Study-Friendly','Free WiFi','Power Outlets','Cozy Vibe'],hours:'Open until 11:00 PM',emoji:'☕',bg:'linear-gradient(135deg,#f8e8d0,#f0d0a8)',price:'Min. order'},
-  {id:10,cat:'cafe',name:'Pages & Latte Studyspace',loc:'Marquee Mall Area, AC',rating:4,reviews:145,avail:'busy',seats:2,tags:['Book Corner','Quiet Hours','Fast WiFi'],hours:'Open until 10:00 PM',emoji:'🫖',bg:'linear-gradient(135deg,#f0e8d8,#e0d0b8)',price:'Min. order'},
-  {id:11,cat:'cafe',name:'SipStudy Milk Tea & Co.',loc:'Sto. Rosario St., San Fernando',rating:4,reviews:73,avail:'open',seats:15,tags:['Milk Tea','Study Tables','Chill Music'],hours:'Open until 10:00 PM',emoji:'🧋',bg:'linear-gradient(135deg,#f8f0d8,#f0e0b0)',price:'Min. order'},
-  {id:12,cat:'cafe',name:'Garden Sip Open Café',loc:'Dolores, San Fernando',rating:3,reviews:29,avail:'open',seats:6,tags:['Outdoor Seating','Budget Menu'],hours:'Open until 7:00 PM',emoji:'🌿',bg:'linear-gradient(135deg,#e8f0e0,#d0e8c0)',price:'Min. order'},
+  // ── Study Places ──
+  {id:1,cat:'study',name:'Malolos City Library',loc:'Sto. Rosario St., Malolos City, Bulacan',rating:5,reviews:142,avail:'open',seats:20,tags:['Quiet Zone','Free WiFi','Air-Conditioned','Power Outlets'],hours:'Open until 8:00 PM',emoji:'📖',bg:'linear-gradient(135deg,#c8e6e6,#a8d5d5)',price:'Free'},
+  {id:2,cat:'study',name:'Bulacan State University Library',loc:'Malolos City, Bulacan (BSU Main Campus)',rating:5,reviews:98,avail:'busy',seats:4,tags:['Academic Resources','Printing','Group Study Rooms','Wi-Fi'],hours:'Open until 5:00 PM',emoji:'🏫',bg:'linear-gradient(135deg,#d4e8c8,#b8d8a0)',price:'Free'},
+  {id:3,cat:'study',name:'Balagtas Public Library',loc:'Poblacion, Balagtas, Bulacan',rating:4,reviews:47,avail:'open',seats:15,tags:['Free Entry','Quiet','Air-Conditioned'],hours:'Open until 5:00 PM',emoji:'📚',bg:'linear-gradient(135deg,#fde8c8,#f8d0a0)',price:'Free'},
+  {id:4,cat:'study',name:'Bocaue Study Hub',loc:'Rizal St., Bocaue, Bulacan',rating:4,reviews:61,avail:'open',seats:18,tags:['Free WiFi','Lockers','Private Booths','Outlets'],hours:'Open until 9:00 PM',emoji:'🎓',bg:'linear-gradient(135deg,#e8e0f8,#d0c0f0)',price:'Free'},
+  {id:5,cat:'study',name:'Meycauayan Learning Center',loc:'M.H. del Pilar St., Meycauayan City, Bulacan',rating:4,reviews:53,avail:'open',seats:12,tags:['Quiet Zone','Free WiFi','Whiteboards'],hours:'Open until 8:00 PM',emoji:'📗',bg:'linear-gradient(135deg,#d0f0e0,#a8e0c0)',price:'Free'},
+  {id:6,cat:'study',name:'Sta. Maria Reading Room',loc:'Bagbaguin, Sta. Maria, Bulacan',rating:3,reviews:29,avail:'open',seats:10,tags:['Free Entry','Quiet','Fans'],hours:'Open until 5:30 PM',emoji:'📝',bg:'linear-gradient(135deg,#f0e8d8,#e0d8c0)',price:'Free'},
+  // ── Computer Shops ──
+  {id:7,cat:'computer',name:'NetZone Bocaue',loc:'Poblacion, Bocaue, Bulacan',rating:5,reviews:187,avail:'open',seats:14,tags:['Fast Internet','Gaming PCs','Headsets','Printing'],hours:'₱25/hour',emoji:'💻',bg:'linear-gradient(135deg,#c8d8f8,#a8c0f0)',price:'₱25/hr'},
+  {id:8,cat:'computer',name:'CyberHub Balagtas',loc:'Zone 2, Balagtas, Bulacan',rating:4,reviews:74,avail:'busy',seats:3,tags:['Printing','Scanning','MS Office','Air-Con'],hours:'₱20/hour',emoji:'🖥️',bg:'linear-gradient(135deg,#d8f0f8,#b0e0f0)',price:'₱20/hr'},
+  {id:9,cat:'computer',name:'DigiStudy Malolos',loc:'Bulihan, Malolos City, Bulacan',rating:4,reviews:88,avail:'open',seats:16,tags:['500 Mbps WiFi','Quiet Area','Study Booths','Webcam'],hours:'₱25/hour',emoji:'🖱️',bg:'linear-gradient(135deg,#e0e8f8,#c8d8f0)',price:'₱25/hr'},
+  {id:10,cat:'computer',name:'TechStop Meycauayan',loc:'Bagong Buhay Ave., Meycauayan City, Bulacan',rating:3,reviews:42,avail:'open',seats:8,tags:['Budget-Friendly','Printing','Photocopy'],hours:'₱18/hour',emoji:'⌨️',bg:'linear-gradient(135deg,#e8e8e8,#d8d8d8)',price:'₱18/hr'},
+  {id:11,cat:'computer',name:'PixelNet Sta. Maria',loc:'Pulong Buhangin, Sta. Maria, Bulacan',rating:4,reviews:55,avail:'full',seats:0,tags:['High-Speed Net','Gaming','Printing','24/7'],hours:'₱22/hour',emoji:'🎮',bg:'linear-gradient(135deg,#f0d8f8,#e0b8f0)',price:'₱22/hr'},
+  // ── Cafés ──
+  {id:12,cat:'cafe',name:'Kape Bulacan',loc:'Catmon, Malolos City, Bulacan',rating:5,reviews:224,avail:'open',seats:11,tags:['Study-Friendly','Free WiFi','Power Outlets','Cozy'],hours:'Open until 10:00 PM',emoji:'☕',bg:'linear-gradient(135deg,#f8e8d0,#f0d0a8)',price:'Min. order'},
+  {id:13,cat:'cafe',name:'The Study Corner Café',loc:'Wawa, Bocaue, Bulacan',rating:5,reviews:163,avail:'busy',seats:2,tags:['Free WiFi','Quiet Nooks','Book Corner','Power Outlets'],hours:'Open until 11:00 PM',emoji:'🫖',bg:'linear-gradient(135deg,#f0e8d8,#e0d0b8)',price:'Min. order'},
+  {id:14,cat:'cafe',name:'SipNStudy Balagtas',loc:'Balagtas Town Center, Balagtas, Bulacan',rating:4,reviews:91,avail:'open',seats:13,tags:['Milk Tea','Study Tables','Chill Music','Free WiFi'],hours:'Open until 10:00 PM',emoji:'🧋',bg:'linear-gradient(135deg,#f8f0d8,#f0e0b0)',price:'Min. order'},
+  {id:15,cat:'cafe',name:'Brew & Focus Meycauayan',loc:'Malhacan, Meycauayan City, Bulacan',rating:4,reviews:78,avail:'open',seats:9,tags:['Specialty Coffee','Fast WiFi','Quiet Hours','Outlets'],hours:'Open until 9:00 PM',emoji:'🍵',bg:'linear-gradient(135deg,#e8f0e0,#d0e8c0)',price:'Min. order'},
+  {id:16,cat:'cafe',name:'Garden Brew Sta. Maria',loc:'Caypombo, Sta. Maria, Bulacan',rating:3,reviews:34,avail:'open',seats:7,tags:['Outdoor Seating','Budget Menu','Free WiFi'],hours:'Open until 8:00 PM',emoji:'🌿',bg:'linear-gradient(135deg,#e0f0e0,#c0e0c0)',price:'Min. order'},
 ];
 
 // Pre-seeded admin account
@@ -1352,45 +1450,150 @@ function updateResSummary(){
     <div class="res-summary-row"><span>💰 Total Price</span><span><strong>${pricing.total}</strong></span></div>`;
 }
 
-async function confirmReservation(){
+// Step 1: validate form → open payment modal
+function confirmReservation(){
   const date=document.getElementById('resDate').value;
   if(!date){showToast('Please select a date.','error');return;}
+  // All good — open payment modal
+  openPaymentModal();
+}
+
+// Payment modal state
+let selectedPaymentMethod = null;
+
+function openPaymentModal(){
+  const dur     = parseInt(document.getElementById('resDuration').value);
+  const persons = parseInt(document.getElementById('resPersons').value)||1;
+  const pricing = calcPrice(pendingPlace, dur, persons);
+  const isFree  = pricing.isFree || pricing.total === 'Free';
+
+  document.getElementById('paymentSpaceName').textContent = pendingPlace.name;
+  document.getElementById('paymentAmountVal').textContent = pricing.total;
+  document.getElementById('paymentAmountSub').textContent = isFree ? 'No payment required — just show up!' : (pricing.breakdown||'');
+
+  // Hide reference box, reset selection
+  selectedPaymentMethod = null;
+  document.querySelectorAll('.payment-method-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('paymentRefBox').classList.remove('show');
+  document.getElementById('paymentRefInput').value='';
+  document.getElementById('btnPayConfirm').disabled = true;
+
+  // If free, auto-select "cash / on arrival" and allow immediate confirm
+  if(isFree){
+    const cashBtn = document.querySelector('.pm-cash');
+    if(cashBtn) selectPayment('cash', cashBtn);
+  }
+
+  // Show payment modal (keep res modal open underneath)
+  document.getElementById('paymentOverlay').classList.add('open');
+}
+
+function closePaymentModal(){
+  document.getElementById('paymentOverlay').classList.remove('open');
+  selectedPaymentMethod = null;
+}
+
+function selectPayment(method, btn){
+  selectedPaymentMethod = method;
+  document.querySelectorAll('.payment-method-btn').forEach(b=>{
+    b.classList.remove('selected');
+    b.querySelector('.payment-method-check').textContent='';
+  });
+  btn.classList.add('selected');
+  btn.querySelector('.payment-method-check').textContent='✓';
+
+  const refBox   = document.getElementById('paymentRefBox');
+  const refNum   = document.getElementById('paymentRefNum');
+  const refLabel = document.getElementById('paymentRefLabel');
+  const refNote  = document.getElementById('paymentRefNote');
+
+  if(method==='gcash'){
+    refLabel.textContent='Send GCash payment to';
+    refNum.textContent  ='0917-123-4567';
+    refNote.textContent ='Account name: Studify PH — Send exact amount then enter reference number below.';
+    refBox.classList.add('show');
+  } else if(method==='maya'){
+    refLabel.textContent='Send Maya payment to';
+    refNum.textContent  ='0915-987-6543';
+    refNote.textContent ='Account name: Studify PH — Send exact amount then enter reference number below.';
+    refBox.classList.add('show');
+  } else {
+    refBox.classList.remove('show');
+  }
+
+  updatePayConfirmBtn();
+}
+
+function updatePayConfirmBtn(){
+  const btn = document.getElementById('btnPayConfirm');
+  if(!selectedPaymentMethod){ btn.disabled=true; return; }
+  if(selectedPaymentMethod==='cash'){ btn.disabled=false; return; }
+  // For GCash/Maya require reference number
+  const ref = document.getElementById('paymentRefInput').value.trim();
+  btn.disabled = ref.length < 5;
+}
+document.getElementById('paymentRefInput')?.addEventListener('input', updatePayConfirmBtn);
+
+// Step 2: actually submit the reservation after payment selection
+async function finalizeReservation(){
+  if(!selectedPaymentMethod) return;
+  const dur     = parseInt(document.getElementById('resDuration').value);
+  const persons = parseInt(document.getElementById('resPersons').value)||1;
+  const pricing = calcPrice(pendingPlace, dur, persons);
+  const refNum  = document.getElementById('paymentRefInput').value.trim();
+  const date    = document.getElementById('resDate').value;
+  const paymentNote = selectedPaymentMethod==='cash'
+    ? 'Pay on Arrival'
+    : `${selectedPaymentMethod.toUpperCase()} Ref: ${refNum}`;
+
+  const btn = document.getElementById('btnPayConfirm');
+  btn.disabled=true;
+  btn.textContent='Processing...';
+
   const token = localStorage.getItem('studify_token');
   try {
     const res = await fetch(`${API}/api/reservations/`, {
       method: 'POST',
       headers: {'Content-Type':'application/json', 'Authorization':`Bearer ${token}`},
       body: JSON.stringify({
-        spaceId:  pendingPlace.id,
+        spaceId:    pendingPlace.id,
         date,
-        start:    document.getElementById('resStart').value,
-        duration: document.getElementById('resDuration').value,
-        persons:  document.getElementById('resPersons').value,
-        notes:    document.getElementById('resNotes').value,
-        totalPrice: calcPrice(pendingPlace, parseInt(document.getElementById('resDuration').value), parseInt(document.getElementById('resPersons').value)).total,
+        start:      document.getElementById('resStart').value,
+        duration:   document.getElementById('resDuration').value,
+        persons:    document.getElementById('resPersons').value,
+        notes:      document.getElementById('resNotes').value + (document.getElementById('resNotes').value ? ' | ' : '') + paymentNote,
+        totalPrice: pricing.total,
+        paymentMethod: selectedPaymentMethod,
+        paymentRef: refNum || null,
       })
     });
     const data = await res.json();
-    if(!res.ok){showToast(data.error || 'Reservation failed.','error');return;}
+    if(!res.ok){
+      showToast(data.error || 'Reservation failed.','error');
+      btn.disabled=false; btn.textContent='Confirm & Reserve →';
+      return;
+    }
+    closePaymentModal();
     closeResModal();
     showToast(`✅ Reservation sent! Waiting for owner confirmation.`);
     showUserDash();
   } catch(e) {
-    // fallback: save locally
     const r={
       id:Date.now(),userEmail:currentUser.email,userName:currentUser.firstName+' '+currentUser.lastName,
       placeId:pendingPlace.id,placeName:pendingPlace.name,placeEmoji:pendingPlace.emoji,
       placeLoc:pendingPlace.loc,placeCat:pendingPlace.cat,
       date,start:document.getElementById('resStart').value,
-      duration:parseInt(document.getElementById('resDuration').value),
-      notes:document.getElementById('resNotes').value,
-      price:pendingPlace.price,status:'confirmed'
+      duration:dur, notes:document.getElementById('resNotes').value,
+      price:pendingPlace.price,status:'pending',paymentMethod:selectedPaymentMethod,
     };
     reservations.push(r);
+    closePaymentModal();
     closeResModal();
     showToast(`✅ Reservation sent! Waiting for owner confirmation.`);
     showUserDash();
   }
+  btn.disabled=false;
+  btn.textContent='Confirm & Reserve →';
 }
 
 // ═══════════════════════════════════════════════════════════
