@@ -1526,6 +1526,8 @@ function loginSuccess(user){
     if(isAdmin){showAdminDash(); showToast(`Welcome, Admin ${user.firstName}! 🛡️`);}
     else if(isOwner){showOwnerDash(); showToast(`Welcome, ${user.firstName}! Manage your space. 🏢`);}
     else{showUserDash(); showToast(`Welcome back, ${user.firstName}!`);}
+    // Re-render place cards so WiFi badges and discounts show correctly
+    applyAllFilters();
   },1600);
 }
 
@@ -1739,6 +1741,7 @@ async function finalizeReservation(){
         totalPrice: pricing.total,
         paymentMethod: selectedPaymentMethod,
         paymentRef: refNum || null,
+        status: (currentUser && currentUser.role === 'premium') ? 'confirmed' : 'pending',
       })
     });
     const data = await res.json();
@@ -2615,6 +2618,8 @@ async function processPremiumPayment() {
   closeUpgradeModal();
   updateNav();
   applyAllFilters();
+  // Re-render place cards so WiFi badges appear immediately
+  loadSpaces().catch(()=>applyAllFilters());
   showToast('⭐ Welcome to Premium! Enjoy your benefits.','success');
 }
 document.getElementById('upgradeOverlay').addEventListener('click', e=>{
@@ -2692,6 +2697,10 @@ try {
     if(role === 'admin') showAdminDash();
     else if(role === 'owner') showOwnerDash();
     else showUserDash();
+    // Re-render cards with correct premium/WiFi state immediately
+    applyAllFilters();
+    // Re-render cards with correct premium/wifi state
+    applyAllFilters();
 
     // STEP 3: Silently verify in background — NEVER log out on failure
     try {
