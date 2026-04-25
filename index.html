@@ -1749,7 +1749,7 @@ async function finalizeReservation(){
     }
     closePaymentModal();
     closeResModal();
-    showToast(`✅ Reservation sent! Waiting for owner confirmation.`);
+    showToast(currentUser&&currentUser.role==='premium' ? '⭐ Priority reserved! Auto-confirmed instantly.' : '✅ Reservation sent! Waiting for owner confirmation.');
     showUserDash();
   } catch(e) {
     const r={
@@ -1758,12 +1758,12 @@ async function finalizeReservation(){
       placeLoc:pendingPlace.loc,placeCat:pendingPlace.cat,
       date,start:document.getElementById('resStart').value,
       duration:dur, notes:document.getElementById('resNotes').value,
-      price:pendingPlace.price,status:'pending',paymentMethod:selectedPaymentMethod,
+      price:pendingPlace.price,status:(currentUser&&currentUser.role==='premium'?'confirmed':'pending'),paymentMethod:selectedPaymentMethod,
     };
     reservations.push(r);
     closePaymentModal();
     closeResModal();
-    showToast(`✅ Reservation sent! Waiting for owner confirmation.`);
+    showToast(currentUser&&currentUser.role==='premium' ? '⭐ Priority reserved! Auto-confirmed instantly.' : '✅ Reservation sent! Waiting for owner confirmation.');
     showUserDash();
   }
   btn.disabled=false;
