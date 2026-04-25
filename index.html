@@ -5,10 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Studify — Find Your Focus</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{--navy:#0f1f3d;--blue:#1a3a6b;--accent:#e8a020;--teal:#1a8a8a;--coral:#d94f2b;--bg:#f0ede8;--white:#fafaf8;--grid:rgba(15,31,61,0.06);}
@@ -412,61 +410,100 @@ tr:hover td{background:rgba(15,31,61,0.02);}
 .owner-section{display:none;}
 .owner-section.active{display:block;}
 
-/* TOAST */
 
-/* ── PREMIUM FEATURES ─────────────────────────────────────── */
-.premium-badge{background:linear-gradient(135deg,var(--accent),#f0b830);color:var(--navy);font-size:0.62rem;font-weight:800;padding:0.18rem 0.55rem;border-radius:100px;letter-spacing:0.06em;text-transform:uppercase;margin-left:0.5rem;vertical-align:middle;}
-.nav-avatar.premium-av{background:linear-gradient(135deg,var(--accent),#f0b830);color:var(--navy);}
+/* ── PREMIUM BADGE & NAV ── */
+.nav-premium-btn{background:linear-gradient(135deg,#f59e0b,#d97706);color:white!important;padding:0.45rem 1rem;border-radius:100px;font-size:0.78rem!important;font-weight:700!important;opacity:1!important;border:none;cursor:pointer;display:flex;align-items:center;gap:0.3rem;animation:shimmer 2s infinite;}
+@keyframes shimmer{0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,0.4);}50%{box-shadow:0 0 0 6px rgba(245,158,11,0);}}
+.premium-badge-nav{background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.62rem;font-weight:800;padding:0.15rem 0.5rem;border-radius:100px;letter-spacing:0.08em;text-transform:uppercase;}
+.nav-avatar.premium-av{background:linear-gradient(135deg,#f59e0b,#d97706);}
 
-/* WiFi badge on place cards */
-.wifi-badge{display:inline-flex;align-items:center;gap:0.25rem;font-size:0.68rem;font-weight:700;padding:0.18rem 0.5rem;border-radius:6px;margin-left:0.3rem;}
-.wifi-strong{background:#dcfce7;color:#15803d;}
+/* ── UPGRADE MODAL ── */
+.upgrade-overlay{position:fixed;inset:0;z-index:1000;background:rgba(10,16,32,0.7);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+.upgrade-overlay.open{opacity:1;pointer-events:all;}
+.upgrade-modal{background:var(--white);border-radius:24px;width:100%;max-width:460px;margin:1rem;box-shadow:0 40px 80px rgba(10,16,32,0.3);transform:translateY(20px) scale(0.97);transition:transform 0.3s;overflow:hidden;}
+.upgrade-overlay.open .upgrade-modal{transform:translateY(0) scale(1);}
+.upgrade-header{background:linear-gradient(135deg,#1a1f3d,#2d3561);padding:2rem;text-align:center;position:relative;}
+.upgrade-header-close{position:absolute;top:1rem;right:1.2rem;background:rgba(255,255,255,0.15);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;color:white;font-size:0.9rem;display:grid;place-items:center;}
+.upgrade-crown{font-size:2.5rem;margin-bottom:0.5rem;}
+.upgrade-header h3{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:white;margin-bottom:0.3rem;}
+.upgrade-header p{font-size:0.82rem;color:rgba(255,255,255,0.6);}
+.upgrade-price{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:#f59e0b;margin-top:0.8rem;}
+.upgrade-price span{font-size:0.85rem;font-weight:400;color:rgba(255,255,255,0.5);}
+.upgrade-body{padding:1.8rem 2rem;}
+.upgrade-features{list-style:none;margin-bottom:1.8rem;}
+.upgrade-features li{display:flex;align-items:flex-start;gap:0.8rem;padding:0.7rem 0;border-bottom:1px solid rgba(15,31,61,0.07);font-size:0.88rem;}
+.upgrade-features li:last-child{border-bottom:none;}
+.upgrade-feature-icon{font-size:1.2rem;flex-shrink:0;margin-top:0.05rem;}
+.upgrade-feature-text strong{display:block;font-weight:700;color:var(--navy);}
+.upgrade-feature-text span{font-size:0.78rem;opacity:0.5;}
+.btn-upgrade-now{width:100%;padding:1rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:14px;font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all 0.2s;letter-spacing:0.02em;}
+.btn-upgrade-now:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(245,158,11,0.4);}
+
+/* ── MOCK CARD PAYMENT FORM ── */
+.card-form{display:none;margin-top:1rem;}
+.card-form.show{display:block;}
+.card-form-group{margin-bottom:0.9rem;}
+.card-form-group label{display:block;font-size:0.72rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;opacity:0.5;margin-bottom:0.35rem;}
+.card-form-group input{width:100%;padding:0.7rem 1rem;border:1.5px solid rgba(15,31,61,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.92rem;color:var(--navy);background:var(--bg);outline:none;transition:border-color 0.2s;}
+.card-form-group input:focus{border-color:var(--accent);}
+.card-form-row{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;}
+.btn-pay-now{width:100%;padding:0.9rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:800;cursor:pointer;margin-top:0.5rem;transition:all 0.2s;}
+.btn-pay-now:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(245,158,11,0.35);}
+.processing-spinner{text-align:center;padding:1.5rem;display:none;}
+.processing-spinner.show{display:block;}
+
+/* ── PREMIUM DISCOUNT BANNER ── */
+.premium-discount-banner{background:linear-gradient(135deg,#fef3c7,#fde68a);border:1.5px solid #f59e0b;border-radius:10px;padding:0.7rem 1rem;margin-bottom:1rem;display:none;align-items:center;gap:0.6rem;font-size:0.82rem;font-weight:600;color:#92400e;}
+.premium-discount-banner.show{display:flex;}
+
+/* ── WIFI BADGE ── */
+.wifi-badge{display:inline-flex;align-items:center;gap:0.2rem;font-size:0.68rem;font-weight:700;padding:0.18rem 0.5rem;border-radius:100px;white-space:nowrap;}
+.wifi-fast{background:#dcfce7;color:#15803d;}
 .wifi-medium{background:#fef9c3;color:#854d0e;}
 .wifi-none{background:#fee2e2;color:#b91c1c;}
+.filter-btn.cat-wifi.active{background:#1a8a8a;border-color:#1a8a8a;color:white;}
 
-/* Discount badge in reservation modal */
-.premium-discount-banner{background:linear-gradient(135deg,rgba(232,160,32,0.12),rgba(240,184,48,0.08));border:1.5px solid rgba(232,160,32,0.35);border-radius:12px;padding:0.8rem 1.2rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.7rem;}
-.premium-discount-banner .disc-icon{font-size:1.3rem;}
-.premium-discount-banner .disc-text{font-size:0.82rem;font-weight:600;color:#a06010;}
-.premium-discount-banner .disc-amount{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:var(--accent);margin-left:auto;}
-.price-original{text-decoration:line-through;opacity:0.45;font-size:0.85rem;margin-right:0.4rem;}
+/* ── 10% OFF badge on cards ── */
+.discount-badge{position:absolute;top:44px;right:12px;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;font-size:0.62rem;font-weight:800;padding:0.18rem 0.5rem;border-radius:100px;letter-spacing:0.06em;}
 
-/* Upgrade modal */
-.upgrade-overlay{position:fixed;inset:0;z-index:998;background:rgba(10,16,32,0.65);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s;}
-.upgrade-overlay.open{opacity:1;pointer-events:all;}
-.upgrade-modal{background:var(--white);border-radius:28px;width:100%;max-width:480px;margin:1rem;box-shadow:0 32px 80px rgba(10,16,32,0.28);transform:translateY(20px) scale(0.97);transition:transform 0.3s;overflow:hidden;}
-.upgrade-overlay.open .upgrade-modal{transform:translateY(0) scale(1);}
-.upgrade-header{background:linear-gradient(135deg,var(--accent),#f0b830);padding:2rem;text-align:center;position:relative;}
-.upgrade-header h3{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--navy);}
-.upgrade-header p{font-size:0.9rem;color:rgba(15,31,61,0.65);margin-top:0.4rem;}
-.upgrade-close{position:absolute;top:1rem;right:1rem;background:rgba(15,31,61,0.12);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:0.9rem;display:grid;place-items:center;}
-.upgrade-body{padding:1.8rem 2rem;}
-.upgrade-features{margin-bottom:1.5rem;}
-.upgrade-feature{display:flex;align-items:center;gap:0.7rem;padding:0.6rem 0;border-bottom:1px solid rgba(15,31,61,0.05);font-size:0.88rem;}
-.upgrade-feature:last-child{border-bottom:none;}
-.upgrade-feature-icon{font-size:1.2rem;width:28px;text-align:center;flex-shrink:0;}
-.upgrade-feature-text{flex:1;}
-.upgrade-feature-text strong{display:block;font-weight:700;margin-bottom:0.1rem;}
-.upgrade-feature-text span{font-size:0.78rem;opacity:0.5;}
-.upgrade-price-box{background:rgba(15,31,61,0.04);border-radius:14px;padding:1.2rem;text-align:center;margin-bottom:1.2rem;}
-.upgrade-price{font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;color:var(--navy);}
-.upgrade-price-sub{font-size:0.8rem;opacity:0.5;margin-top:0.2rem;}
-
-/* Mock payment form */
-.mock-payment-form{display:none;}
-.mock-payment-form.show{display:block;}
-.mock-payment-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:1rem;}
-.card-row{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;}
-.mock-input{width:100%;background:rgba(15,31,61,0.05);border:1.5px solid rgba(15,31,61,0.12);color:var(--navy);padding:0.7rem 0.9rem;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;margin-bottom:0.8rem;}
-.mock-input:focus{outline:none;border-color:var(--teal);}
-.btn-pay-now{width:100%;background:linear-gradient(135deg,var(--accent),#f0b830);color:var(--navy);padding:0.95rem;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all 0.2s;}
-.btn-pay-now:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(232,160,32,0.4);}
-.btn-view-plans{width:100%;background:var(--navy);color:white;padding:0.95rem;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;transition:all 0.2s;}
-.btn-view-plans:hover{background:var(--teal);}
-@media(max-width:600px){
-  .upgrade-overlay{align-items:flex-end;}
-  .upgrade-modal{border-radius:24px 24px 0 0;margin:0;max-width:100%;}
-}
+/* TOAST */
+/* PAYMENT MODAL */
+.payment-overlay{position:fixed;inset:0;z-index:999;background:rgba(10,16,32,0.65);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+.payment-overlay.open{opacity:1;pointer-events:all;}
+.payment-modal{background:var(--white);border-radius:24px;width:100%;max-width:420px;margin:1rem;box-shadow:0 32px 80px rgba(10,16,32,0.28);transform:translateY(20px) scale(0.97);transition:transform 0.3s;overflow:hidden;}
+.payment-overlay.open .payment-modal{transform:translateY(0) scale(1);}
+.payment-header{background:var(--navy);padding:1.5rem 2rem;color:white;position:relative;}
+.payment-header h3{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:white;}
+.payment-header p{font-size:0.82rem;opacity:0.6;margin-top:0.3rem;}
+.payment-close{position:absolute;top:1.1rem;right:1.3rem;background:rgba(255,255,255,0.15);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;color:white;font-size:0.9rem;display:grid;place-items:center;}
+.payment-body{padding:1.6rem 2rem 2rem;}
+.payment-amount-box{background:linear-gradient(135deg,var(--teal),#1a6a6a);border-radius:14px;padding:1.2rem 1.5rem;text-align:center;margin-bottom:1.5rem;color:white;}
+.payment-amount-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;opacity:0.8;margin-bottom:0.3rem;}
+.payment-amount-val{font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;}
+.payment-amount-sub{font-size:0.75rem;opacity:0.7;margin-top:0.2rem;}
+.payment-methods{display:flex;flex-direction:column;gap:0.7rem;margin-bottom:1.5rem;}
+.payment-method-btn{display:flex;align-items:center;gap:1rem;padding:0.9rem 1.2rem;background:rgba(15,31,61,0.04);border:2px solid rgba(15,31,61,0.1);border-radius:14px;cursor:pointer;transition:all 0.2s;text-align:left;width:100%;font-family:'DM Sans',sans-serif;}
+.payment-method-btn:hover{background:rgba(26,138,138,0.06);border-color:rgba(26,138,138,0.3);}
+.payment-method-btn.selected{background:rgba(26,138,138,0.1);border-color:var(--teal);}
+.payment-method-icon{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;font-size:1.4rem;flex-shrink:0;}
+.pm-gcash .payment-method-icon{background:#007bff1a;}
+.pm-maya .payment-method-icon{background:#2ecc711a;}
+.pm-cash .payment-method-icon{background:#f39c121a;}
+.payment-method-name{font-weight:700;font-size:0.92rem;color:var(--navy);}
+.payment-method-desc{font-size:0.75rem;color:var(--navy);opacity:0.5;margin-top:0.1rem;}
+.payment-method-check{margin-left:auto;width:22px;height:22px;border-radius:50%;border:2px solid rgba(15,31,61,0.2);display:grid;place-items:center;flex-shrink:0;transition:all 0.2s;}
+.payment-method-btn.selected .payment-method-check{background:var(--teal);border-color:var(--teal);color:white;font-size:0.75rem;}
+.payment-ref-box{display:none;background:rgba(15,31,61,0.04);border:1.5px solid rgba(15,31,61,0.1);border-radius:12px;padding:1rem 1.2rem;margin-bottom:1.2rem;}
+.payment-ref-box.show{display:block;}
+.payment-ref-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;opacity:0.5;font-weight:600;margin-bottom:0.4rem;}
+.payment-ref-num{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--teal);letter-spacing:0.08em;}
+.payment-ref-note{font-size:0.72rem;opacity:0.5;margin-top:0.3rem;}
+.payment-ref-input{width:100%;margin-top:0.7rem;padding:0.6rem 0.9rem;border:1.5px solid rgba(15,31,61,0.15);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--navy);background:white;}
+.payment-ref-input:focus{outline:none;border-color:var(--teal);}
+.btn-pay-confirm{width:100%;padding:0.95rem;background:var(--teal);color:white;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-pay-confirm:hover{background:var(--navy);transform:translateY(-1px);}
+.btn-pay-confirm:disabled{background:rgba(15,31,61,0.2);cursor:not-allowed;transform:none;}
+@media(max-width:600px){.payment-overlay{align-items:flex-end;}.payment-modal{border-radius:24px 24px 0 0;margin:0;max-width:100%;}}
 .toast{position:fixed;bottom:2rem;right:2rem;background:var(--navy);color:white;padding:1rem 1.5rem;border-radius:14px;font-size:0.88rem;font-weight:500;z-index:9999;transform:translateY(100px);opacity:0;transition:all 0.4s;max-width:320px;box-shadow:0 8px 32px rgba(10,16,32,0.3);}
 .toast.show{transform:translateY(0);opacity:1;}
 .toast.success{background:var(--teal);}
@@ -592,71 +629,6 @@ tr:hover td{background:rgba(15,31,61,0.02);}
   .owner-stats{grid-template-columns:1fr 1fr;}
   .nav-avatar{width:30px;height:30px;font-size:0.75rem;}
 }
-
-/* ── MAP PAGE ─────────────────────────────────────────────── */
-.map-page{padding:6rem 0 0;min-height:100vh;display:flex;flex-direction:column;}
-.map-topbar{padding:0 5%;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
-.map-title{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;}
-.map-title span{color:var(--teal);}
-.map-premium-badge{background:linear-gradient(135deg,var(--accent),#f0b830);color:var(--navy);font-size:0.7rem;font-weight:800;padding:0.3rem 0.8rem;border-radius:100px;letter-spacing:0.08em;text-transform:uppercase;margin-left:0.6rem;}
-.map-filters{display:flex;gap:0.5rem;flex-wrap:wrap;}
-.map-filter-btn{background:transparent;border:1.5px solid rgba(15,31,61,0.15);color:var(--navy);padding:0.45rem 1rem;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:0.8rem;cursor:pointer;transition:all 0.2s;font-weight:500;opacity:0.7;}
-.map-filter-btn:hover,.map-filter-btn.active{background:var(--navy);color:var(--white);border-color:var(--navy);opacity:1;}
-.map-container{display:flex;flex:1;height:calc(100vh - 140px);gap:0;}
-#studifyMap{flex:1;min-height:500px;z-index:1;}
-.map-sidebar{width:320px;flex-shrink:0;background:var(--white);border-left:1px solid rgba(15,31,61,0.1);overflow-y:auto;display:flex;flex-direction:column;}
-.map-sidebar-header{padding:1.2rem 1.5rem;border-bottom:1px solid rgba(15,31,61,0.08);font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;display:flex;align-items:center;justify-content:space-between;}
-.map-sidebar-count{font-size:0.72rem;font-weight:400;opacity:0.45;font-family:'DM Sans',sans-serif;}
-.map-space-card{padding:1.1rem 1.5rem;border-bottom:1px solid rgba(15,31,61,0.06);cursor:pointer;transition:background 0.15s;}
-.map-space-card:hover{background:rgba(15,31,61,0.03);}
-.map-space-card.active{background:rgba(26,138,138,0.06);border-left:3px solid var(--teal);}
-.map-space-emoji{font-size:1.5rem;margin-bottom:0.4rem;}
-.map-space-name{font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;margin-bottom:0.2rem;}
-.map-space-loc{font-size:0.72rem;opacity:0.5;margin-bottom:0.5rem;}
-.map-space-meta{display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;}
-.map-avail-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-.map-avail-dot.open{background:#22c55e;}
-.map-avail-dot.busy{background:var(--accent);}
-.map-avail-dot.full{background:var(--coral);}
-.map-avail-text{font-size:0.72rem;opacity:0.65;}
-.map-space-price{font-size:0.72rem;font-weight:600;color:var(--teal);}
-.map-route-btn{margin-top:0.6rem;background:var(--teal);color:white;border:none;padding:0.4rem 1rem;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.2s;}
-.map-route-btn:hover{background:var(--navy);}
-.map-reserve-btn{margin-top:0.4rem;margin-left:0.4rem;background:transparent;color:var(--teal);border:1.5px solid var(--teal);padding:0.4rem 1rem;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
-.map-reserve-btn:hover{background:var(--teal);color:white;}
-
-/* Premium lock overlay */
-.map-lock-overlay{position:absolute;inset:0;background:rgba(15,31,61,0.75);backdrop-filter:blur(8px);z-index:500;display:flex;align-items:center;justify-content:center;}
-.map-lock-box{background:var(--white);border-radius:28px;padding:3rem 2.5rem;text-align:center;max-width:380px;margin:1rem;box-shadow:0 32px 80px rgba(10,16,32,0.3);}
-.map-lock-icon{font-size:3.5rem;margin-bottom:1rem;}
-.map-lock-title{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:0.6rem;}
-.map-lock-sub{font-size:0.9rem;opacity:0.6;line-height:1.6;margin-bottom:1.8rem;}
-.map-lock-features{text-align:left;margin-bottom:1.8rem;}
-.map-lock-feature{display:flex;align-items:center;gap:0.6rem;font-size:0.85rem;margin-bottom:0.6rem;opacity:0.75;}
-.map-lock-feature::before{content:'✓';color:var(--teal);font-weight:700;flex-shrink:0;}
-.btn-upgrade{background:linear-gradient(135deg,var(--accent),#f0b830);color:var(--navy);padding:0.9rem 2rem;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:700;border:none;cursor:pointer;transition:all 0.2s;width:100%;}
-.btn-upgrade:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,160,32,0.4);}
-.btn-maybe-later{background:transparent;border:none;color:var(--navy);opacity:0.4;font-size:0.82rem;cursor:pointer;margin-top:0.8rem;font-family:'DM Sans',sans-serif;}
-.btn-maybe-later:hover{opacity:0.7;}
-
-/* Leaflet popup custom style */
-.studify-popup .leaflet-popup-content-wrapper{border-radius:16px;box-shadow:0 8px 32px rgba(15,31,61,0.15);border:1px solid rgba(15,31,61,0.08);}
-.studify-popup .leaflet-popup-content{margin:0;padding:0;}
-.popup-inner{padding:1rem 1.2rem;}
-.popup-name{font-family:'Syne',sans-serif;font-weight:800;font-size:0.95rem;margin-bottom:0.2rem;}
-.popup-loc{font-size:0.72rem;opacity:0.5;margin-bottom:0.5rem;}
-.popup-avail{font-size:0.75rem;font-weight:600;display:flex;align-items:center;gap:0.4rem;}
-.popup-avail.open{color:#15803d;} .popup-avail.busy{color:#92400e;} .popup-avail.full{color:#b91c1c;}
-.popup-actions{display:flex;gap:0.4rem;margin-top:0.7rem;}
-.popup-btn{padding:0.4rem 0.9rem;border-radius:100px;font-size:0.75rem;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
-.popup-btn-route{background:var(--teal);color:white;} .popup-btn-route:hover{background:var(--navy);}
-.popup-btn-reserve{background:transparent;border:1.5px solid var(--teal);color:var(--teal);} .popup-btn-reserve:hover{background:var(--teal);color:white;}
-
-@media(max-width:768px){
-  .map-container{flex-direction:column;height:auto;}
-  #studifyMap{height:55vh;}
-  .map-sidebar{width:100%;height:45vh;border-left:none;border-top:1px solid rgba(15,31,61,0.1);}
-}
 </style>
 </head>
 <body>
@@ -674,16 +646,16 @@ tr:hover td{background:rgba(15,31,61,0.02);}
       <li><a onclick="goHome();setTimeout(()=>scrollToSection('places'),100)">Browse Spaces</a></li>
     </li>
     <li id="navAuthBtn"><a class="nav-cta" onclick="openAuth('login')">Get Started</a></li>
+    <li id="navPremiumBtn" style="display:none"><a class="nav-premium-btn" onclick="openUpgradeModal()">⭐ Go Premium</a></li>
     <li id="navDashBtn" style="display:none"><a onclick="showUserDash()">My Reservations</a></li>
-    <li id="navMapBtn" style="display:none"><a onclick="showMapPage()">🗺️ Map <span style="background:linear-gradient(135deg,var(--accent),#f0b830);color:var(--navy);font-size:0.6rem;font-weight:800;padding:0.1rem 0.4rem;border-radius:100px;margin-left:0.2rem;vertical-align:middle;">PRO</span></a></li>
     <li id="navAdminBtn" style="display:none"><a onclick="showAdminDash()">Admin Panel</a></li>
     <li id="navOwnerBtn" style="display:none"><a onclick="showOwnerDash()">My Space</a></li>
-    <li id="navUpgradeBtn" style="display:none"><a onclick="openUpgradeModal()" style="background:linear-gradient(135deg,var(--accent),#f0b830);color:var(--navy);padding:0.45rem 1rem;border-radius:100px;font-weight:700;font-size:0.8rem;">⭐ Go Premium</a></li>
   </ul>
   <div class="nav-user" id="navUser" style="display:none">
     <div class="nav-avatar" id="navAvatar">?</div>
     <span class="nav-user-name" id="navUserName"></span>
     <span class="admin-badge-nav" id="navAdminBadge" style="display:none">Admin</span>
+    <span class="premium-badge-nav" id="navPremiumBadge" style="display:none">⭐ Premium</span>
     <button class="btn-logout" onclick="logout()">Log out</button>
   </div>
 </nav>
@@ -749,7 +721,7 @@ tr:hover td{background:rgba(15,31,61,0.02);}
         <button class="filter-btn cat-library" data-cat="study">📚 Study Places</button>
         <button class="filter-btn cat-computer" data-cat="computer">💻 Computer Shops</button>
         <button class="filter-btn cat-cafe" data-cat="cafe">☕ Cafés</button>
-        <button class="filter-btn" id="wifiFilterBtn" onclick="toggleWifiFilter(this)">📶 Fast WiFi Only</button>
+        <button class="filter-btn cat-wifi" data-wifi="true" id="wifiFilterBtn" onclick="toggleWifiFilter(this)">📶 Fast WiFi</button>
       </div>
       <div class="star-filter">
         <label>⭐ Min Rating:</label>
@@ -762,7 +734,7 @@ tr:hover td{background:rgba(15,31,61,0.02);}
       </div>
     </div>
     <div class="location-search-wrap">
-      <input class="location-search" id="locationSearch" placeholder="🔍  Search by location name (e.g. Angeles, Dau, San Fernando…)" oninput="applyAllFilters()">
+      <input class="location-search" id="locationSearch" placeholder="🔍  Search by location (e.g. Malolos, Bocaue, Balagtas, Meycauayan…)" oninput="applyAllFilters()">
       <button class="btn-gps" id="gpsBtn" onclick="findNearest()">📍 Nearest to Me</button>
     </div>
     <div class="places-count" id="placesCount">Showing 12 spaces</div>
@@ -1004,53 +976,6 @@ tr:hover td{background:rgba(15,31,61,0.02);}
   <footer><strong>STUDIFY</strong> — Space Owner Panel.</footer>
 </div>
 
-<!-- MAP PAGE -->
-<div class="page" id="mapPage">
-  <div class="map-page">
-    <div class="map-topbar">
-      <div>
-        <span class="map-title">🗺️ Study Space <span>Map</span></span>
-        <span class="map-premium-badge">⭐ Premium</span>
-        <div style="font-size:0.82rem;opacity:0.5;margin-top:0.3rem;">Find and navigate to study spaces near you in Bulacan.</div>
-      </div>
-      <div class="map-filters">
-        <button class="map-filter-btn active" onclick="filterMap('all',this)">All Spaces</button>
-        <button class="map-filter-btn" onclick="filterMap('study',this)">📚 Study</button>
-        <button class="map-filter-btn" onclick="filterMap('computer',this)">💻 Computer</button>
-        <button class="map-filter-btn" onclick="filterMap('cafe',this)">☕ Café</button>
-      </div>
-    </div>
-    <div class="map-container" style="position:relative;">
-      <!-- Premium lock overlay — shown for non-premium users -->
-      <div class="map-lock-overlay" id="mapLockOverlay" style="display:none;">
-        <div class="map-lock-box">
-          <div class="map-lock-icon">🗺️</div>
-          <div class="map-lock-title">Premium Feature</div>
-          <div class="map-lock-sub">Upgrade to Studify Premium to access the interactive map and navigate to any study space.</div>
-          <div class="map-lock-features">
-            <div class="map-lock-feature">See all spaces on an interactive map</div>
-            <div class="map-lock-feature">Get directions from your location</div>
-            <div class="map-lock-feature">Live availability pins</div>
-            <div class="map-lock-feature">Filter by category</div>
-          </div>
-          <button class="btn-upgrade" onclick="showToast('Premium coming soon! 🚀','warn');closeMapLock()">⭐ Upgrade to Premium</button>
-          <br>
-          <button class="btn-maybe-later" onclick="closeMapLock()">Maybe later</button>
-        </div>
-      </div>
-      <div id="studifyMap"></div>
-      <div class="map-sidebar">
-        <div class="map-sidebar-header">
-          <span>Nearby Spaces</span>
-          <span class="map-sidebar-count" id="mapSidebarCount">16 spaces</span>
-        </div>
-        <div id="mapSidebarList"></div>
-      </div>
-    </div>
-  </div>
-  <footer><strong>STUDIFY</strong> — Your Study Space, Reserved.</footer>
-</div>
-
 <!-- BULK CHECK MODAL -->
 <div class="bulk-modal-overlay" id="bulkOverlay">
   <div class="bulk-modal">
@@ -1178,20 +1103,15 @@ tr:hover td{background:rgba(15,31,61,0.02);}
           <option value="10">10 persons</option>
         </select>
       </div>
+      <div class="premium-discount-banner" id="premiumDiscountBanner">⭐ Premium 10% discount applied!</div>
       <div id="priceLive" class="price-live" style="display:none">
         <div class="price-live-label">Total Estimated Price</div>
         <div class="price-live-amount" id="priceAmount">Free</div>
         <div class="price-live-sub" id="priceSub"></div>
       </div>
-      <!-- Premium discount banner -->
-      <div class="premium-discount-banner" id="premiumDiscountBanner" style="display:none;">
-        <div class="disc-icon">⭐</div>
-        <div class="disc-text">Premium 10% discount applied!</div>
-        <div class="disc-amount" id="discountAmount"></div>
-      </div>
       <div class="res-form-group"><label>Notes (optional)</label><input type="text" id="resNotes" placeholder="e.g. Need outlet near window"></div>
       <div class="res-summary" id="resSummary"></div>
-      <button class="btn-confirm-res" onclick="confirmReservation()">✓ Confirm Reservation</button>
+      <button class="btn-confirm-res" onclick="confirmReservation()">Proceed to Payment →</button>
     </div>
   </div>
 </div>
@@ -1235,51 +1155,95 @@ tr:hover td{background:rgba(15,31,61,0.02);}
   </div>
 </div>
 
-<!-- UPGRADE TO PREMIUM MODAL -->
-<div class="upgrade-overlay" id="upgradeOverlay">
-  <div class="upgrade-modal">
-    <div class="upgrade-header">
-      <button class="upgrade-close" onclick="closeUpgradeModal()">✕</button>
-      <div style="font-size:2.5rem;margin-bottom:0.5rem;">⭐</div>
-      <h3>Studify Premium</h3>
-      <p>Unlock the full study experience</p>
+<!-- PAYMENT MODAL -->
+<div class="payment-overlay" id="paymentOverlay">
+  <div class="payment-modal">
+    <div class="payment-header">
+      <button class="payment-close" onclick="closePaymentModal()">✕</button>
+      <h3>Complete Payment</h3>
+      <p id="paymentSpaceName">Choose how you'll pay for your reservation.</p>
     </div>
-    <div class="upgrade-body">
-      <div id="upgradeFeaturesList" class="upgrade-features">
-        <div class="upgrade-feature"><div class="upgrade-feature-icon">🚀</div><div class="upgrade-feature-text"><strong>Priority Reservation</strong><span>Your bookings auto-confirm instantly — no waiting</span></div></div>
-        <div class="upgrade-feature"><div class="upgrade-feature-icon">💸</div><div class="upgrade-feature-text"><strong>10% Exclusive Discount</strong><span>On all paid computer shops and cafés</span></div></div>
-        <div class="upgrade-feature"><div class="upgrade-feature-icon">📶</div><div class="upgrade-feature-text"><strong>Verified Fast WiFi Filter</strong><span>Find spaces with reliable high-speed internet</span></div></div>
-        <div class="upgrade-feature"><div class="upgrade-feature-icon">🗺️</div><div class="upgrade-feature-text"><strong>Interactive Map</strong><span>Navigate to any study space with live pins</span></div></div>
+    <div class="payment-body">
+      <div class="payment-amount-box">
+        <div class="payment-amount-label">Total Amount Due</div>
+        <div class="payment-amount-val" id="paymentAmountVal">Free</div>
+        <div class="payment-amount-sub" id="paymentAmountSub"></div>
       </div>
-      <div class="upgrade-price-box">
-        <div class="upgrade-price">₱99<span style="font-size:1rem;font-weight:400;opacity:0.5;">/month</span></div>
-        <div class="upgrade-price-sub">Cancel anytime · Instant activation</div>
+      <div class="payment-methods">
+        <button class="payment-method-btn pm-gcash" onclick="selectPayment('gcash', this)">
+          <div class="payment-method-icon">💙</div>
+          <div>
+            <div class="payment-method-name">GCash</div>
+            <div class="payment-method-desc">Pay via GCash e-wallet</div>
+          </div>
+          <div class="payment-method-check"></div>
+        </button>
+        <button class="payment-method-btn pm-maya" onclick="selectPayment('maya', this)">
+          <div class="payment-method-icon">💚</div>
+          <div>
+            <div class="payment-method-name">Maya</div>
+            <div class="payment-method-desc">Pay via Maya (PayMaya)</div>
+          </div>
+          <div class="payment-method-check"></div>
+        </button>
+        <button class="payment-method-btn pm-cash" onclick="selectPayment('cash', this)">
+          <div class="payment-method-icon">💵</div>
+          <div>
+            <div class="payment-method-name">Pay on Arrival</div>
+            <div class="payment-method-desc">Cash payment when you arrive</div>
+          </div>
+          <div class="payment-method-check"></div>
+        </button>
       </div>
-      <!-- Step 1: CTA -->
-      <div id="upgradeStep1">
-        <button class="btn-view-plans" onclick="showMockPayment()">⭐ Upgrade Now →</button>
+      <!-- Reference box for GCash / Maya -->
+      <div class="payment-ref-box" id="paymentRefBox">
+        <div class="payment-ref-label" id="paymentRefLabel">Send payment to</div>
+        <div class="payment-ref-num" id="paymentRefNum">09XX-XXX-XXXX</div>
+        <div class="payment-ref-note" id="paymentRefNote">Send the exact amount then enter your reference number below.</div>
+        <input class="payment-ref-input" type="text" id="paymentRefInput" placeholder="Enter GCash/Maya reference number">
       </div>
-      <!-- Step 2: Mock payment form -->
-      <div class="mock-payment-form" id="mockPaymentForm">
-        <div class="mock-payment-title">💳 Card Details</div>
-        <input class="mock-input" type="text" placeholder="Cardholder Name" id="cardName" maxlength="40">
-        <input class="mock-input" type="text" placeholder="Card Number (16 digits)" id="cardNum" maxlength="19" oninput="formatCardNum(this)">
-        <div class="card-row">
-          <input class="mock-input" type="text" placeholder="MM/YY" id="cardExp" maxlength="5" oninput="formatExpiry(this)">
-          <input class="mock-input" type="text" placeholder="CVV" id="cardCvv" maxlength="3">
-        </div>
-        <button class="btn-pay-now" onclick="processMockPayment()">Pay ₱99 & Activate Premium</button>
-        <div style="text-align:center;font-size:0.72rem;opacity:0.4;margin-top:0.6rem;">🔒 Secured · Mock payment for demo</div>
-      </div>
+      <button class="btn-pay-confirm" id="btnPayConfirm" onclick="finalizeReservation()" disabled>
+        Confirm &amp; Reserve →
+      </button>
     </div>
   </div>
 </div>
 
-<!-- Hidden Google Identity div -->
-<div id="g_id_onload"
-  data-client_id="228576238903-0sqoqcnt19kangi93p0qcuhf1ve58gs5.apps.googleusercontent.com"
-  data-callback="handleGoogleCredential"
-  data-auto_prompt="false">
+
+<!-- UPGRADE TO PREMIUM MODAL -->
+<div class="upgrade-overlay" id="upgradeOverlay">
+  <div class="upgrade-modal">
+    <div class="upgrade-header">
+      <button class="upgrade-header-close" onclick="closeUpgradeModal()">✕</button>
+      <div class="upgrade-crown">⭐</div>
+      <h3>Studify Premium</h3>
+      <p>Unlock the full study experience</p>
+      <div class="upgrade-price">₱99<span>/month</span></div>
+    </div>
+    <div class="upgrade-body">
+      <ul class="upgrade-features">
+        <li><div class="upgrade-feature-icon">⚡</div><div class="upgrade-feature-text"><strong>Priority Reservation</strong><span>Your reservations auto-confirm — no waiting for owner approval</span></div></li>
+        <li><div class="upgrade-feature-icon">💰</div><div class="upgrade-feature-text"><strong>10% Discount</strong><span>Automatic 10% off on all paid spaces (computer shops & cafés)</span></div></li>
+        <li><div class="upgrade-feature-icon">📶</div><div class="upgrade-feature-text"><strong>Verified Fast WiFi Spaces</strong><span>See WiFi speed badges and filter fast-WiFi-only spaces</span></div></li>
+        <li><div class="upgrade-feature-icon">🎯</div><div class="upgrade-feature-text"><strong>Premium Badge</strong><span>Stand out with a ⭐ Premium badge on your profile</span></div></li>
+      </ul>
+      <button class="btn-upgrade-now" id="btnUpgradeNow" onclick="showCardForm()">Upgrade Now →</button>
+      <div class="card-form" id="cardForm">
+        <div class="card-form-group"><label>Cardholder Name</label><input type="text" id="cardName" placeholder="Juan dela Cruz"></div>
+        <div class="card-form-group"><label>Card Number</label><input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCardNum(this)"></div>
+        <div class="card-form-row">
+          <div class="card-form-group"><label>Expiry (MM/YY)</label><input type="text" id="cardExpiry" placeholder="08/27" maxlength="5" oninput="formatExpiry(this)"></div>
+          <div class="card-form-group"><label>CVV</label><input type="text" id="cardCvv" placeholder="123" maxlength="3"></div>
+        </div>
+        <button class="btn-pay-now" onclick="processPremiumPayment()">💳 Pay ₱99 Now</button>
+      </div>
+      <div class="processing-spinner" id="upgradeSpinner">
+        <div style="font-size:2rem;margin-bottom:0.8rem;">⏳</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:var(--navy);">Processing payment...</div>
+        <div style="font-size:0.8rem;opacity:0.5;margin-top:0.3rem;">Please wait a moment</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -1289,18 +1253,25 @@ tr:hover td{background:rgba(15,31,61,0.02);}
 // DATA
 // ═══════════════════════════════════════════════════════════
 let PLACES = [
-  {id:1,cat:'study',name:'University Central Library',loc:'Main Campus, Building A',rating:5,reviews:128,avail:'open',seats:14,tags:['Quiet Zone','Free WiFi','Air-Conditioned','Power Outlets'],hours:'Open until 9:00 PM',emoji:'📖',bg:'linear-gradient(135deg,#c8e6e6,#a8d5d5)',price:'Free'},
-  {id:2,cat:'study',name:'Greenfield Study Hub',loc:'Greenfield Ave., 2nd Floor',rating:4,reviews:87,avail:'busy',seats:3,tags:['Group Rooms','Whiteboards','Printing'],hours:'Open until 8:00 PM',emoji:'🏫',bg:'linear-gradient(135deg,#d4e8c8,#b8d8a0)',price:'Free'},
-  {id:3,cat:'study',name:"Scholar's Den Learning Center",loc:'Rizal St., Near City Hall',rating:4,reviews:54,avail:'open',seats:22,tags:['Private Booths','Free WiFi','Locker Storage'],hours:'Open 24 Hours',emoji:'🎓',bg:'linear-gradient(135deg,#e8e0f8,#d0c0f0)',price:'Free'},
-  {id:4,cat:'study',name:'Barangay Public Reading Room',loc:'Barangay Hall, Santos St.',rating:3,reviews:21,avail:'open',seats:8,tags:['Free Entry','Quiet'],hours:'Open until 5:00 PM',emoji:'📚',bg:'linear-gradient(135deg,#fde8c8,#f8d0a0)',price:'Free'},
-  {id:5,cat:'computer',name:'TechZone Internet Café',loc:'MacArthur Highway, Dau',rating:5,reviews:203,avail:'open',seats:10,tags:['Fast Internet','Gaming PCs','Headsets','Printing'],hours:'₱25/hour',emoji:'💻',bg:'linear-gradient(135deg,#c8d8f8,#a8c0f0)',price:'₱25/hr'},
-  {id:6,cat:'computer',name:'CyberPoint Study & Print',loc:'Friendship, Angeles City',rating:4,reviews:66,avail:'busy',seats:2,tags:['Printing','Scanning','MS Office','Air-Con'],hours:'₱20/hour',emoji:'🖥️',bg:'linear-gradient(135deg,#d8f0f8,#b0e0f0)',price:'₱20/hr'},
-  {id:7,cat:'computer',name:'PixelHub Internet Lounge',loc:'Balibago, Angeles City',rating:4,reviews:91,avail:'open',seats:18,tags:['500 Mbps WiFi','Webcam','Quiet Area'],hours:'₱30/hour',emoji:'🖱️',bg:'linear-gradient(135deg,#e0e8f8,#c8d8f0)',price:'₱30/hr'},
-  {id:8,cat:'computer',name:'NetKing Budget Shop',loc:'Sto. Rosario, Pampanga',rating:3,reviews:38,avail:'full',seats:0,tags:['Budget-Friendly','Printing'],hours:'₱15/hour',emoji:'⌨️',bg:'linear-gradient(135deg,#e8e8e8,#d8d8d8)',price:'₱15/hr'},
-  {id:9,cat:'cafe',name:'Brewed Minds Coffee Co.',loc:'Nepo Quad, Angeles City',rating:5,reviews:312,avail:'open',seats:9,tags:['Study-Friendly','Free WiFi','Power Outlets','Cozy Vibe'],hours:'Open until 11:00 PM',emoji:'☕',bg:'linear-gradient(135deg,#f8e8d0,#f0d0a8)',price:'Min. order'},
-  {id:10,cat:'cafe',name:'Pages & Latte Studyspace',loc:'Marquee Mall Area, AC',rating:4,reviews:145,avail:'busy',seats:2,tags:['Book Corner','Quiet Hours','Fast WiFi'],hours:'Open until 10:00 PM',emoji:'🫖',bg:'linear-gradient(135deg,#f0e8d8,#e0d0b8)',price:'Min. order'},
-  {id:11,cat:'cafe',name:'SipStudy Milk Tea & Co.',loc:'Sto. Rosario St., San Fernando',rating:4,reviews:73,avail:'open',seats:15,tags:['Milk Tea','Study Tables','Chill Music'],hours:'Open until 10:00 PM',emoji:'🧋',bg:'linear-gradient(135deg,#f8f0d8,#f0e0b0)',price:'Min. order'},
-  {id:12,cat:'cafe',name:'Garden Sip Open Café',loc:'Dolores, San Fernando',rating:3,reviews:29,avail:'open',seats:6,tags:['Outdoor Seating','Budget Menu'],hours:'Open until 7:00 PM',emoji:'🌿',bg:'linear-gradient(135deg,#e8f0e0,#d0e8c0)',price:'Min. order'},
+  // ── Study Places ──
+  {id:1,cat:'study',name:'Malolos City Library',loc:'Sto. Rosario St., Malolos City, Bulacan',rating:5,reviews:142,avail:'open',seats:20,tags:['Quiet Zone','Free WiFi','Air-Conditioned','Power Outlets'],hours:'Open until 8:00 PM',emoji:'📖',bg:'linear-gradient(135deg,#c8e6e6,#a8d5d5)',price:'Free'},
+  {id:2,cat:'study',name:'Bulacan State University Library',loc:'Malolos City, Bulacan (BSU Main Campus)',rating:5,reviews:98,avail:'busy',seats:4,tags:['Academic Resources','Printing','Group Study Rooms','Wi-Fi'],hours:'Open until 5:00 PM',emoji:'🏫',bg:'linear-gradient(135deg,#d4e8c8,#b8d8a0)',price:'Free'},
+  {id:3,cat:'study',name:'Balagtas Public Library',loc:'Poblacion, Balagtas, Bulacan',rating:4,reviews:47,avail:'open',seats:15,tags:['Free Entry','Quiet','Air-Conditioned'],hours:'Open until 5:00 PM',emoji:'📚',bg:'linear-gradient(135deg,#fde8c8,#f8d0a0)',price:'Free'},
+  {id:4,cat:'study',name:'Bocaue Study Hub',loc:'Rizal St., Bocaue, Bulacan',rating:4,reviews:61,avail:'open',seats:18,tags:['Free WiFi','Lockers','Private Booths','Outlets'],hours:'Open until 9:00 PM',emoji:'🎓',bg:'linear-gradient(135deg,#e8e0f8,#d0c0f0)',price:'Free'},
+  {id:5,cat:'study',name:'Meycauayan Learning Center',loc:'M.H. del Pilar St., Meycauayan City, Bulacan',rating:4,reviews:53,avail:'open',seats:12,tags:['Quiet Zone','Free WiFi','Whiteboards'],hours:'Open until 8:00 PM',emoji:'📗',bg:'linear-gradient(135deg,#d0f0e0,#a8e0c0)',price:'Free'},
+  {id:6,cat:'study',name:'Sta. Maria Reading Room',loc:'Bagbaguin, Sta. Maria, Bulacan',rating:3,reviews:29,avail:'open',seats:10,tags:['Free Entry','Quiet','Fans'],hours:'Open until 5:30 PM',emoji:'📝',bg:'linear-gradient(135deg,#f0e8d8,#e0d8c0)',price:'Free'},
+  // ── Computer Shops ──
+  {id:7,cat:'computer',name:'NetZone Bocaue',loc:'Poblacion, Bocaue, Bulacan',rating:5,reviews:187,avail:'open',seats:14,tags:['Fast Internet','Gaming PCs','Headsets','Printing'],hours:'₱25/hour',emoji:'💻',bg:'linear-gradient(135deg,#c8d8f8,#a8c0f0)',price:'₱25/hr'},
+  {id:8,cat:'computer',name:'CyberHub Balagtas',loc:'Zone 2, Balagtas, Bulacan',rating:4,reviews:74,avail:'busy',seats:3,tags:['Printing','Scanning','MS Office','Air-Con'],hours:'₱20/hour',emoji:'🖥️',bg:'linear-gradient(135deg,#d8f0f8,#b0e0f0)',price:'₱20/hr'},
+  {id:9,cat:'computer',name:'DigiStudy Malolos',loc:'Bulihan, Malolos City, Bulacan',rating:4,reviews:88,avail:'open',seats:16,tags:['500 Mbps WiFi','Quiet Area','Study Booths','Webcam'],hours:'₱25/hour',emoji:'🖱️',bg:'linear-gradient(135deg,#e0e8f8,#c8d8f0)',price:'₱25/hr'},
+  {id:10,cat:'computer',name:'TechStop Meycauayan',loc:'Bagong Buhay Ave., Meycauayan City, Bulacan',rating:3,reviews:42,avail:'open',seats:8,tags:['Budget-Friendly','Printing','Photocopy'],hours:'₱18/hour',emoji:'⌨️',bg:'linear-gradient(135deg,#e8e8e8,#d8d8d8)',price:'₱18/hr'},
+  {id:11,cat:'computer',name:'PixelNet Sta. Maria',loc:'Pulong Buhangin, Sta. Maria, Bulacan',rating:4,reviews:55,avail:'full',seats:0,tags:['High-Speed Net','Gaming','Printing','24/7'],hours:'₱22/hour',emoji:'🎮',bg:'linear-gradient(135deg,#f0d8f8,#e0b8f0)',price:'₱22/hr'},
+  // ── Cafés ──
+  {id:12,cat:'cafe',name:'Kape Bulacan',loc:'Catmon, Malolos City, Bulacan',rating:5,reviews:224,avail:'open',seats:11,tags:['Study-Friendly','Free WiFi','Power Outlets','Cozy'],hours:'Open until 10:00 PM',emoji:'☕',bg:'linear-gradient(135deg,#f8e8d0,#f0d0a8)',price:'Min. order'},
+  {id:13,cat:'cafe',name:'The Study Corner Café',loc:'Wawa, Bocaue, Bulacan',rating:5,reviews:163,avail:'busy',seats:2,tags:['Free WiFi','Quiet Nooks','Book Corner','Power Outlets'],hours:'Open until 11:00 PM',emoji:'🫖',bg:'linear-gradient(135deg,#f0e8d8,#e0d0b8)',price:'Min. order'},
+  {id:14,cat:'cafe',name:'SipNStudy Balagtas',loc:'Balagtas Town Center, Balagtas, Bulacan',rating:4,reviews:91,avail:'open',seats:13,tags:['Milk Tea','Study Tables','Chill Music','Free WiFi'],hours:'Open until 10:00 PM',emoji:'🧋',bg:'linear-gradient(135deg,#f8f0d8,#f0e0b0)',price:'Min. order'},
+  {id:15,cat:'cafe',name:'Brew & Focus Meycauayan',loc:'Malhacan, Meycauayan City, Bulacan',rating:4,reviews:78,avail:'open',seats:9,tags:['Specialty Coffee','Fast WiFi','Quiet Hours','Outlets'],hours:'Open until 9:00 PM',emoji:'🍵',bg:'linear-gradient(135deg,#e8f0e0,#d0e8c0)',price:'Min. order'},
+  {id:16,cat:'cafe',name:'Garden Brew Sta. Maria',loc:'Caypombo, Sta. Maria, Bulacan',rating:3,reviews:34,avail:'open',seats:7,tags:['Outdoor Seating','Budget Menu','Free WiFi'],hours:'Open until 8:00 PM',emoji:'🌿',bg:'linear-gradient(135deg,#e0f0e0,#c0e0c0)',price:'Min. order'},
 ];
 
 // Pre-seeded admin account
@@ -1348,60 +1319,30 @@ function badgeLbl(cat){return cat==='study'?'Study Place':cat==='computer'?'Comp
 function catEmojis(){return{study:'📖',computer:'💻',cafe:'☕'};}
 const BG_COLORS = ['linear-gradient(135deg,#c8e6e6,#a8d5d5)','linear-gradient(135deg,#d4e8c8,#b8d8a0)','linear-gradient(135deg,#e8e0f8,#d0c0f0)','linear-gradient(135deg,#fde8c8,#f8d0a0)','linear-gradient(135deg,#c8d8f8,#a8c0f0)','linear-gradient(135deg,#f8e8d0,#f0d0a8)'];
 
-// WiFi strength helper
-function wifiStrength(tags) {
-  const t = (tags||[]).join(' ').toLowerCase();
-  if (t.includes('500 mbps') || t.includes('fast internet') || t.includes('high-speed') || t.includes('fiber')) return 'strong';
-  if (t.includes('wifi') || t.includes('wi-fi') || t.includes('wi fi') || t.includes('internet')) return 'medium';
-  return 'none';
-}
-function wifiBadge(tags) {
-  const s = wifiStrength(tags);
-  if (s==='strong') return '<span class="wifi-badge wifi-strong">📶 Fast WiFi</span>';
-  if (s==='medium') return '<span class="wifi-badge wifi-medium">📶 WiFi</span>';
-  return '<span class="wifi-badge wifi-none">❌ No WiFi</span>';
-}
-
-let wifiFilterActive = false;
-function toggleWifiFilter(btn) {
-  wifiFilterActive = !wifiFilterActive;
-  btn.classList.toggle('active', wifiFilterActive);
-  applyAllFilters();
-}
-
 function renderPlaces() {
   const grid = document.getElementById('placesGrid');
-  const query = document.getElementById('locationSearch')?.value?.toLowerCase()||'';
-  let filtered = PLACES.filter(p =>
-    (activeCat==='all'||p.cat===activeCat) &&
-    p.rating>=minStar &&
-    (!query || p.name.toLowerCase().includes(query) || (p.loc||'').toLowerCase().includes(query))
-  );
-  if (wifiFilterActive) filtered = filtered.filter(p => wifiStrength(p.tags) === 'strong');
+  const filtered = PLACES.filter(p => (activeCat==='all'||p.cat===activeCat) && p.rating>=minStar);
   document.getElementById('placesCount').textContent = `Showing ${filtered.length} space${filtered.length!==1?'s':''}`;
   if(!filtered.length){grid.innerHTML='<div class="no-results">🔍 No spaces match your filters.</div>';return;}
-  const isPremium = currentUser && currentUser.role === 'premium';
-  grid.innerHTML = filtered.map(p => {
-    const pricing = calcPrice(p, 1, 1);
-    const discountBadge = isPremium && !pricing.isFree ? '<span class="premium-badge">10% OFF</span>' : '';
-    return `
+  grid.innerHTML = filtered.map(p=>`
     <div class="place-card">
       <div class="place-img-bg" style="background:${p.bg||BG_COLORS[p.id%BG_COLORS.length]}">${p.emoji||'📍'}
         <span class="place-badge ${badgeCls(p.cat)}">${badgeLbl(p.cat)}</span>
+${(()=>{const pricing=calcPrice(p,1,1);return (currentUser&&currentUser.role==='premium'&&!pricing.isFree)?'<span class="discount-badge">10% OFF</span>':'';})()}
         <span class="avail-dot">${availLabel(p)}</span>
       </div>
       <div class="place-body">
-        <h3>${p.name}${discountBadge}</h3>
-        <div class="place-location">📍 ${p.loc||p.location||''}</div>
-        <div class="place-stars">${starsHTML(p.rating)}<span class="place-rating-num">${p.rating}.0 (${p.reviews||0} reviews)</span>${wifiBadge(p.tags)}</div>
+        <h3>${p.name}</h3>
+        <div class="place-location">📍 ${p.loc}</div>
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">${wifiBadgeHTML(p)}</div>
+        <div class="place-stars">${starsHTML(p.rating)}<span class="place-rating-num">${p.rating}.0 (${p.reviews||0} reviews)</span></div>
         <div class="place-tags">${(p.tags||[]).map(t=>`<span class="place-tag">${t}</span>`).join('')}</div>
         <div class="place-footer">
           <span class="place-seats">🕐 ${p.hours}</span>
           ${p.avail==='full'?`<button class="btn-reserve" disabled>Full</button>`:`<button class="btn-reserve" onclick="startReserve(${p.id})">Reserve →</button>`}
         </div>
       </div>
-    </div>`;
-  }).join('');
+    </div>`).join('');
 }
 
 document.querySelectorAll('.filter-btn[data-cat]').forEach(btn=>{
@@ -1497,55 +1438,42 @@ document.getElementById('signupBtn').addEventListener('click', async ()=>{
   }
 });
 
-// Real Google OAuth via GSI
-function googleSignIn() {
-  google.accounts.id.initialize({
-    client_id: '228576238903-0sqoqcnt19kangi93p0qcuhf1ve58gs5.apps.googleusercontent.com',
-    callback: handleGoogleCredential,
-  });
-  google.accounts.id.prompt((notification) => {
-    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-      // Fallback: render a One Tap button in a temp div
-      const div = document.createElement('div');
-      div.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;';
-      document.body.appendChild(div);
-      google.accounts.id.renderButton(div, { theme:'outline', size:'large', text:'continue_with' });
-      setTimeout(() => div.querySelector('div[role=button]')?.click(), 200);
-      setTimeout(() => div.remove(), 5000);
-    }
-  });
+function googleSignIn(){
+  // Real Google OAuth using GSI
+  if(typeof google !== 'undefined' && google.accounts) {
+    google.accounts.id.prompt();
+  } else {
+    // Fallback if GSI not loaded
+    showToast('Google sign-in unavailable. Please use email/password.','error');
+  }
 }
 
 function handleGoogleCredential(response) {
-  try {
-    // Decode JWT payload
-    const payload = JSON.parse(atob(response.credential.split('.')[1]));
-    const email     = payload.email;
-    const firstName = payload.given_name  || payload.name?.split(' ')[0] || 'Google';
-    const lastName  = payload.family_name || payload.name?.split(' ').slice(1).join(' ') || 'User';
-    const picture   = payload.picture || '';
-
-    // Try to register/login on backend
-    const token = localStorage.getItem('studify_token');
-    fetch(`${API}/api/auth/google`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, firstName, lastName, googleId: payload.sub }),
-    }).then(r => r.json()).then(data => {
-      if (data.token) localStorage.setItem('studify_token', data.token);
-      const user = data.user || { firstName, lastName, email, role: 'user' };
-      users[email] = user;
-      loginSuccess(user);
-    }).catch(() => {
-      // Fallback: log in locally with Google data
-      const existing = Object.values(users).find(u => u.email === email);
-      const user = existing || { firstName, lastName, email, role: 'user', picture };
-      users[email] = user;
-      loginSuccess(user);
-    });
-  } catch(e) {
-    showToast('Google sign-in failed. Please try email.', 'error');
-  }
+  // Decode JWT from Google
+  const parts = response.credential.split('.');
+  const payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
+  const firstName = payload.given_name || 'Google';
+  const lastName  = payload.family_name || 'User';
+  const email     = payload.email;
+  const googleId  = payload.sub;
+  // Register/login on backend
+  fetch(`${API}/api/auth/google`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({firstName, lastName, email, googleId})
+  }).then(r=>r.json()).then(data=>{
+    if(data.token){
+      localStorage.setItem('studify_token', data.token);
+      loginSuccess(data.user);
+    } else {
+      // Fallback: create local user
+      const user={firstName,lastName,email,password:'google-oauth',role:'user'};
+      users[email]=user; loginSuccess(user);
+    }
+  }).catch(()=>{
+    const user={firstName,lastName,email,password:'google-oauth',role:'user'};
+    users[email]=user; loginSuccess(user);
+  });
 }
 
 function loginSuccess(user){
@@ -1578,80 +1506,24 @@ function logout(){
 
 function updateNav(){
   const li=!!currentUser;
-  const isAdmin  = li&&currentUser.role==='admin';
-  const isOwner  = li&&currentUser.role==='owner';
-  const isPremium= li&&currentUser.role==='premium';
+  const isAdmin=li&&currentUser.role==='admin';
+  const isOwner=li&&currentUser.role==='owner';
+  const isPremium=li&&currentUser.role==='premium';
+  const isUser=li&&!isAdmin&&!isOwner;
   document.getElementById('navAuthBtn').style.display=li?'none':'';
-  document.getElementById('navDashBtn').style.display=(li&&!isAdmin&&!isOwner)?'':'none';
-  document.getElementById('navMapBtn').style.display=li?'':'none';
+  document.getElementById('navDashBtn').style.display=isUser?'':'none';
   document.getElementById('navAdminBtn').style.display=isAdmin?'':'none';
   document.getElementById('navOwnerBtn').style.display=isOwner?'':'none';
+  document.getElementById('navPremiumBtn').style.display=(isUser&&!isPremium)?'':'none';
   document.getElementById('navUser').style.display=li?'flex':'none';
   document.getElementById('navAdminBadge').style.display=isAdmin?'':'none';
-  document.getElementById('navUpgradeBtn').style.display=(li&&!isAdmin&&!isOwner&&!isPremium)?'':'none';
+  document.getElementById('navPremiumBadge').style.display=isPremium?'':'none';
   if(li){
     const av=document.getElementById('navAvatar');
     av.textContent=currentUser.firstName[0].toUpperCase();
     av.className='nav-avatar'+(isAdmin?' admin-av':isOwner?' owner-av':isPremium?' premium-av':'');
-    document.getElementById('navUserName').textContent=currentUser.firstName+' '+currentUser.lastName+(isPremium?' ⭐':'');
+    document.getElementById('navUserName').textContent=currentUser.firstName+' '+currentUser.lastName;
   }
-}
-
-// ═══════════════════════════════════════════════════════════
-// PREMIUM / UPGRADE
-// ═══════════════════════════════════════════════════════════
-function openUpgradeModal() {
-  document.getElementById('upgradeOverlay').classList.add('open');
-  document.body.style.overflow='hidden';
-  document.getElementById('upgradeStep1').style.display='block';
-  document.getElementById('mockPaymentForm').classList.remove('show');
-}
-function closeUpgradeModal() {
-  document.getElementById('upgradeOverlay').classList.remove('open');
-  document.body.style.overflow='';
-}
-document.getElementById('upgradeOverlay').addEventListener('click', e=>{
-  if(e.target===document.getElementById('upgradeOverlay')) closeUpgradeModal();
-});
-function showMockPayment() {
-  document.getElementById('upgradeStep1').style.display='none';
-  document.getElementById('mockPaymentForm').classList.add('show');
-}
-function formatCardNum(input) {
-  let v = input.value.replace(/[^0-9]/g,'').substring(0,16);
-  input.value = v.replace(/(.{4})/g,'$1 ').trim();
-}
-function formatExpiry(input) {
-  let v = input.value.replace(/[^0-9]/g,'').substring(0,4);
-  if(v.length>=2) v = v.substring(0,2)+'/'+v.substring(2);
-  input.value = v;
-}
-async function processMockPayment() {
-  const name = document.getElementById('cardName').value.trim();
-  const num  = document.getElementById('cardNum').value.replace(/\s/g,'');
-  const exp  = document.getElementById('cardExp').value;
-  const cvv  = document.getElementById('cardCvv').value;
-  if(!name)           return showToast('Please enter cardholder name.','error');
-  if(num.length!==16) return showToast('Please enter a valid 16-digit card number.','error');
-  if(!exp.includes('/')) return showToast('Please enter expiry as MM/YY.','error');
-  if(cvv.length!==3)  return showToast('Please enter a valid 3-digit CVV.','error');
-  const btn = document.querySelector('.btn-pay-now');
-  btn.textContent='Processing...'; btn.disabled=true;
-  await new Promise(r=>setTimeout(r,1800));
-  currentUser.role='premium';
-  localStorage.setItem('studify_user', JSON.stringify(currentUser));
-  const token = localStorage.getItem('studify_token');
-  try {
-    await fetch(`${API}/api/auth/upgrade`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},
-      body: JSON.stringify({role:'premium'}),
-    });
-  } catch(e){}
-  closeUpgradeModal();
-  updateNav(); renderPlaces();
-  showToast('⭐ Welcome to Studify Premium! Enjoy your perks.','success');
-  btn.textContent='Pay ₱99 & Activate Premium'; btn.disabled=false;
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1680,30 +1552,17 @@ function calcPrice(place, dur, persons) {
   const priceStr = place.price || place.hours || '';
   const match = priceStr.match(/[₱P](\d+)/i);
   if(!match) return {total:'Free', perHour:null, isFree:true};
-  const perHr   = parseInt(match[1]);
-  const raw     = perHr * dur * persons;
+  const perHr = parseInt(match[1]);
+  let total = perHr * dur * persons;
   const isPremium = currentUser && currentUser.role === 'premium';
-  const discount  = isPremium ? Math.round(raw * 0.10) : 0;
-  const total     = raw - discount;
-  return {
-    total:    `₱${total.toLocaleString()}`,
-    original: discount > 0 ? `₱${raw.toLocaleString()}` : null,
-    discount: discount > 0 ? `₱${discount.toLocaleString()} saved` : null,
-    perHour:  perHr,
-    isFree:   false,
-    breakdown:`₱${perHr}/hr × ${dur}hr${dur!==1?'s':''} × ${persons} person${persons!==1?'s':''}${discount>0?' (10% premium discount applied)':''}`,
-  };
+  let discounted = false;
+  if(isPremium){ total = Math.round(total * 0.9); discounted = true; }
+  const breakdown = `₱${perHr}/hr × ${dur}hr${dur!==1?'s':''} × ${persons} person${persons!==1?'s':''}${discounted?' (−10%)':''}`;
+  return {total:`₱${total.toLocaleString()}`, perHour:perHr, isFree:false, breakdown, discounted};
 }
 
 function updateResSummary(){
   if(!pendingPlace) return;
-  const isPremium = currentUser && currentUser.role === 'premium';
-  // Show/hide premium discount banner
-  const banner = document.getElementById('premiumDiscountBanner');
-  if(banner) {
-    const p = calcPrice(pendingPlace, 1, 1);
-    banner.style.display = (isPremium && !p.isFree) ? 'flex' : 'none';
-  }
   const date=document.getElementById('resDate').value;
   const start=document.getElementById('resStart').value;
   const dur=parseInt(document.getElementById('resDuration').value);
@@ -1711,6 +1570,9 @@ function updateResSummary(){
   const fmt=date?new Date(date+'T12:00:00').toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric',year:'numeric'}):'—';
   const pricing = calcPrice(pendingPlace, dur, persons);
   // show live price widget
+  // Show premium discount banner
+  const discBanner = document.getElementById('premiumDiscountBanner');
+  if(discBanner) discBanner.classList.toggle('show', !!(currentUser && currentUser.role==='premium' && !pricing.isFree));
   const priceLive = document.getElementById('priceLive');
   const priceAmount = document.getElementById('priceAmount');
   const priceSub = document.getElementById('priceSub');
@@ -1730,55 +1592,150 @@ function updateResSummary(){
     <div class="res-summary-row"><span>💰 Total Price</span><span><strong>${pricing.total}</strong></span></div>`;
 }
 
-async function confirmReservation(){
+// Step 1: validate form → open payment modal
+function confirmReservation(){
   const date=document.getElementById('resDate').value;
   if(!date){showToast('Please select a date.','error');return;}
+  // All good — open payment modal
+  openPaymentModal();
+}
+
+// Payment modal state
+let selectedPaymentMethod = null;
+
+function openPaymentModal(){
+  const dur     = parseInt(document.getElementById('resDuration').value);
+  const persons = parseInt(document.getElementById('resPersons').value)||1;
+  const pricing = calcPrice(pendingPlace, dur, persons);
+  const isFree  = pricing.isFree || pricing.total === 'Free';
+
+  document.getElementById('paymentSpaceName').textContent = pendingPlace.name;
+  document.getElementById('paymentAmountVal').textContent = pricing.total;
+  document.getElementById('paymentAmountSub').textContent = isFree ? 'No payment required — just show up!' : (pricing.breakdown||'');
+
+  // Hide reference box, reset selection
+  selectedPaymentMethod = null;
+  document.querySelectorAll('.payment-method-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('paymentRefBox').classList.remove('show');
+  document.getElementById('paymentRefInput').value='';
+  document.getElementById('btnPayConfirm').disabled = true;
+
+  // If free, auto-select "cash / on arrival" and allow immediate confirm
+  if(isFree){
+    const cashBtn = document.querySelector('.pm-cash');
+    if(cashBtn) selectPayment('cash', cashBtn);
+  }
+
+  // Show payment modal (keep res modal open underneath)
+  document.getElementById('paymentOverlay').classList.add('open');
+}
+
+function closePaymentModal(){
+  document.getElementById('paymentOverlay').classList.remove('open');
+  selectedPaymentMethod = null;
+}
+
+function selectPayment(method, btn){
+  selectedPaymentMethod = method;
+  document.querySelectorAll('.payment-method-btn').forEach(b=>{
+    b.classList.remove('selected');
+    b.querySelector('.payment-method-check').textContent='';
+  });
+  btn.classList.add('selected');
+  btn.querySelector('.payment-method-check').textContent='✓';
+
+  const refBox   = document.getElementById('paymentRefBox');
+  const refNum   = document.getElementById('paymentRefNum');
+  const refLabel = document.getElementById('paymentRefLabel');
+  const refNote  = document.getElementById('paymentRefNote');
+
+  if(method==='gcash'){
+    refLabel.textContent='Send GCash payment to';
+    refNum.textContent  ='0917-XXX-XXXX'; // TODO: Replace with real GCash number
+    refNote.textContent ='Account name: Studify PH — Send exact amount then enter reference number below.';
+    refBox.classList.add('show');
+  } else if(method==='maya'){
+    refLabel.textContent='Send Maya payment to';
+    refNum.textContent  ='0915-XXX-XXXX'; // TODO: Replace with real Maya number
+    refNote.textContent ='Account name: Studify PH — Send exact amount then enter reference number below.';
+    refBox.classList.add('show');
+  } else {
+    refBox.classList.remove('show');
+  }
+
+  updatePayConfirmBtn();
+}
+
+function updatePayConfirmBtn(){
+  const btn = document.getElementById('btnPayConfirm');
+  if(!selectedPaymentMethod){ btn.disabled=true; return; }
+  if(selectedPaymentMethod==='cash'){ btn.disabled=false; return; }
+  // For GCash/Maya require reference number
+  const ref = document.getElementById('paymentRefInput').value.trim();
+  btn.disabled = ref.length < 5;
+}
+document.getElementById('paymentRefInput')?.addEventListener('input', updatePayConfirmBtn);
+
+// Step 2: actually submit the reservation after payment selection
+async function finalizeReservation(){
+  if(!selectedPaymentMethod) return;
+  const dur     = parseInt(document.getElementById('resDuration').value);
+  const persons = parseInt(document.getElementById('resPersons').value)||1;
+  const pricing = calcPrice(pendingPlace, dur, persons);
+  const refNum  = document.getElementById('paymentRefInput').value.trim();
+  const date    = document.getElementById('resDate').value;
+  const paymentNote = selectedPaymentMethod==='cash'
+    ? 'Pay on Arrival'
+    : `${selectedPaymentMethod.toUpperCase()} Ref: ${refNum}`;
+
+  const btn = document.getElementById('btnPayConfirm');
+  btn.disabled=true;
+  btn.textContent='Processing...';
+
   const token = localStorage.getItem('studify_token');
   try {
     const res = await fetch(`${API}/api/reservations/`, {
       method: 'POST',
       headers: {'Content-Type':'application/json', 'Authorization':`Bearer ${token}`},
       body: JSON.stringify({
-        spaceId:  pendingPlace.id,
+        spaceId:    pendingPlace.id,
         date,
-        start:    document.getElementById('resStart').value,
-        duration: document.getElementById('resDuration').value,
-        persons:  document.getElementById('resPersons').value,
-        notes:    document.getElementById('resNotes').value,
-        totalPrice: calcPrice(pendingPlace, parseInt(document.getElementById('resDuration').value), parseInt(document.getElementById('resPersons').value)).total,
+        start:      document.getElementById('resStart').value,
+        duration:   document.getElementById('resDuration').value,
+        persons:    document.getElementById('resPersons').value,
+        notes:      document.getElementById('resNotes').value + (document.getElementById('resNotes').value ? ' | ' : '') + paymentNote,
+        totalPrice: pricing.total,
+        paymentMethod: selectedPaymentMethod,
+        paymentRef: refNum || null,
       })
     });
     const data = await res.json();
-    if(!res.ok){showToast(data.error || 'Reservation failed.','error');return;}
-    const isPremium = currentUser && currentUser.role === 'premium';
-    closeResModal();
-    if(isPremium) {
-      showToast('⭐ Priority reserved! Auto-confirmed instantly.');
-    } else {
-      showToast('✅ Reservation sent! Waiting for owner confirmation.');
+    if(!res.ok){
+      showToast(data.error || 'Reservation failed.','error');
+      btn.disabled=false; btn.textContent='Confirm & Reserve →';
+      return;
     }
+    closePaymentModal();
+    closeResModal();
+    showToast(`✅ Reservation sent! Waiting for owner confirmation.`);
     showUserDash();
   } catch(e) {
-    const isPremium = currentUser && currentUser.role === 'premium';
     const r={
       id:Date.now(),userEmail:currentUser.email,userName:currentUser.firstName+' '+currentUser.lastName,
       placeId:pendingPlace.id,placeName:pendingPlace.name,placeEmoji:pendingPlace.emoji,
       placeLoc:pendingPlace.loc,placeCat:pendingPlace.cat,
       date,start:document.getElementById('resStart').value,
-      duration:parseInt(document.getElementById('resDuration').value),
-      notes:document.getElementById('resNotes').value,
-      price:pendingPlace.price,
-      status: isPremium ? 'confirmed' : 'pending'
+      duration:dur, notes:document.getElementById('resNotes').value,
+      price:pendingPlace.price,status:'pending',paymentMethod:selectedPaymentMethod,
     };
     reservations.push(r);
+    closePaymentModal();
     closeResModal();
-    if(isPremium) {
-      showToast('⭐ Priority reserved! Auto-confirmed instantly.');
-    } else {
-      showToast('✅ Reservation sent! Waiting for owner confirmation.');
-    }
+    showToast(`✅ Reservation sent! Waiting for owner confirmation.`);
     showUserDash();
   }
+  btn.disabled=false;
+  btn.textContent='Confirm & Reserve →';
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2142,18 +2099,22 @@ let userLat = null, userLng = null;
 
 // Coordinates for each space (Angeles/Pampanga area)
 const SPACE_COORDS = {
-  4:  {lat:15.1449, lng:120.5887}, // University Library
-  5:  {lat:15.1600, lng:120.5700}, // Greenfield Hub
-  6:  {lat:15.1490, lng:120.5950}, // Scholar's Den
-  7:  {lat:15.1350, lng:120.5900}, // Barangay Reading Room
-  8:  {lat:15.1650, lng:120.5580}, // TechZone Dau
-  9:  {lat:15.1430, lng:120.6010}, // CyberPoint
-  10: {lat:15.1510, lng:120.6100}, // PixelHub
-  11: {lat:15.0500, lng:120.6900}, // NetKing Sto Rosario
-  12: {lat:15.1530, lng:120.5960}, // Brewed Minds
-  13: {lat:15.1600, lng:120.6200}, // Pages & Latte
-  14: {lat:15.0500, lng:120.6900}, // SipStudy
-  15: {lat:15.0450, lng:120.7100}, // Garden Sip
+  1:  {lat:14.8450, lng:120.8114}, // Malolos City Library
+  2:  {lat:14.8555, lng:120.8103}, // BulSU Library, Malolos
+  3:  {lat:14.8163, lng:120.8998}, // Balagtas Public Library
+  4:  {lat:14.8005, lng:120.9287}, // Bocaue Study Hub
+  5:  {lat:14.7366, lng:120.9580}, // Meycauayan Learning Center
+  6:  {lat:14.8050, lng:121.0180}, // Sta. Maria Reading Room
+  7:  {lat:14.8005, lng:120.9287}, // NetZone Bocaue
+  8:  {lat:14.8163, lng:120.8998}, // CyberHub Balagtas
+  9:  {lat:14.8430, lng:120.8095}, // DigiStudy Malolos
+  10: {lat:14.7366, lng:120.9580}, // TechStop Meycauayan
+  11: {lat:14.8050, lng:121.0180}, // PixelNet Sta. Maria
+  12: {lat:14.8461, lng:120.8090}, // Kape Bulacan, Malolos
+  13: {lat:14.7980, lng:120.9300}, // The Study Corner, Bocaue
+  14: {lat:14.8163, lng:120.8998}, // SipNStudy Balagtas
+  15: {lat:14.7366, lng:120.9580}, // Brew & Focus Meycauayan
+  16: {lat:14.8050, lng:121.0180}, // Garden Brew Sta. Maria
 };
 
 function getDistanceKm(lat1, lng1, lat2, lng2) {
@@ -2195,7 +2156,8 @@ function applyAllFilters() {
     const locOk = !searchQ || 
       (p.loc||'').toLowerCase().includes(searchQ) || 
       (p.name||'').toLowerCase().includes(searchQ);
-    return catOk && starOk && locOk;
+    const wifiOk = !wifiFilterActive || getWifiStrength(p)==='fast';
+    return catOk && starOk && locOk && wifiOk;
   });
   // sort by distance if GPS available
   if(userLat && userLng) {
@@ -2215,12 +2177,14 @@ function applyAllFilters() {
     <div class="place-card">
       <div class="place-img-bg" style="background:${p.bg||BG_COLORS[p.id%BG_COLORS.length]}">${p.emoji||'📍'}
         <span class="place-badge ${badgeCls(p.cat)}">${badgeLbl(p.cat)}</span>
+${(()=>{const pricing=calcPrice(p,1,1);return (currentUser&&currentUser.role==='premium'&&!pricing.isFree)?'<span class="discount-badge">10% OFF</span>':'';})()}
         <span class="avail-dot">${availLabel(p)}</span>
         ${distBadge}
       </div>
       <div class="place-body">
         <h3>${p.name}</h3>
         <div class="place-location">📍 ${p.loc}</div>
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">${wifiBadgeHTML(p)}</div>
         <div class="place-stars">${starsHTML(p.rating)}<span class="place-rating-num">${p.rating}.0 (${p.reviews||0} reviews)</span></div>
         <div class="place-tags">${(p.tags||[]).map(t=>`<span class="place-tag">${t}</span>`).join('')}</div>
         <div class="place-footer">
@@ -2524,6 +2488,107 @@ document.getElementById('ratingOverlay').addEventListener('click', e=>{
 });
 
 // ═══════════════════════════════════════════════════════════
+// GOOGLE OAUTH INIT
+// ═══════════════════════════════════════════════════════════
+window.addEventListener('load', () => {
+  if(typeof google !== 'undefined' && google.accounts) {
+    google.accounts.id.initialize({
+      client_id: '228576238903-0sqoqcnt19kangi93p0qcuhf1ve58gs5.apps.googleusercontent.com',
+      callback: handleGoogleCredential,
+      auto_select: false,
+      cancel_on_tap_outside: true,
+    });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════
+// WIFI STRENGTH HELPER
+// ═══════════════════════════════════════════════════════════
+function getWifiStrength(place) {
+  const tags = (place.tags || []).join(' ').toLowerCase();
+  const name = (place.name || '').toLowerCase();
+  if(tags.includes('500 mbps') || tags.includes('fast internet') || tags.includes('high-speed') || tags.includes('high speed')) return 'fast';
+  if(tags.includes('free wifi') || tags.includes('wi-fi') || tags.includes('wifi')) return 'medium';
+  return 'none';
+}
+function wifiBadgeHTML(place) {
+  const s = getWifiStrength(place);
+  if(s==='fast')   return '<span class="wifi-badge wifi-fast">📶 Fast WiFi</span>';
+  if(s==='medium') return '<span class="wifi-badge wifi-medium">📶 WiFi</span>';
+  return '<span class="wifi-badge wifi-none">❌ No WiFi</span>';
+}
+
+// ═══════════════════════════════════════════════════════════
+// WIFI FILTER
+// ═══════════════════════════════════════════════════════════
+let wifiFilterActive = false;
+function toggleWifiFilter(btn) {
+  wifiFilterActive = !wifiFilterActive;
+  btn.classList.toggle('active', wifiFilterActive);
+  applyAllFilters();
+}
+
+// ═══════════════════════════════════════════════════════════
+// UPGRADE MODAL
+// ═══════════════════════════════════════════════════════════
+function openUpgradeModal() {
+  document.getElementById('upgradeOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  // reset state
+  document.getElementById('cardForm').classList.remove('show');
+  document.getElementById('upgradeSpinner').classList.remove('show');
+  document.getElementById('btnUpgradeNow').style.display='block';
+}
+function closeUpgradeModal() {
+  document.getElementById('upgradeOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function showCardForm() {
+  document.getElementById('btnUpgradeNow').style.display='none';
+  document.getElementById('cardForm').classList.add('show');
+}
+function formatCardNum(el) {
+  let v = el.value.replace(/\D/g,'').substring(0,16);
+  el.value = v.replace(/(\d{4})/g,'$1 ').trim();
+}
+function formatExpiry(el) {
+  let v = el.value.replace(/\D/g,'').substring(0,4);
+  if(v.length>=2) v = v.substring(0,2)+'/'+v.substring(2);
+  el.value = v;
+}
+async function processPremiumPayment() {
+  const name = document.getElementById('cardName').value.trim();
+  const num  = document.getElementById('cardNumber').value.replace(/\s/g,'');
+  const exp  = document.getElementById('cardExpiry').value;
+  const cvv  = document.getElementById('cardCvv').value;
+  if(!name||num.length<16||!exp||cvv.length<3) { showToast('Please fill in all card details.','error'); return; }
+  // show processing
+  document.getElementById('cardForm').classList.remove('show');
+  document.getElementById('upgradeSpinner').classList.add('show');
+  // call backend to upgrade role
+  const token = localStorage.getItem('studify_token');
+  try {
+    await fetch(`${API}/api/auth/upgrade`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+      body: JSON.stringify({plan:'premium'})
+    });
+  } catch(e) {}
+  // wait 1.8s for effect
+  await new Promise(r=>setTimeout(r,1800));
+  // flip role locally
+  currentUser.role = 'premium';
+  localStorage.setItem('studify_user', JSON.stringify(currentUser));
+  closeUpgradeModal();
+  updateNav();
+  applyAllFilters();
+  showToast('⭐ Welcome to Premium! Enjoy your benefits.','success');
+}
+document.getElementById('upgradeOverlay').addEventListener('click', e=>{
+  if(e.target===document.getElementById('upgradeOverlay')) closeUpgradeModal();
+});
+
+// ═══════════════════════════════════════════════════════════
 // API CONFIG
 // ═══════════════════════════════════════════════════════════
 const API = 'https://studify-backend-cdy8.onrender.com';
@@ -2625,241 +2690,6 @@ try {
     localStorage.removeItem('studify_token');
   }
 })();
-
-
-// ═══════════════════════════════════════════════════════════
-// MAP (PREMIUM)
-// ═══════════════════════════════════════════════════════════
-
-const SPACE_COORDS = {
-  'Malolos City Library':             [14.8527, 120.8122],
-  'Bulacan State University Library': [14.8469, 120.8125],
-  'Balagtas Public Library':          [14.8167, 120.9050],
-  'Balagtas Municipal Library':       [14.8167, 120.9050],
-  'Bocaue Study Hub':                 [14.7983, 120.9183],
-  'Bocaue Learning Center':           [14.7983, 120.9183],
-  'Meycauayan Learning Center':       [14.7333, 120.9600],
-  'Sta. Maria Reading Room':          [14.8167, 120.9600],
-  'NetZone Bocaue':                   [14.7990, 120.9190],
-  'NetZone Computer Shop Bocaue':     [14.7990, 120.9190],
-  'CyberHub Balagtas':                [14.8170, 120.9055],
-  'CyberHub Balagtas Internet Café':  [14.8170, 120.9055],
-  'DigiStudy Malolos':                [14.8480, 120.8130],
-  'DigiNet Malolos Internet Shop':    [14.8480, 120.8130],
-  'TechStop Meycauayan':              [14.7340, 120.9605],
-  'TechStop Meycauayan Internet Café':[14.7340, 120.9605],
-  'PixelNet Sta. Maria':              [14.8175, 120.9610],
-  'Kape Bulacan':                     [14.8510, 120.8100],
-  'The Study Corner Café':            [14.7975, 120.9175],
-  'SipNStudy Balagtas':               [14.8160, 120.9045],
-  'Brew & Focus Meycauayan':          [14.7325, 120.9595],
-  'Garden Brew Sta. Maria':           [14.8180, 120.9620],
-};
-
-let mapInstance     = null;
-let mapMarkers      = [];
-let mapRouteLine    = null;
-let mapActiveCat    = 'all';
-let mapActiveSpaceId = null;
-let userLocationMarker = null;
-let userLatLng      = null;
-
-function showMapPage() {
-  showPage('mapPage');
-  setTimeout(initMap, 100);
-}
-
-function initMap() {
-  if (mapInstance) {
-    mapInstance.invalidateSize();
-    renderMapSidebar();
-    return;
-  }
-
-  // Check premium — for now all logged-in users can access, lock for guests
-  if (!currentUser) {
-    openAuth('login');
-    showToast('Please log in to access the map.', 'error');
-    return;
-  }
-
-  // Init Leaflet map centered on Bulacan
-  mapInstance = L.map('studifyMap', { zoomControl: true }).setView([14.7833, 120.9000], 12);
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    maxZoom: 19,
-  }).addTo(mapInstance);
-
-  // Try to get user location
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(pos => {
-      userLatLng = [pos.coords.latitude, pos.coords.longitude];
-      if (userLocationMarker) mapInstance.removeLayer(userLocationMarker);
-      userLocationMarker = L.circleMarker(userLatLng, {
-        radius: 10, fillColor: '#1a8a8a', color: '#fff',
-        weight: 3, opacity: 1, fillOpacity: 0.9,
-      }).addTo(mapInstance).bindPopup('<div style="font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.85rem;">📍 Your Location</div>');
-    }, () => {});
-  }
-
-  renderMapMarkers();
-  renderMapSidebar();
-}
-
-function getMarkerColor(avail) {
-  if (avail === 'open') return '#22c55e';
-  if (avail === 'busy') return '#e8a020';
-  return '#d94f2b';
-}
-
-function renderMapMarkers() {
-  if (!mapInstance) return;
-  // Clear old markers
-  mapMarkers.forEach(m => mapInstance.removeLayer(m));
-  mapMarkers = [];
-
-  const filtered = PLACES.filter(p => mapActiveCat === 'all' || p.cat === mapActiveCat);
-
-  filtered.forEach(p => {
-    const coords = SPACE_COORDS[p.name];
-    if (!coords) return;
-
-    const color = getMarkerColor(p.avail || p.status);
-    const icon = L.divIcon({
-      className: '',
-      html: `<div style="
-        background:${color};color:white;
-        width:36px;height:36px;border-radius:50% 50% 50% 0;
-        transform:rotate(-45deg);
-        border:3px solid white;
-        box-shadow:0 4px 12px rgba(0,0,0,0.25);
-        display:flex;align-items:center;justify-content:center;
-      "><span style="transform:rotate(45deg);font-size:1rem;">${p.emoji || '📍'}</span></div>`,
-      iconSize: [36, 36],
-      iconAnchor: [18, 36],
-      popupAnchor: [0, -40],
-    });
-
-    const marker = L.marker(coords, { icon })
-      .addTo(mapInstance)
-      .bindPopup(`
-        <div class="popup-inner">
-          <div class="popup-name">${p.name}</div>
-          <div class="popup-loc">📍 ${p.loc || p.location}</div>
-          <div class="popup-avail ${p.avail || p.status}">
-            ${p.avail === 'open' ? '🟢 Open' : p.avail === 'busy' ? '🟡 Busy' : '🔴 Full'}
-            · ${p.seats} seat${p.seats !== 1 ? 's' : ''}
-          </div>
-          <div class="popup-actions">
-            <button class="popup-btn popup-btn-route" onclick="getRouteToSpace(${p.id})">🧭 Route</button>
-            ${p.avail !== 'full' ? `<button class="popup-btn popup-btn-reserve" onclick="startReserveFromMap(${p.id})">Reserve →</button>` : ''}
-          </div>
-        </div>
-      `, { className: 'studify-popup' });
-
-    marker.on('click', () => highlightSidebarCard(p.id));
-    mapMarkers.push(marker);
-  });
-}
-
-function renderMapSidebar() {
-  const filtered = PLACES.filter(p => mapActiveCat === 'all' || p.cat === mapActiveCat);
-  const list = document.getElementById('mapSidebarList');
-  document.getElementById('mapSidebarCount').textContent = `${filtered.length} space${filtered.length !== 1 ? 's' : ''}`;
-
-  list.innerHTML = filtered.map(p => `
-    <div class="map-space-card${mapActiveSpaceId === p.id ? ' active' : ''}" id="map-card-${p.id}" onclick="focusMapSpace(${p.id})">
-      <div class="map-space-emoji">${p.emoji || '📍'}</div>
-      <div class="map-space-name">${p.name}</div>
-      <div class="map-space-loc">📍 ${p.loc || p.location}</div>
-      <div class="map-space-meta">
-        <div class="map-avail-dot ${p.avail || p.status}"></div>
-        <span class="map-avail-text">${p.avail === 'open' ? 'Open' : p.avail === 'busy' ? 'Busy' : 'Full'} · ${p.seats} seats</span>
-        <span class="map-space-price">${p.price || 'Free'}</span>
-      </div>
-      <div>
-        <button class="map-route-btn" onclick="event.stopPropagation();getRouteToSpace(${p.id})">🧭 Get Route</button>
-        ${p.avail !== 'full' ? `<button class="map-reserve-btn" onclick="event.stopPropagation();startReserveFromMap(${p.id})">Reserve →</button>` : ''}
-      </div>
-    </div>`).join('');
-}
-
-function filterMap(cat, btn) {
-  mapActiveCat = cat;
-  document.querySelectorAll('.map-filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderMapMarkers();
-  renderMapSidebar();
-}
-
-function focusMapSpace(id) {
-  const p = PLACES.find(p => p.id === id);
-  if (!p || !mapInstance) return;
-  const coords = SPACE_COORDS[p.name];
-  if (!coords) return;
-  mapActiveSpaceId = id;
-  mapInstance.flyTo(coords, 16, { animate: true, duration: 0.8 });
-  // Open the marker popup
-  mapMarkers.forEach(m => {
-    if (Math.abs(m.getLatLng().lat - coords[0]) < 0.0001) m.openPopup();
-  });
-  highlightSidebarCard(id);
-}
-
-function highlightSidebarCard(id) {
-  mapActiveSpaceId = id;
-  document.querySelectorAll('.map-space-card').forEach(c => c.classList.remove('active'));
-  const card = document.getElementById(`map-card-${id}`);
-  if (card) { card.classList.add('active'); card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
-}
-
-function getRouteToSpace(id) {
-  const p = PLACES.find(p => p.id === id);
-  if (!p) return;
-  const coords = SPACE_COORDS[p.name];
-  if (!coords) return;
-
-  // Clear old route
-  if (mapRouteLine) { mapInstance.removeLayer(mapRouteLine); mapRouteLine = null; }
-
-  if (!userLatLng) {
-    // No user location — open in OpenStreetMap directions
-    const url = `https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=${coords[0]},${coords[1]}`;
-    window.open(url, '_blank');
-    showToast('Opening route in OpenStreetMap...', '');
-    return;
-  }
-
-  // Draw a straight line for now (real routing needs OSRM API)
-  mapRouteLine = L.polyline([userLatLng, coords], {
-    color: '#1a8a8a', weight: 4, opacity: 0.8, dashArray: '8 6',
-  }).addTo(mapInstance);
-
-  mapInstance.fitBounds([userLatLng, coords], { padding: [60, 60] });
-
-  // Calculate rough distance
-  const R = 6371;
-  const dLat = (coords[0] - userLatLng[0]) * Math.PI / 180;
-  const dLon = (coords[1] - userLatLng[1]) * Math.PI / 180;
-  const a = Math.sin(dLat/2)**2 + Math.cos(userLatLng[0]*Math.PI/180)*Math.cos(coords[0]*Math.PI/180)*Math.sin(dLon/2)**2;
-  const dist = (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))).toFixed(1);
-
-  showToast(`📍 ${dist} km to ${p.name}`);
-  focusMapSpace(id);
-}
-
-function startReserveFromMap(id) {
-  goHome();
-  setTimeout(() => {
-    scrollToSection('places');
-    setTimeout(() => startReserve(id), 400);
-  }, 300);
-}
-
-function closeMapLock() {
-  document.getElementById('mapLockOverlay').style.display = 'none';
-}
 
 loadSpaces();
 updateNav();
