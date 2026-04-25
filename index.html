@@ -1439,11 +1439,43 @@ document.getElementById('signupBtn').addEventListener('click', async ()=>{
 });
 
 function googleSignIn(){
-  // Real Google OAuth using GSI
   if(typeof google !== 'undefined' && google.accounts) {
-    google.accounts.id.prompt();
+    // Use popup flow instead of One Tap
+    const client = google.accounts.oauth2.initTokenClient({
+      client_id: '228576238903-0sqoqcnt19kangi93p0qcuhf1ve58gs5.apps.googleusercontent.com',
+      scope: 'email profile openid',
+      callback: async (tokenResponse) => {
+        if(tokenResponse.error) { showToast('Google sign-in failed.','error'); return; }
+        // Fetch user info from Google
+        try {
+          const infoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: {'Authorization': 'Bearer ' + tokenResponse.access_token}
+          });
+          const info = await infoRes.json();
+          const firstName = info.given_name || 'Google';
+          const lastName  = info.family_name || 'User';
+          const email     = info.email;
+          // Register/login on backend
+          const backendRes = await fetch(`${API}/api/auth/google`, {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({firstName, lastName, email})
+          });
+          const data = await backendRes.json();
+          if(data.token){
+            localStorage.setItem('studify_token', data.token);
+            loginSuccess(data.user);
+          } else {
+            showToast('Google sign-in failed. Try again.','error');
+          }
+        } catch(e) {
+          showToast('Google sign-in error. Try again.','error');
+          console.error(e);
+        }
+      }
+    });
+    client.requestAccessToken({prompt: 'select_account'});
   } else {
-    // Fallback if GSI not loaded
     showToast('Google sign-in unavailable. Please use email/password.','error');
   }
 }
@@ -2491,14 +2523,8 @@ document.getElementById('ratingOverlay').addEventListener('click', e=>{
 // GOOGLE OAUTH INIT
 // ═══════════════════════════════════════════════════════════
 window.addEventListener('load', () => {
-  if(typeof google !== 'undefined' && google.accounts) {
-    google.accounts.id.initialize({
-      client_id: '228576238903-0sqoqcnt19kangi93p0qcuhf1ve58gs5.apps.googleusercontent.com',
-      callback: handleGoogleCredential,
-      auto_select: false,
-      cancel_on_tap_outside: true,
-    });
-  }
+  // Google GSI loaded — ready for popup flow via oauth2.initTokenClient
+  console.log('Google GSI ready');
 });
 
 // ═══════════════════════════════════════════════════════════
