@@ -822,28 +822,32 @@ tr:hover td{background:rgba(15,31,61,0.02);}
       <div class="footer-col">
         <h4>Features</h4>
         <ul>
-          <li><a>Study Space Finder</a></li>
-          <li><a>Real-Time Availability</a></li>
-          <li><a>Online Reservation</a></li>
-          <li><a>Ratings & Feedback</a></li>
-          <li><a>Priority Booking</a></li>
-          <li><a>Fast WiFi Spaces</a></li>
+          <li><a onclick="showFeatureFinderPage()">Study Space Finder</a></li>
+          <li><a onclick="showFeatureRealtimePage()">Real-Time Availability</a></li>
+          <li><a onclick="showFeatureReservationPage()">Online Reservation</a></li>
+          <li><a onclick="goHome();setTimeout(()=>scrollToSection('why'),100)">Ratings & Feedback</a></li>
+          <li><a onclick="showFeaturePriorityPage()">Priority Booking ⭐</a></li>
+          <li><a onclick="showFeatureWifiPage()">Fast WiFi Spaces 📶</a></li>
         </ul>
       </div>
       <div class="footer-col">
         <h4>Company</h4>
         <ul>
-          <li><a>About Us</a></li>
-          <li><a>Privacy Policy</a></li>
-          <li><a>Terms of Service</a></li>
-          <li><a>Support</a></li>
+          <li><a onclick="showAboutPage()">About Us</a></li>
+          <li><a onclick="showPrivacyPage()">Privacy Policy</a></li>
+          <li><a onclick="showTermsPage()">Terms of Service</a></li>
+          <li><a onclick="showSupportPage()">Support</a></li>
         </ul>
       </div>
       <div class="footer-col">
         <h4>Contact Us</h4>
         <div class="footer-contact-item">
           <div class="footer-contact-icon">✉️</div>
-          <div><div class="footer-contact-label">Email</div><div class="footer-contact-value">studify.notifs@gmail.com</div></div>
+          <div><div class="footer-contact-label">Email</div><div class="footer-contact-value"><a href="mailto:studify.notifs@gmail.com" style="color:rgba(255,255,255,0.75);text-decoration:none;">studify.notifs@gmail.com</a></div></div>
+        </div>
+        <div class="footer-contact-item">
+          <div class="footer-contact-icon">📞</div>
+          <div><div class="footer-contact-label">Phone</div><div class="footer-contact-value"><a href="tel:+639695763754" style="color:rgba(255,255,255,0.75);text-decoration:none;">+63 969 576 3754</a></div></div>
         </div>
         <div class="footer-contact-item">
           <div class="footer-contact-icon">📍</div>
@@ -852,7 +856,7 @@ tr:hover td{background:rgba(15,31,61,0.02);}
       </div>
     </div>
     <div class="footer-bottom">
-      <div class="footer-bottom-copy">© 2026 Studify. All rights reserved. Developed by BSCpE-3A Logic Works - DYCI</div>
+      <div class="footer-bottom-copy">© 2026 Studify. All rights reserved. Developed by BSCpE-3A - Team Logic Works - DYCI</div>
       <div class="footer-members">
         <span class="footer-member">Mark David Valle</span>
         <span class="footer-member">Elijah James Zamora</span>
@@ -1401,6 +1405,16 @@ function showPage(id) {
   window.scrollTo({top:0});
 }
 function goHome() { showPage('landingPage'); }
+function showAboutPage()      { showPage('aboutPage');            window.scrollTo({top:0}); }
+function showFeatureFinderPage()    { showPage('featureFinderPage');    window.scrollTo({top:0}); }
+function showFeatureRealtimePage()  { showPage('featureRealtimePage');  window.scrollTo({top:0}); }
+function showFeatureReservationPage(){ showPage('featureReservationPage'); window.scrollTo({top:0}); }
+function showFeatureRatingsPage()   { showPage('featureRatingsPage');   window.scrollTo({top:0}); }
+function showFeaturePriorityPage()  { showPage('featurePriorityPage');  window.scrollTo({top:0}); }
+function showFeatureWifiPage()      { showPage('featureWifiPage');      window.scrollTo({top:0}); }
+function showPrivacyPage() { showPage('privacyPage'); window.scrollTo({top:0}); }
+function showTermsPage()   { showPage('termsPage');   window.scrollTo({top:0}); }
+function showSupportPage() { showPage('supportPage'); window.scrollTo({top:0}); }
 function showUserDash() { showPage('userDashPage'); renderUserDash(); }
 function showAdminDash() { showPage('adminDashPage'); renderAdminDash(); }
 
@@ -2873,5 +2887,323 @@ loadSpaces();
 updateNav();
 document.getElementById('resDate').value=new Date().toISOString().split('T')[0];
 </script>
+
+<!-- ═══════════════ ABOUT PAGE ═══════════════ -->
+<div class="page" id="aboutPage" style="padding-top:64px;">
+  <div class="dashboard" style="max-width:800px;margin:0 auto;">
+    <div style="margin-bottom:2rem;"><a onclick="goHome()" style="color:var(--teal);cursor:pointer;font-size:0.88rem;">← Back to Home</a></div>
+    <div class="section-tag">About Us</div>
+    <h2 style="margin-bottom:1.5rem;">About Studify</h2>
+    <div style="background:var(--white);border-radius:20px;padding:2.5rem;border:1px solid rgba(15,31,61,0.08);line-height:1.8;font-size:0.95rem;opacity:0.8;">
+      <p style="margin-bottom:1rem;"><strong style="opacity:1;">Studify</strong> is a study space reservation platform built by students, for students. Developed as part of a capstone project at <strong style="opacity:1;">Dr. Yanga's Colleges, Inc.</strong> in Bocaue, Bulacan.</p>
+      <p style="margin-bottom:1rem;">Our mission is to help students find and reserve the perfect study environment — whether it's a quiet library, a computer shop, or a cozy café — without the hassle of showing up only to find no available seats.</p>
+      <p style="margin-bottom:2rem;">With real-time seat availability, online reservations, and a premium tier for priority access, Studify makes studying smarter and less stressful.</p>
+      <h3 style="font-family:'Syne',sans-serif;margin-bottom:1rem;opacity:1;">Our Team</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;">
+        ${['Mark David Valle','Elijah James Zamora','Edrian Mark Reyes','John Rasheed Gonzales','Jeremias Sarmiento'].map(n=>`<div style="background:var(--bg);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:2rem;margin-bottom:0.5rem;">👤</div><div style="font-weight:600;font-size:0.88rem;">${n}</div><div style="font-size:0.75rem;opacity:0.5;">Developer</div></div>`).join('')}
+      </div>
+    </div>
+  </div>
+  <footer class="site-footer" style="margin-top:4rem;"><div class="footer-bottom" style="border-top:none;"><div class="footer-bottom-copy">© 2026 Studify. All rights reserved.</div></div></footer>
+</div>
+
+<!-- ═══════════════ PRIVACY PAGE ═══════════════ -->
+<div class="page" id="privacyPage" style="padding-top:64px;">
+  <div class="dashboard" style="max-width:800px;margin:0 auto;">
+    <div style="margin-bottom:2rem;"><a onclick="goHome()" style="color:var(--teal);cursor:pointer;font-size:0.88rem;">← Back to Home</a></div>
+    <div class="section-tag">Legal</div>
+    <h2 style="margin-bottom:1.5rem;">Privacy Policy</h2>
+    <div style="background:var(--white);border-radius:20px;padding:2.5rem;border:1px solid rgba(15,31,61,0.08);line-height:1.8;font-size:0.92rem;opacity:0.8;">
+      <p style="margin-bottom:1rem;font-size:0.78rem;opacity:0.5;">Last updated: April 2026</p>
+      <h3 style="font-family:'Syne',sans-serif;margin-bottom:0.8rem;margin-top:1.5rem;opacity:1;">1. Information We Collect</h3>
+      <p style="margin-bottom:1rem;">We collect your name, email address, and reservation details when you register and use Studify. We do not collect payment card information — all payment processing is handled through mock flows for demonstration purposes.</p>
+      <h3 style="font-family:'Syne',sans-serif;margin-bottom:0.8rem;margin-top:1.5rem;opacity:1;">2. How We Use Your Information</h3>
+      <p style="margin-bottom:1rem;">Your information is used to manage your account, process reservations, send confirmation emails, and improve our platform. We do not sell your personal data to third parties.</p>
+      <h3 style="font-family:'Syne',sans-serif;margin-bottom:0.8rem;margin-top:1.5rem;opacity:1;">3. Data Security</h3>
+      <p style="margin-bottom:1rem;">Passwords are encrypted using bcrypt. JWT tokens are used for secure authentication. All data is stored in a secure cloud database (Supabase).</p>
+      <h3 style="font-family:'Syne',sans-serif;margin-bottom:0.8rem;margin-top:1.5rem;opacity:1;">4. Contact</h3>
+      <p>For privacy concerns, contact us at <a href="mailto:studify.notifs@gmail.com" style="color:var(--teal);">studify.notifs@gmail.com</a>.</p>
+    </div>
+  </div>
+  <footer class="site-footer" style="margin-top:4rem;"><div class="footer-bottom" style="border-top:none;"><div class="footer-bottom-copy">© 2026 Studify. All rights reserved.</div></div></footer>
+</div>
+
+<!-- ═══════════════ TERMS PAGE ═══════════════ -->
+<div class="page" id="termsPage" style="padding-top:64px;">
+  <div class="dashboard" style="max-width:800px;margin:0 auto;">
+    <div style="margin-bottom:2rem;"><a onclick="goHome()" style="color:var(--teal);cursor:pointer;font-size:0.88rem;">← Back to Home</a></div>
+    <div class="section-tag">Legal</div>
+    <h2 style="margin-bottom:1.5rem;">Terms of Service</h2>
+    <div style="background:var(--white);border-radius:20px;padding:2.5rem;border:1px solid rgba(15,31,61,0.08);line-height:1.8;font-size:0.92rem;opacity:0.8;">
+      <p style="margin-bottom:1rem;font-size:0.78rem;opacity:0.5;">Last updated: April 2026</p>
+      <h3 style="font-family:'Syne',sans-serif;margin-bottom:0.8rem;margin-top:1.5rem;opacity:1;">1. Acceptance of Terms</h3>
+      <p style="margin-bottom:1rem;">By using Studify, you agree to these Terms of Service. If you do not agree, please do not use the platform.</p>
+      <h3 style="font-family:'Syne',sans-serif;margin-bottom:0.8rem;margin-top:1.5rem;opacity:1;">2. Account Responsibilities</h3>
+      <p style="margin-bottom:1rem;">You are responsible for maintaining the security of your account. Do not share your login credentials with others. You must provide accurate information when registering.</p>
+      <h3 style="font-family:'Syne',sans-serif;margin-bottom:0.8rem;margin-top:1.5rem;opacity:1;">3. Reservations</h3>
+      <p style="margin-bottom:1rem;">Reservations are subject to space owner approval (except for Premium members). Cancelling a reservation restores the seat to availability. Abuse of the reservation system may result in account suspension.</p>
+      <h3 style="font-family:'Syne',sans-serif;margin-bottom:0.8rem;margin-top:1.5rem;opacity:1;">4. Premium Membership</h3>
+      <p style="margin-bottom:1rem;">Premium membership is ₱99/month. It grants priority reservations, 10% discounts on paid spaces, and access to WiFi speed badges. This is a demonstration platform — no real charges are made.</p>
+      <h3 style="font-family:'Syne',sans-serif;margin-bottom:0.8rem;margin-top:1.5rem;opacity:1;">5. Contact</h3>
+      <p>For questions, contact us at <a href="mailto:studify.notifs@gmail.com" style="color:var(--teal);">studify.notifs@gmail.com</a>.</p>
+    </div>
+  </div>
+  <footer class="site-footer" style="margin-top:4rem;"><div class="footer-bottom" style="border-top:none;"><div class="footer-bottom-copy">© 2026 Studify. All rights reserved.</div></div></footer>
+</div>
+
+<!-- ═══════════════ SUPPORT PAGE ═══════════════ -->
+<div class="page" id="supportPage" style="padding-top:64px;">
+  <div class="dashboard" style="max-width:800px;margin:0 auto;">
+    <div style="margin-bottom:2rem;"><a onclick="goHome()" style="color:var(--teal);cursor:pointer;font-size:0.88rem;">← Back to Home</a></div>
+    <div class="section-tag">Help Center</div>
+    <h2 style="margin-bottom:1.5rem;">Support</h2>
+    <div style="display:grid;gap:1rem;margin-bottom:2rem;">
+      <div style="background:var(--white);border-radius:16px;padding:1.8rem;border:1px solid rgba(15,31,61,0.08);">
+        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.5rem;">📧 Email Support</h3>
+        <p style="font-size:0.88rem;opacity:0.6;margin-bottom:0.8rem;">Send us an email and we'll get back to you within 24 hours.</p>
+        <a href="mailto:studify.notifs@gmail.com" style="color:var(--teal);font-weight:600;font-size:0.88rem;">studify.notifs@gmail.com</a>
+      </div>
+      <div style="background:var(--white);border-radius:16px;padding:1.8rem;border:1px solid rgba(15,31,61,0.08);">
+        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.5rem;">📞 Phone Support</h3>
+        <p style="font-size:0.88rem;opacity:0.6;margin-bottom:0.8rem;">Call or text us during school hours (Mon–Fri, 8AM–5PM).</p>
+        <a href="tel:+639695763754" style="color:var(--teal);font-weight:600;font-size:0.88rem;">+63 969 576 3754</a>
+      </div>
+      <div style="background:var(--white);border-radius:16px;padding:1.8rem;border:1px solid rgba(15,31,61,0.08);">
+        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.5rem;">📍 Visit Us</h3>
+        <p style="font-size:0.88rem;opacity:0.6;">Dr. Yanga's Colleges, Inc.<br>Bocaue, Bulacan, Philippines</p>
+      </div>
+    </div>
+    <div style="background:var(--white);border-radius:20px;padding:2rem;border:1px solid rgba(15,31,61,0.08);">
+      <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:1.2rem;">❓ Frequently Asked Questions</h3>
+      <div style="border-bottom:1px solid rgba(15,31,61,0.07);padding-bottom:1rem;margin-bottom:1rem;">
+        <div style="font-weight:600;font-size:0.88rem;margin-bottom:0.3rem;">How do I make a reservation?</div>
+        <div style="font-size:0.82rem;opacity:0.55;">Browse available spaces, click Reserve, fill in your details, and submit. You'll be notified when the owner confirms.</div>
+      </div>
+      <div style="border-bottom:1px solid rgba(15,31,61,0.07);padding-bottom:1rem;margin-bottom:1rem;">
+        <div style="font-weight:600;font-size:0.88rem;margin-bottom:0.3rem;">What is Premium membership?</div>
+        <div style="font-size:0.82rem;opacity:0.55;">Premium gives you priority reservations (auto-confirmed), 10% discounts on paid spaces, and WiFi speed badges for ₱99/month.</div>
+      </div>
+      <div style="border-bottom:1px solid rgba(15,31,61,0.07);padding-bottom:1rem;margin-bottom:1rem;">
+        <div style="font-weight:600;font-size:0.88rem;margin-bottom:0.3rem;">Can I cancel my reservation?</div>
+        <div style="font-size:0.82rem;opacity:0.55;">Yes. Go to My Reservations and click Cancel. The seat will be restored automatically.</div>
+      </div>
+      <div>
+        <div style="font-weight:600;font-size:0.88rem;margin-bottom:0.3rem;">How do I become a space owner?</div>
+        <div style="font-size:0.82rem;opacity:0.55;">Contact us via email or phone. Our admin team will set up your account and link it to your space.</div>
+      </div>
+    </div>
+  </div>
+  <footer class="site-footer" style="margin-top:4rem;"><div class="footer-bottom" style="border-top:none;"><div class="footer-bottom-copy">© 2026 Studify. All rights reserved.</div></div></footer>
+</div>
+
+
+<!-- ═══════════════ FEATURE: STUDY SPACE FINDER ═══════════════ -->
+<div class="page" id="featureFinderPage" style="padding-top:64px;">
+  <div class="dashboard" style="max-width:860px;margin:0 auto;">
+    <div style="margin-bottom:2rem;"><a onclick="goHome()" style="color:var(--teal);cursor:pointer;font-size:0.88rem;">← Back to Home</a></div>
+    <div class="section-tag">Feature</div>
+    <h2 style="margin-bottom:0.8rem;">🗺️ Study Space Finder</h2>
+    <p style="opacity:0.55;font-size:0.95rem;margin-bottom:2.5rem;line-height:1.7;">Discover the best study spots near you across Bulacan — libraries, computer shops, and cafés — all in one place.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;">
+      <div style="background:var(--white);border-radius:18px;padding:2rem;border:1px solid rgba(15,31,61,0.08);">
+        <div style="font-size:2rem;margin-bottom:1rem;">🔍</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.5rem;">Search by Location</h3>
+        <p style="font-size:0.85rem;opacity:0.55;line-height:1.6;">Type any city or area in Bulacan — Malolos, Bocaue, Meycauayan, Balagtas — and instantly see all available spaces nearby.</p>
+      </div>
+      <div style="background:var(--white);border-radius:18px;padding:2rem;border:1px solid rgba(15,31,61,0.08);">
+        <div style="font-size:2rem;margin-bottom:1rem;">📍</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.5rem;">GPS Nearest to Me</h3>
+        <p style="font-size:0.85rem;opacity:0.55;line-height:1.6;">Tap "Nearest to Me" to use your device GPS and automatically sort spaces by distance — closest first.</p>
+      </div>
+      <div style="background:var(--white);border-radius:18px;padding:2rem;border:1px solid rgba(15,31,61,0.08);">
+        <div style="font-size:2rem;margin-bottom:1rem;">🏷️</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.5rem;">Filter by Category</h3>
+        <p style="font-size:0.85rem;opacity:0.55;line-height:1.6;">Filter by Study Place, Computer Shop, or Café. Choose what fits your study style.</p>
+      </div>
+      <div style="background:var(--white);border-radius:18px;padding:2rem;border:1px solid rgba(15,31,61,0.08);">
+        <div style="font-size:2rem;margin-bottom:1rem;">⭐</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.5rem;">Filter by Rating</h3>
+        <p style="font-size:0.85rem;opacity:0.55;line-height:1.6;">Only show spaces rated 3★, 4★ or 5★ so you always find a quality spot.</p>
+      </div>
+    </div>
+    <div style="text-align:center;"><button class="btn-primary" onclick="goHome();setTimeout(()=>scrollToSection('places'),300)">Browse Spaces Now →</button></div>
+  </div>
+  <footer class="site-footer" style="margin-top:4rem;"><div class="footer-bottom" style="border-top:none;"><div class="footer-bottom-copy">© 2026 Studify. All rights reserved.</div></div></footer>
+</div>
+
+<!-- ═══════════════ FEATURE: REAL-TIME AVAILABILITY ═══════════════ -->
+<div class="page" id="featureRealtimePage" style="padding-top:64px;">
+  <div class="dashboard" style="max-width:860px;margin:0 auto;">
+    <div style="margin-bottom:2rem;"><a onclick="goHome()" style="color:var(--teal);cursor:pointer;font-size:0.88rem;">← Back to Home</a></div>
+    <div class="section-tag">Feature</div>
+    <h2 style="margin-bottom:0.8rem;">⚡ Real-Time Availability</h2>
+    <p style="opacity:0.55;font-size:0.95rem;margin-bottom:2.5rem;line-height:1.7;">Know exactly how many seats are available at any space before you even leave the house.</p>
+    <div style="background:var(--white);border-radius:20px;padding:2.5rem;border:1px solid rgba(15,31,61,0.08);margin-bottom:1.5rem;">
+      <h3 style="font-family:'Syne',sans-serif;font-size:1.1rem;margin-bottom:1.5rem;">How It Works</h3>
+      <div style="display:flex;flex-direction:column;gap:1.2rem;">
+        <div style="display:flex;gap:1rem;align-items:flex-start;">
+          <div style="background:var(--teal);color:white;border-radius:50%;width:32px;height:32px;display:grid;place-items:center;font-weight:700;flex-shrink:0;">1</div>
+          <div><strong>Space owners check in students</strong> — when a student arrives, the owner taps Check In and the seat count drops in real time.</div>
+        </div>
+        <div style="display:flex;gap:1rem;align-items:flex-start;">
+          <div style="background:var(--teal);color:white;border-radius:50%;width:32px;height:32px;display:grid;place-items:center;font-weight:700;flex-shrink:0;">2</div>
+          <div><strong>Socket.io pushes updates</strong> — every browser viewing Studify gets the updated seat count instantly, no refresh needed.</div>
+        </div>
+        <div style="display:flex;gap:1rem;align-items:flex-start;">
+          <div style="background:var(--teal);color:white;border-radius:50%;width:32px;height:32px;display:grid;place-items:center;font-weight:700;flex-shrink:0;">3</div>
+          <div><strong>Status badges update</strong> — each space card shows 🟢 Open, 🟡 Busy, or 🔴 Full automatically based on the seat count.</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem;">
+      <div style="background:#dcfce7;border-radius:14px;padding:1.5rem;text-align:center;"><div style="font-size:1.8rem;margin-bottom:0.5rem;">🟢</div><strong>Open</strong><div style="font-size:0.8rem;opacity:0.6;margin-top:0.3rem;">Seats available</div></div>
+      <div style="background:#fef9c3;border-radius:14px;padding:1.5rem;text-align:center;"><div style="font-size:1.8rem;margin-bottom:0.5rem;">🟡</div><strong>Busy</strong><div style="font-size:0.8rem;opacity:0.6;margin-top:0.3rem;">3 or fewer seats left</div></div>
+      <div style="background:#fee2e2;border-radius:14px;padding:1.5rem;text-align:center;"><div style="font-size:1.8rem;margin-bottom:0.5rem;">🔴</div><strong>Full</strong><div style="font-size:0.8rem;opacity:0.6;margin-top:0.3rem;">No seats available</div></div>
+    </div>
+    <div style="text-align:center;"><button class="btn-primary" onclick="goHome();setTimeout(()=>scrollToSection('places'),300)">See Live Availability →</button></div>
+  </div>
+  <footer class="site-footer" style="margin-top:4rem;"><div class="footer-bottom" style="border-top:none;"><div class="footer-bottom-copy">© 2026 Studify. All rights reserved.</div></div></footer>
+</div>
+
+<!-- ═══════════════ FEATURE: ONLINE RESERVATION ═══════════════ -->
+<div class="page" id="featureReservationPage" style="padding-top:64px;">
+  <div class="dashboard" style="max-width:860px;margin:0 auto;">
+    <div style="margin-bottom:2rem;"><a onclick="goHome()" style="color:var(--teal);cursor:pointer;font-size:0.88rem;">← Back to Home</a></div>
+    <div class="section-tag">Feature</div>
+    <h2 style="margin-bottom:0.8rem;">📅 Online Reservation System</h2>
+    <p style="opacity:0.55;font-size:0.95rem;margin-bottom:2.5rem;line-height:1.7;">Book your study spot in seconds. No calls, no walk-ins, no guessing.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;">
+      <div style="background:var(--white);border-radius:18px;padding:2rem;border:1px solid rgba(15,31,61,0.08);">
+        <div style="font-size:2rem;margin-bottom:1rem;">🗓️</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.5rem;">Pick Your Date & Time</h3>
+        <p style="font-size:0.85rem;opacity:0.55;line-height:1.6;">Choose your preferred date, start time, and how long you need the space — 1 to 5 hours.</p>
+      </div>
+      <div style="background:var(--white);border-radius:18px;padding:2rem;border:1px solid rgba(15,31,61,0.08);">
+        <div style="font-size:2rem;margin-bottom:1rem;">👥</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.5rem;">Group Reservations</h3>
+        <p style="font-size:0.85rem;opacity:0.55;line-height:1.6;">Specify how many persons are coming. The system checks seat availability before confirming.</p>
+      </div>
+      <div style="background:var(--white);border-radius:18px;padding:2rem;border:1px solid rgba(15,31,61,0.08);">
+        <div style="font-size:2rem;margin-bottom:1rem;">💰</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.5rem;">Live Price Calculator</h3>
+        <p style="font-size:0.85rem;opacity:0.55;line-height:1.6;">See the total cost before confirming. Price is calculated as rate × hours × persons automatically.</p>
+      </div>
+      <div style="background:var(--white);border-radius:18px;padding:2rem;border:1px solid rgba(15,31,61,0.08);">
+        <div style="font-size:2rem;margin-bottom:1rem;">✅</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.5rem;">Owner Confirmation</h3>
+        <p style="font-size:0.85rem;opacity:0.55;line-height:1.6;">The space owner reviews and confirms or rejects your booking. You get an email notification either way.</p>
+      </div>
+    </div>
+    <div style="text-align:center;"><button class="btn-primary" onclick="goHome();setTimeout(()=>scrollToSection('places'),300)">Make a Reservation →</button></div>
+  </div>
+  <footer class="site-footer" style="margin-top:4rem;"><div class="footer-bottom" style="border-top:none;"><div class="footer-bottom-copy">© 2026 Studify. All rights reserved.</div></div></footer>
+</div>
+
+<!-- ═══════════════ FEATURE: RATINGS ═══════════════ -->
+<div class="page" id="featureRatingsPage" style="padding-top:64px;">
+  <div class="dashboard" style="max-width:860px;margin:0 auto;">
+    <div style="margin-bottom:2rem;"><a onclick="goHome()" style="color:var(--teal);cursor:pointer;font-size:0.88rem;">← Back to Home</a></div>
+    <div class="section-tag">Feature</div>
+    <h2 style="margin-bottom:0.8rem;">⭐ Ratings & Feedback</h2>
+    <p style="opacity:0.55;font-size:0.95rem;margin-bottom:2.5rem;line-height:1.7;">Honest reviews from real students help everyone find the best spots to study.</p>
+    <div style="background:var(--white);border-radius:20px;padding:2.5rem;border:1px solid rgba(15,31,61,0.08);margin-bottom:1.5rem;">
+      <h3 style="font-family:'Syne',sans-serif;font-size:1.1rem;margin-bottom:1.5rem;">How Ratings Work</h3>
+      <div style="display:flex;flex-direction:column;gap:1.2rem;">
+        <div style="display:flex;gap:1rem;align-items:flex-start;">
+          <div style="background:var(--accent);color:var(--navy);border-radius:50%;width:32px;height:32px;display:grid;place-items:center;font-weight:700;flex-shrink:0;">1</div>
+          <div>After your reservation is confirmed, a <strong>⭐ Rate</strong> button appears in your My Reservations dashboard.</div>
+        </div>
+        <div style="display:flex;gap:1rem;align-items:flex-start;">
+          <div style="background:var(--accent);color:var(--navy);border-radius:50%;width:32px;height:32px;display:grid;place-items:center;font-weight:700;flex-shrink:0;">2</div>
+          <div>Tap 1–5 stars and optionally leave a written review about your experience.</div>
+        </div>
+        <div style="display:flex;gap:1rem;align-items:flex-start;">
+          <div style="background:var(--accent);color:var(--navy);border-radius:50%;width:32px;height:32px;display:grid;place-items:center;font-weight:700;flex-shrink:0;">3</div>
+          <div>The space's average rating <strong>recalculates instantly</strong> and updates on the space card for all users to see.</div>
+        </div>
+        <div style="display:flex;gap:1rem;align-items:flex-start;">
+          <div style="background:var(--accent);color:var(--navy);border-radius:50%;width:32px;height:32px;display:grid;place-items:center;font-weight:700;flex-shrink:0;">4</div>
+          <div>Each user can rate a space <strong>once</strong>. You can update your rating anytime.</div>
+        </div>
+      </div>
+    </div>
+    <div style="background:linear-gradient(135deg,#fef9c3,#fde68a);border-radius:16px;padding:1.8rem;text-align:center;margin-bottom:2rem;">
+      <div style="font-size:2.5rem;margin-bottom:0.5rem;">★★★★★</div>
+      <div style="font-weight:700;font-size:1rem;">Your review helps other students!</div>
+      <div style="font-size:0.85rem;opacity:0.65;margin-top:0.3rem;">Only verified users who actually reserved a space can leave a rating.</div>
+    </div>
+    <div style="text-align:center;"><button class="btn-primary" onclick="currentUser ? showUserDash() : openAuth('login')">Rate a Space →</button></div>
+  </div>
+  <footer class="site-footer" style="margin-top:4rem;"><div class="footer-bottom" style="border-top:none;"><div class="footer-bottom-copy">© 2026 Studify. All rights reserved.</div></div></footer>
+</div>
+
+<!-- ═══════════════ FEATURE: PRIORITY BOOKING ═══════════════ -->
+<div class="page" id="featurePriorityPage" style="padding-top:64px;">
+  <div class="dashboard" style="max-width:860px;margin:0 auto;">
+    <div style="margin-bottom:2rem;"><a onclick="goHome()" style="color:var(--teal);cursor:pointer;font-size:0.88rem;">← Back to Home</a></div>
+    <div class="section-tag">Premium Feature</div>
+    <h2 style="margin-bottom:0.8rem;">⚡ Priority Booking</h2>
+    <p style="opacity:0.55;font-size:0.95rem;margin-bottom:2.5rem;line-height:1.7;">Premium members skip the queue. Your reservations are auto-confirmed instantly — no waiting for owner approval.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;">
+      <div style="background:#fef3c7;border-radius:18px;padding:2rem;border:1.5px solid #f59e0b;">
+        <div style="font-size:2rem;margin-bottom:1rem;">🆓</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.8rem;">Free Users</h3>
+        <ul style="font-size:0.85rem;opacity:0.65;line-height:1.8;padding-left:1.2rem;">
+          <li>Reservation starts as <strong>Pending</strong></li>
+          <li>Wait for owner to approve</li>
+          <li>May take hours or days</li>
+          <li>Can be rejected by owner</li>
+        </ul>
+      </div>
+      <div style="background:linear-gradient(135deg,#fff7ed,#fef3c7);border-radius:18px;padding:2rem;border:1.5px solid #f59e0b;">
+        <div style="font-size:2rem;margin-bottom:1rem;">⭐</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.8rem;">Premium Members</h3>
+        <ul style="font-size:0.85rem;opacity:0.75;line-height:1.8;padding-left:1.2rem;">
+          <li>Reservation is <strong>Auto-Confirmed</strong></li>
+          <li>No waiting needed</li>
+          <li>Instant booking guarantee</li>
+          <li>Toast shows "Priority reserved!"</li>
+        </ul>
+      </div>
+    </div>
+    <div style="text-align:center;"><button class="btn-primary" style="background:linear-gradient(135deg,#f59e0b,#d97706);" onclick="openUpgradeModal()">⭐ Upgrade to Premium →</button></div>
+  </div>
+  <footer class="site-footer" style="margin-top:4rem;"><div class="footer-bottom" style="border-top:none;"><div class="footer-bottom-copy">© 2026 Studify. All rights reserved.</div></div></footer>
+</div>
+
+<!-- ═══════════════ FEATURE: FAST WIFI ═══════════════ -->
+<div class="page" id="featureWifiPage" style="padding-top:64px;">
+  <div class="dashboard" style="max-width:860px;margin:0 auto;">
+    <div style="margin-bottom:2rem;"><a onclick="goHome()" style="color:var(--teal);cursor:pointer;font-size:0.88rem;">← Back to Home</a></div>
+    <div class="section-tag">Premium Feature</div>
+    <h2 style="margin-bottom:0.8rem;">📶 Fast WiFi Spaces</h2>
+    <p style="opacity:0.55;font-size:0.95rem;margin-bottom:2.5rem;line-height:1.7;">Premium members can see WiFi speed badges on every space card and filter for fast WiFi-only spots.</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem;">
+      <div style="background:var(--white);border-radius:16px;padding:1.8rem;text-align:center;border:1px solid rgba(15,31,61,0.08);">
+        <div style="font-size:2rem;margin-bottom:0.8rem;">📶</div>
+        <span style="background:#dcfce7;color:#15803d;font-size:0.75rem;font-weight:700;padding:0.25rem 0.7rem;border-radius:100px;">Fast WiFi</span>
+        <p style="font-size:0.8rem;opacity:0.55;margin-top:0.8rem;line-height:1.5;">500 Mbps or high-speed internet. Best for video calls and large downloads.</p>
+      </div>
+      <div style="background:var(--white);border-radius:16px;padding:1.8rem;text-align:center;border:1px solid rgba(15,31,61,0.08);">
+        <div style="font-size:2rem;margin-bottom:0.8rem;">📶</div>
+        <span style="background:#fef9c3;color:#854d0e;font-size:0.75rem;font-weight:700;padding:0.25rem 0.7rem;border-radius:100px;">WiFi</span>
+        <p style="font-size:0.8rem;opacity:0.55;margin-top:0.8rem;line-height:1.5;">Standard WiFi available. Good for browsing and light work.</p>
+      </div>
+      <div style="background:var(--white);border-radius:16px;padding:1.8rem;text-align:center;border:1px solid rgba(15,31,61,0.08);">
+        <div style="font-size:2rem;margin-bottom:0.8rem;">❌</div>
+        <span style="background:#fee2e2;color:#b91c1c;font-size:0.75rem;font-weight:700;padding:0.25rem 0.7rem;border-radius:100px;">No WiFi</span>
+        <p style="font-size:0.8rem;opacity:0.55;margin-top:0.8rem;line-height:1.5;">No internet connection. Good for distraction-free offline studying.</p>
+      </div>
+    </div>
+    <div style="background:linear-gradient(135deg,#1a1f3d,#2d3561);border-radius:20px;padding:2rem;text-align:center;margin-bottom:2rem;">
+      <div style="font-size:2rem;margin-bottom:0.8rem;">🔒</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:white;margin-bottom:0.5rem;">Premium Members Only</div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.55);margin-bottom:1.2rem;">WiFi badges and the Fast WiFi filter are exclusive to Premium subscribers.</div>
+      <button class="btn-primary" style="background:linear-gradient(135deg,#f59e0b,#d97706);" onclick="openUpgradeModal()">⭐ Upgrade to Premium →</button>
+    </div>
+  </div>
+  <footer class="site-footer" style="margin-top:4rem;"><div class="footer-bottom" style="border-top:none;"><div class="footer-bottom-copy">© 2026 Studify. All rights reserved.</div></div></footer>
+</div>
+
 </body>
 </html>
