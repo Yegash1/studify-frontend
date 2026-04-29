@@ -14,7 +14,7 @@ html{scroll-behavior:smooth;}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--navy);overflow-x:hidden;}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
 .page{display:none;min-height:100vh;position:relative;z-index:1;}
-.page.active{display:block;}
+.page.active{display:flex;flex-direction:column;}
 
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:1rem 5%;background:rgba(240,237,232,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(15,31,61,0.1);}
@@ -99,7 +99,7 @@ h2{font-family:'Syne',sans-serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:80
 .cta-actions{display:flex;gap:1rem;justify-content:center;}
 .btn-accent{background:var(--accent);color:var(--navy);padding:1rem 2.2rem;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;}
 .btn-accent:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,160,32,0.4);}
-footer{position:relative;z-index:1;background:var(--navy);color:rgba(255,255,255,0.5);text-align:center;padding:2rem 5%;font-size:0.82rem;}
+footer{position:relative;z-index:1;background:var(--navy);color:rgba(255,255,255,0.5);text-align:center;padding:2rem 5%;font-size:0.82rem;margin-top:auto;}
 footer strong{color:var(--white);}
 .members{display:flex;justify-content:center;gap:0.6rem;flex-wrap:wrap;margin-top:0.5rem;}
 .member-tag{background:rgba(255,255,255,0.08);padding:0.25rem 0.7rem;border-radius:100px;font-size:0.75rem;}
@@ -469,7 +469,7 @@ tr:hover td{background:rgba(15,31,61,0.02);}
 
 /* ── NEW FOOTER ── */
 .site-footer{background:var(--navy);color:rgba(255,255,255,0.55);padding:4rem 5% 0;}
-.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.4fr;gap:3rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,0.1);}
+.footer-grid{display:grid;grid-template-columns:1.8fr 1fr 1fr 1.2fr;gap:2.5rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,0.1);}
 .footer-brand .logo-wrap{display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;}
 .footer-brand .logo-wrap img{width:38px;height:38px;border-radius:8px;object-fit:contain;}
 .footer-brand .logo-wrap span{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:var(--accent);}
@@ -479,9 +479,9 @@ tr:hover td{background:rgba(15,31,61,0.02);}
 .footer-col ul li{margin-bottom:0.7rem;}
 .footer-col ul li a{color:rgba(255,255,255,0.5);font-size:0.84rem;text-decoration:none;cursor:pointer;transition:all 0.2s;display:block;}
 .footer-col ul li a:hover{color:var(--accent);padding-left:4px;}
-.footer-col:last-child{display:flex;flex-direction:column;align-items:center;}
-.footer-col:last-child h4{text-align:center;width:100%;}
-.footer-contact-item{display:flex;flex-direction:row;align-items:center;gap:0.9rem;margin-bottom:1rem;width:210px;}
+.footer-col:last-child{display:flex;flex-direction:column;align-items:flex-start;text-align:left;}
+.footer-col:last-child h4{text-align:left;width:100%;}
+.footer-contact-item{display:flex;flex-direction:row;align-items:flex-start;gap:0.9rem;margin-bottom:1rem;width:100%;}
 .footer-contact-icon{width:36px;height:36px;background:rgba(26,138,138,0.25);border-radius:9px;display:grid;place-items:center;font-size:1rem;flex-shrink:0;}
 .footer-contact-label{font-size:0.67rem;opacity:0.5;margin-bottom:0.15rem;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;}
 .footer-contact-value{font-size:0.83rem;color:rgba(255,255,255,0.82);line-height:1.5;}
@@ -502,6 +502,13 @@ tr:hover td{background:rgba(15,31,61,0.02);}
 .mobile-menu a:last-child{border-bottom:none;}
 .mobile-menu .mobile-premium-btn{background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;padding:0.75rem 1rem;border-radius:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;cursor:pointer;margin-top:0.5rem;width:100%;text-align:center;display:none;}
 .mobile-menu .mobile-premium-btn.show{display:block;}
+
+
+.page-footer-bar{background:#0d1929;padding:1rem 5%;text-align:center;border-top:1px solid rgba(255,255,255,0.08);}
+.page-footer-bar p{font-size:0.73rem;color:rgba(255,255,255,0.3);margin:0;}
+#featurePriorityPage.active{display:flex;flex-direction:column;min-height:100vh;}
+#featurePriorityPage.active .page-footer-bar{background:#0d1929 !important;padding:1rem 5% !important;text-align:center !important;border-top:1px solid rgba(255,255,255,0.08) !important;margin-top:auto !important;}
+#featurePriorityPage.active .page-footer-bar p{color:rgba(255,255,255,0.95) !important;}
 
 /* TOAST */
 /* PAYMENT MODAL */
@@ -563,6 +570,9 @@ tr:hover td{background:rgba(15,31,61,0.02);}
   .nav-hamburger{display:flex;}
   .footer-grid{grid-template-columns:1fr 1fr;gap:2rem;}
   .footer-bottom{flex-direction:column;align-items:flex-start;}
+  .footer-col{text-align:left!important;}
+  .footer-col:last-child{align-items:flex-start!important;}
+  .footer-contact-item{justify-content:flex-start;}
 
   /* HERO */
   .hero{padding:6rem 5% 3rem;}
@@ -646,6 +656,11 @@ tr:hover td{background:rgba(15,31,61,0.02);}
   .btn-checkin,.btn-checkout,.btn-bulk{width:100%;justify-content:center;}
   .owner-seat-control{flex-direction:column;gap:1rem;}
   .reservation-item{flex-wrap:wrap;}
+  [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important;}
+  [style*="grid-template-columns:repeat(3,1fr)"]{grid-template-columns:1fr!important;}
+  [style*="grid-template-columns:repeat(5,1fr)"]{grid-template-columns:repeat(2,1fr)!important;}
+  [style*="padding:2rem 5% 4rem"]{padding:1.5rem 4% 3rem!important;}
+  [style*="display:flex;gap:1.5rem;align-items:flex-start"]{flex-direction:column!important;}
 
   /* TABLES */
   table{font-size:0.78rem;}
@@ -666,6 +681,7 @@ tr:hover td{background:rgba(15,31,61,0.02);}
 @media(max-width:480px){
   .footer-grid{grid-template-columns:1fr;}
   .footer-members{display:none;}
+  .page-footer-bar{padding:0.8rem 4%;}
   .hero-stats{gap:0.5rem;}
   .admin-stats{grid-template-columns:1fr 1fr;}
   .owner-stats{grid-template-columns:1fr 1fr;}
@@ -857,7 +873,7 @@ tr:hover td{background:rgba(15,31,61,0.02);}
         </div>
       </div>
     </div>
-    <div class="footer-bottom">
+    <!--<div class="footer-bottom">
       <div class="footer-bottom-copy">© 2026 Studify. All rights reserved. Developed by BSCpE-3A - Team Logic Works - DYCI</div>
       <div class="footer-members">
         <span class="footer-member">Mark David Valle</span>
@@ -865,7 +881,7 @@ tr:hover td{background:rgba(15,31,61,0.02);}
         <span class="footer-member">Edrian Mark Reyes</span>
         <span class="footer-member">John Rasheed Gonzales</span>
         <span class="footer-member">Jeremias Sarmiento</span>
-      </div>
+      </div> -->
     </div>
   </footer>
 </div>
@@ -2892,17 +2908,36 @@ document.getElementById('resDate').value=new Date().toISOString().split('T')[0];
 
 <!-- ═══════════════ ABOUT PAGE ═══════════════ -->
 <div class="page" id="aboutPage" style="padding-top:64px;">
-  <div class="dashboard" style="max-width:800px;margin:0 auto;">
+  <div style="padding:2rem 5% 4rem;">
     <div style="margin-bottom:2rem;"><a onclick="goHome()" style="color:var(--teal);cursor:pointer;font-size:0.88rem;">← Back to Home</a></div>
     <div class="section-tag">About Us</div>
-    <h2 style="margin-bottom:1.5rem;">About Studify</h2>
-    <div style="background:var(--white);border-radius:20px;padding:2.5rem;border:1px solid rgba(15,31,61,0.08);line-height:1.8;font-size:0.95rem;opacity:0.8;">
-      <p style="margin-bottom:1rem;"><strong style="opacity:1;">Studify</strong> is a study space reservation platform built by students, for students. Developed as part of a technopreneurship project at <strong style="opacity:1;">Dr. Yanga's Colleges, Inc.</strong> in Bocaue, Bulacan.</p>
-      <p style="margin-bottom:1rem;">Our mission is to help students find and reserve the perfect study environment — whether it's a quiet library, a computer shop, or a cozy café — without the hassle of showing up only to find no available seats.</p>
-      <p style="margin-bottom:2rem;">With real-time seat availability, online reservations, and a premium tier for priority access, Studify makes studying smarter and less stressful.</p>
-      <h3 style="font-family:'Syne',sans-serif;margin-bottom:1.5rem;opacity:1;">Our Team</h3>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1.5rem;">
-
+    <h2 style="margin-bottom:0.8rem;">Built by students,<br>for students.</h2>
+    <p style="opacity:0.55;font-size:0.95rem;margin-bottom:2.5rem;line-height:1.7;">Studify was created to solve a real problem — showing up to study only to find no seats. We built the solution at Dr. Yanga's Colleges, Inc., Bocaue, Bulacan.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2.5rem;">
+      <div style="background:var(--white);border-radius:18px;padding:2rem;border:1px solid rgba(15,31,61,0.08);">
+        <div style="font-size:2rem;margin-bottom:1rem;">🎯</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.5rem;">Our Mission</h3>
+        <p style="font-size:0.85rem;opacity:0.55;line-height:1.6;">Help students across Bulacan find and reserve the perfect study environment — instantly, without the hassle of walking in to a full room.</p>
+      </div>
+      <div style="background:var(--white);border-radius:18px;padding:2rem;border:1px solid rgba(15,31,61,0.08);">
+        <div style="font-size:2rem;margin-bottom:1rem;">👁️</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.5rem;">Our Vision</h3>
+        <p style="font-size:0.85rem;opacity:0.55;line-height:1.6;">A Bulacan where every student always has a productive, comfortable place to study — connected through one smart platform.</p>
+      </div>
+      <div style="background:var(--white);border-radius:18px;padding:2rem;border:1px solid rgba(15,31,61,0.08);">
+        <div style="font-size:2rem;margin-bottom:1rem;">⚡</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.5rem;">What We Built</h3>
+        <p style="font-size:0.85rem;opacity:0.55;line-height:1.6;">Real-time seat availability, online reservations, owner dashboards, premium memberships, WiFi badges, and email notifications — all in one app.</p>
+      </div>
+      <div style="background:var(--white);border-radius:18px;padding:2rem;border:1px solid rgba(15,31,61,0.08);">
+        <div style="font-size:2rem;margin-bottom:1rem;">🏫</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.5rem;">Where We're From</h3>
+        <p style="font-size:0.85rem;opacity:0.55;line-height:1.6;">Dr. Yanga's Colleges, Inc. — Bocaue, Bulacan, Philippines. Developed as a capstone project by BSCpE-3A, Team Logic Works.</p>
+      </div>
+    </div>
+    <div style="background:var(--navy);border-radius:20px;padding:2.5rem;">
+      <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:white;margin-bottom:1.8rem;">Meet the Team</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:1.2rem;">
         <div style="background:var(--bg);border-radius:16px;padding:1.5rem 1rem;text-align:center;border:1px solid rgba(15,31,61,0.08);transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
           <img src="data:image/png;base64,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" alt="Mark David Valle" style="width:90px;height:90px;border-radius:50%;object-fit:cover;object-position:center top;border:3px solid var(--teal);margin-bottom:0.8rem;display:block;margin-left:auto;margin-right:auto;">
           <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;margin-bottom:0.2rem;">Mark David Valle</div>
@@ -2933,101 +2968,154 @@ document.getElementById('resDate').value=new Date().toISOString().split('T')[0];
           <div style="font-size:0.72rem;color:var(--teal);font-weight:600;">Developer</div>
         </div>
 
+      
+      </div>
       </div>
     </div>
   </div>
-  <footer class="site-footer" style="margin-top:4rem;"><div class="footer-bottom" style="border-top:none;"><div class="footer-bottom-copy">© 2026 Studify. All rights reserved.</div></div></footer>
+  <div class="page-footer-bar"><p>© 2026 Studify. All rights reserved. Developed by BSCpE-3A – Team Logic Works – DYCI</p></div>
 </div>
 
 <!-- ═══════════════ PRIVACY PAGE ═══════════════ -->
 <div class="page" id="privacyPage" style="padding-top:64px;">
-  <div class="dashboard" style="max-width:800px;margin:0 auto;">
+  <div style="padding:2rem 5% 4rem;">
     <div style="margin-bottom:2rem;"><a onclick="goHome()" style="color:var(--teal);cursor:pointer;font-size:0.88rem;">← Back to Home</a></div>
     <div class="section-tag">Legal</div>
-    <h2 style="margin-bottom:1.5rem;">Privacy Policy</h2>
-    <div style="background:var(--white);border-radius:20px;padding:2.5rem;border:1px solid rgba(15,31,61,0.08);line-height:1.8;font-size:0.92rem;opacity:0.8;">
-      <p style="margin-bottom:1rem;font-size:0.78rem;opacity:0.5;">Last updated: April 2026</p>
-      <h3 style="font-family:'Syne',sans-serif;margin-bottom:0.8rem;margin-top:1.5rem;opacity:1;">1. Information We Collect</h3>
-      <p style="margin-bottom:1rem;">We collect your name, email address, and reservation details when you register and use Studify. We do not collect payment card information — all payment processing is handled through mock flows for demonstration purposes.</p>
-      <h3 style="font-family:'Syne',sans-serif;margin-bottom:0.8rem;margin-top:1.5rem;opacity:1;">2. How We Use Your Information</h3>
-      <p style="margin-bottom:1rem;">Your information is used to manage your account, process reservations, send confirmation emails, and improve our platform. We do not sell your personal data to third parties.</p>
-      <h3 style="font-family:'Syne',sans-serif;margin-bottom:0.8rem;margin-top:1.5rem;opacity:1;">3. Data Security</h3>
-      <p style="margin-bottom:1rem;">Passwords are encrypted using bcrypt. JWT tokens are used for secure authentication. All data is stored in a secure cloud database (Supabase).</p>
-      <h3 style="font-family:'Syne',sans-serif;margin-bottom:0.8rem;margin-top:1.5rem;opacity:1;">4. Contact</h3>
-      <p>For privacy concerns, contact us at <a href="mailto:studify.notifs@gmail.com" style="color:var(--teal);">studify.notifs@gmail.com</a>.</p>
+    <h2 style="margin-bottom:0.8rem;">Privacy Policy</h2>
+    <p style="opacity:0.55;font-size:0.95rem;margin-bottom:2.5rem;line-height:1.7;">We take your privacy seriously. Here's exactly what we collect, how we use it, and how we protect it.</p>
+    <div style="font-size:0.78rem;opacity:0.4;margin-bottom:1.5rem;font-style:italic;">Last updated: April 2026</div>
+    <div style="display:flex;flex-direction:column;gap:1rem;margin-bottom:2rem;">
+      <div style="background:var(--white);border-radius:18px;padding:1.8rem 2rem;border:1px solid rgba(15,31,61,0.08);display:flex;gap:1.5rem;align-items:flex-start;">
+        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;color:rgba(15,31,61,0.08);flex-shrink:0;line-height:1;min-width:44px;">01</div>
+        <div><h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.4rem;">Information We Collect</h3><p style="font-size:0.85rem;opacity:0.55;line-height:1.7;margin:0;">We collect your name, email address, and reservation details when you register and use Studify. We do not collect payment card information — all payment processing is handled through mock flows for demonstration purposes.</p></div>
+      </div>
+      <div style="background:var(--white);border-radius:18px;padding:1.8rem 2rem;border:1px solid rgba(15,31,61,0.08);display:flex;gap:1.5rem;align-items:flex-start;">
+        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;color:rgba(15,31,61,0.08);flex-shrink:0;line-height:1;min-width:44px;">02</div>
+        <div><h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.4rem;">How We Use Your Information</h3><p style="font-size:0.85rem;opacity:0.55;line-height:1.7;margin:0;">Your information is used to manage your account, process reservations, send confirmation emails, and improve our platform. We do not sell your personal data to third parties.</p></div>
+      </div>
+      <div style="background:var(--white);border-radius:18px;padding:1.8rem 2rem;border:1px solid rgba(15,31,61,0.08);display:flex;gap:1.5rem;align-items:flex-start;">
+        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;color:rgba(15,31,61,0.08);flex-shrink:0;line-height:1;min-width:44px;">03</div>
+        <div><h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.4rem;">Data Security</h3><p style="font-size:0.85rem;opacity:0.55;line-height:1.7;margin:0;">Passwords are encrypted using bcrypt hashing. JWT tokens are used for secure session authentication. All data is stored in a secure cloud database (Supabase) with encrypted connections.</p></div>
+      </div>
+      <div style="background:var(--white);border-radius:18px;padding:1.8rem 2rem;border:1px solid rgba(15,31,61,0.08);display:flex;gap:1.5rem;align-items:flex-start;">
+        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;color:rgba(15,31,61,0.08);flex-shrink:0;line-height:1;min-width:44px;">04</div>
+        <div><h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.4rem;">Cookies & Local Storage</h3><p style="font-size:0.85rem;opacity:0.55;line-height:1.7;margin:0;">Studify stores your session token in browser localStorage to keep you logged in. No third-party tracking cookies are used.</p></div>
+      </div>
+      <div style="background:var(--white);border-radius:18px;padding:1.8rem 2rem;border:1px solid rgba(15,31,61,0.08);display:flex;gap:1.5rem;align-items:flex-start;">
+        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;color:rgba(15,31,61,0.08);flex-shrink:0;line-height:1;min-width:44px;">05</div>
+        <div><h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.4rem;">Your Rights</h3><p style="font-size:0.85rem;opacity:0.55;line-height:1.7;margin:0;">You may request deletion of your account and data at any time by contacting us. We will process your request within 7 business days.</p></div>
+      </div>
+      <div style="background:var(--white);border-radius:18px;padding:1.8rem 2rem;border:1px solid rgba(15,31,61,0.08);display:flex;gap:1.5rem;align-items:flex-start;">
+        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;color:rgba(15,31,61,0.08);flex-shrink:0;line-height:1;min-width:44px;">06</div>
+        <div><h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.4rem;">Contact</h3><p style="font-size:0.85rem;opacity:0.55;line-height:1.7;margin:0;">For privacy concerns, contact us at <a href="mailto:studify.notifs@gmail.com" style="color:var(--teal);">studify.notifs@gmail.com</a> or call <a href="tel:+639695763754" style="color:var(--teal);">+63 969 576 3754</a>.</p></div>
+      </div>
     </div>
   </div>
-  <footer class="site-footer" style="margin-top:4rem;"><div class="footer-bottom" style="border-top:none;"><div class="footer-bottom-copy">© 2026 Studify. All rights reserved.</div></div></footer>
+  <div class="page-footer-bar"><p>© 2026 Studify. All rights reserved. Developed by BSCpE-3A – Team Logic Works – DYCI</p></div>
 </div>
 
 <!-- ═══════════════ TERMS PAGE ═══════════════ -->
 <div class="page" id="termsPage" style="padding-top:64px;">
-  <div class="dashboard" style="max-width:800px;margin:0 auto;">
+  <div style="padding:2rem 5% 4rem;">
     <div style="margin-bottom:2rem;"><a onclick="goHome()" style="color:var(--teal);cursor:pointer;font-size:0.88rem;">← Back to Home</a></div>
     <div class="section-tag">Legal</div>
-    <h2 style="margin-bottom:1.5rem;">Terms of Service</h2>
-    <div style="background:var(--white);border-radius:20px;padding:2.5rem;border:1px solid rgba(15,31,61,0.08);line-height:1.8;font-size:0.92rem;opacity:0.8;">
-      <p style="margin-bottom:1rem;font-size:0.78rem;opacity:0.5;">Last updated: April 2026</p>
-      <h3 style="font-family:'Syne',sans-serif;margin-bottom:0.8rem;margin-top:1.5rem;opacity:1;">1. Acceptance of Terms</h3>
-      <p style="margin-bottom:1rem;">By using Studify, you agree to these Terms of Service. If you do not agree, please do not use the platform.</p>
-      <h3 style="font-family:'Syne',sans-serif;margin-bottom:0.8rem;margin-top:1.5rem;opacity:1;">2. Account Responsibilities</h3>
-      <p style="margin-bottom:1rem;">You are responsible for maintaining the security of your account. Do not share your login credentials with others. You must provide accurate information when registering.</p>
-      <h3 style="font-family:'Syne',sans-serif;margin-bottom:0.8rem;margin-top:1.5rem;opacity:1;">3. Reservations</h3>
-      <p style="margin-bottom:1rem;">Reservations are subject to space owner approval (except for Premium members). Cancelling a reservation restores the seat to availability. Abuse of the reservation system may result in account suspension.</p>
-      <h3 style="font-family:'Syne',sans-serif;margin-bottom:0.8rem;margin-top:1.5rem;opacity:1;">4. Premium Membership</h3>
-      <p style="margin-bottom:1rem;">Premium membership is ₱99/month. It grants priority reservations, 10% discounts on paid spaces, and access to WiFi speed badges. This is a demonstration platform — no real charges are made.</p>
-      <h3 style="font-family:'Syne',sans-serif;margin-bottom:0.8rem;margin-top:1.5rem;opacity:1;">5. Contact</h3>
-      <p>For questions, contact us at <a href="mailto:studify.notifs@gmail.com" style="color:var(--teal);">studify.notifs@gmail.com</a>.</p>
+    <h2 style="margin-bottom:0.8rem;">Terms of Service</h2>
+    <p style="opacity:0.55;font-size:0.95rem;margin-bottom:2.5rem;line-height:1.7;">By using Studify, you agree to these terms. Please read them carefully before creating an account.</p>
+    <div style="font-size:0.78rem;opacity:0.4;margin-bottom:1.5rem;font-style:italic;">Last updated: April 2026</div>
+    <div style="display:flex;flex-direction:column;gap:1rem;margin-bottom:2rem;">
+      <div style="background:var(--white);border-radius:18px;padding:1.8rem 2rem;border:1px solid rgba(15,31,61,0.08);display:flex;gap:1.5rem;align-items:flex-start;">
+        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;color:rgba(15,31,61,0.08);flex-shrink:0;line-height:1;min-width:44px;">01</div>
+        <div><h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.4rem;">Acceptance of Terms</h3><p style="font-size:0.85rem;opacity:0.55;line-height:1.7;margin:0;">By accessing or using Studify, you agree to be bound by these Terms of Service. If you do not agree, please do not use the platform.</p></div>
+      </div>
+      <div style="background:var(--white);border-radius:18px;padding:1.8rem 2rem;border:1px solid rgba(15,31,61,0.08);display:flex;gap:1.5rem;align-items:flex-start;">
+        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;color:rgba(15,31,61,0.08);flex-shrink:0;line-height:1;min-width:44px;">02</div>
+        <div><h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.4rem;">Account Responsibilities</h3><p style="font-size:0.85rem;opacity:0.55;line-height:1.7;margin:0;">You are responsible for maintaining the security of your account. Do not share your login credentials with others. You must provide accurate and truthful information when registering.</p></div>
+      </div>
+      <div style="background:var(--white);border-radius:18px;padding:1.8rem 2rem;border:1px solid rgba(15,31,61,0.08);display:flex;gap:1.5rem;align-items:flex-start;">
+        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;color:rgba(15,31,61,0.08);flex-shrink:0;line-height:1;min-width:44px;">03</div>
+        <div><h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.4rem;">Reservations</h3><p style="font-size:0.85rem;opacity:0.55;line-height:1.7;margin:0;">Reservations are subject to space owner approval (except for Premium members who receive auto-confirmation). Cancelling a reservation automatically restores the seat to availability. Abuse of the reservation system may result in account suspension.</p></div>
+      </div>
+      <div style="background:var(--white);border-radius:18px;padding:1.8rem 2rem;border:1px solid rgba(15,31,61,0.08);display:flex;gap:1.5rem;align-items:flex-start;">
+        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;color:rgba(15,31,61,0.08);flex-shrink:0;line-height:1;min-width:44px;">04</div>
+        <div><h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.4rem;">Premium Membership</h3><p style="font-size:0.85rem;opacity:0.55;line-height:1.7;margin:0;">Premium membership is ₱99/month and grants priority reservations, 10% discounts on paid spaces, and access to WiFi speed badges. This is a demonstration platform — no real financial charges are processed.</p></div>
+      </div>
+      <div style="background:var(--white);border-radius:18px;padding:1.8rem 2rem;border:1px solid rgba(15,31,61,0.08);display:flex;gap:1.5rem;align-items:flex-start;">
+        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;color:rgba(15,31,61,0.08);flex-shrink:0;line-height:1;min-width:44px;">05</div>
+        <div><h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.4rem;">Space Owner Obligations</h3><p style="font-size:0.85rem;opacity:0.55;line-height:1.7;margin:0;">Space owners are responsible for maintaining accurate seat counts and responding to reservation requests in a timely manner. Owners who consistently reject without reason may have their listing removed.</p></div>
+      </div>
+      <div style="background:var(--white);border-radius:18px;padding:1.8rem 2rem;border:1px solid rgba(15,31,61,0.08);display:flex;gap:1.5rem;align-items:flex-start;">
+        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;color:rgba(15,31,61,0.08);flex-shrink:0;line-height:1;min-width:44px;">06</div>
+        <div><h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.4rem;">Prohibited Conduct</h3><p style="font-size:0.85rem;opacity:0.55;line-height:1.7;margin:0;">You may not use Studify to harass other users, submit false information, or attempt to access accounts that are not yours. Violation may result in immediate account termination.</p></div>
+      </div>
+      <div style="background:var(--white);border-radius:18px;padding:1.8rem 2rem;border:1px solid rgba(15,31,61,0.08);display:flex;gap:1.5rem;align-items:flex-start;">
+        <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;color:rgba(15,31,61,0.08);flex-shrink:0;line-height:1;min-width:44px;">07</div>
+        <div><h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.4rem;">Contact</h3><p style="font-size:0.85rem;opacity:0.55;line-height:1.7;margin:0;">For questions about these terms, contact us at <a href="mailto:studify.notifs@gmail.com" style="color:var(--teal);">studify.notifs@gmail.com</a>.</p></div>
+      </div>
     </div>
   </div>
-  <footer class="site-footer" style="margin-top:4rem;"><div class="footer-bottom" style="border-top:none;"><div class="footer-bottom-copy">© 2026 Studify. All rights reserved.</div></div></footer>
+  <div class="page-footer-bar"><p>© 2026 Studify. All rights reserved. Developed by BSCpE-3A – Team Logic Works – DYCI</p></div>
 </div>
 
 <!-- ═══════════════ SUPPORT PAGE ═══════════════ -->
 <div class="page" id="supportPage" style="padding-top:64px;">
-  <div class="dashboard" style="max-width:800px;margin:0 auto;">
+  <div style="padding:2rem 5% 4rem;">
     <div style="margin-bottom:2rem;"><a onclick="goHome()" style="color:var(--teal);cursor:pointer;font-size:0.88rem;">← Back to Home</a></div>
     <div class="section-tag">Help Center</div>
-    <h2 style="margin-bottom:1.5rem;">Support</h2>
-    <div style="display:grid;gap:1rem;margin-bottom:2rem;">
-      <div style="background:var(--white);border-radius:16px;padding:1.8rem;border:1px solid rgba(15,31,61,0.08);">
-        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.5rem;">📧 Email Support</h3>
-        <p style="font-size:0.88rem;opacity:0.6;margin-bottom:0.8rem;">Send us an email and we'll get back to you within 24 hours.</p>
+    <h2 style="margin-bottom:0.8rem;">We're here to help.</h2>
+    <p style="opacity:0.55;font-size:0.95rem;margin-bottom:2.5rem;line-height:1.7;">Reach out any time via email, phone, or visit us at our campus. We respond within 24 hours on school days.</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:2.5rem;">
+      <div style="background:var(--white);border-radius:18px;padding:2rem;border:1px solid rgba(15,31,61,0.08);text-align:center;">
+        <div style="font-size:2.5rem;margin-bottom:1rem;">✉️</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.4rem;">Email Support</h3>
+        <p style="font-size:0.82rem;opacity:0.45;margin-bottom:0.8rem;line-height:1.5;">We respond within 24 hours on school days.</p>
         <a href="mailto:studify.notifs@gmail.com" style="color:var(--teal);font-weight:600;font-size:0.88rem;">studify.notifs@gmail.com</a>
       </div>
-      <div style="background:var(--white);border-radius:16px;padding:1.8rem;border:1px solid rgba(15,31,61,0.08);">
-        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.5rem;">📞 Phone Support</h3>
-        <p style="font-size:0.88rem;opacity:0.6;margin-bottom:0.8rem;">Call or text us during school hours (Mon–Fri, 8AM–5PM).</p>
+      <div style="background:var(--white);border-radius:18px;padding:2rem;border:1px solid rgba(15,31,61,0.08);text-align:center;">
+        <div style="font-size:2.5rem;margin-bottom:1rem;">📞</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.4rem;">Phone Support</h3>
+        <p style="font-size:0.82rem;opacity:0.45;margin-bottom:0.8rem;line-height:1.5;">Mon–Fri, 8:00 AM – 5:00 PM</p>
         <a href="tel:+639695763754" style="color:var(--teal);font-weight:600;font-size:0.88rem;">+63 969 576 3754</a>
       </div>
-      <div style="background:var(--white);border-radius:16px;padding:1.8rem;border:1px solid rgba(15,31,61,0.08);">
-        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:0.5rem;">📍 Visit Us</h3>
-        <p style="font-size:0.88rem;opacity:0.6;">Dr. Yanga's Colleges, Inc.<br>Bocaue, Bulacan, Philippines</p>
+      <div style="background:var(--white);border-radius:18px;padding:2rem;border:1px solid rgba(15,31,61,0.08);text-align:center;">
+        <div style="font-size:2.5rem;margin-bottom:1rem;">📍</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.4rem;">Visit Us</h3>
+        <p style="font-size:0.82rem;opacity:0.45;margin-bottom:0.8rem;line-height:1.5;">Open during school hours.</p>
+        <p style="font-size:0.88rem;color:var(--navy);font-weight:600;">Dr. Yanga's Colleges, Inc.<br>Bocaue, Bulacan</p>
       </div>
     </div>
-    <div style="background:var(--white);border-radius:20px;padding:2rem;border:1px solid rgba(15,31,61,0.08);">
-      <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:1.2rem;">❓ Frequently Asked Questions</h3>
-      <div style="border-bottom:1px solid rgba(15,31,61,0.07);padding-bottom:1rem;margin-bottom:1rem;">
-        <div style="font-weight:600;font-size:0.88rem;margin-bottom:0.3rem;">How do I make a reservation?</div>
-        <div style="font-size:0.82rem;opacity:0.55;">Browse available spaces, click Reserve, fill in your details, and submit. You'll be notified when the owner confirms.</div>
+    <div style="background:var(--white);border-radius:18px;border:1px solid rgba(15,31,61,0.08);overflow:hidden;">
+      <div style="background:var(--navy);padding:1.3rem 2rem;display:flex;align-items:center;gap:0.6rem;">
+        <span style="font-size:1.1rem;">❓</span>
+        <span style="font-family:'Syne',sans-serif;font-weight:700;color:white;font-size:0.95rem;">Frequently Asked Questions</span>
       </div>
-      <div style="border-bottom:1px solid rgba(15,31,61,0.07);padding-bottom:1rem;margin-bottom:1rem;">
-        <div style="font-weight:600;font-size:0.88rem;margin-bottom:0.3rem;">What is Premium membership?</div>
-        <div style="font-size:0.82rem;opacity:0.55;">Premium gives you priority reservations (auto-confirmed), 10% discounts on paid spaces, and WiFi speed badges for ₱99/month.</div>
+      <div style="padding:1.3rem 2rem;border-bottom:1px solid rgba(15,31,61,0.06);">
+        <h4 style="font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;margin-bottom:0.3rem;">How do I make a reservation?</h4>
+        <p style="font-size:0.83rem;opacity:0.55;line-height:1.65;margin:0;">Browse available spaces, click Reserve, fill in your date, time, duration, and number of persons, then confirm. You'll receive an email when the owner approves.</p>
       </div>
-      <div style="border-bottom:1px solid rgba(15,31,61,0.07);padding-bottom:1rem;margin-bottom:1rem;">
-        <div style="font-weight:600;font-size:0.88rem;margin-bottom:0.3rem;">Can I cancel my reservation?</div>
-        <div style="font-size:0.82rem;opacity:0.55;">Yes. Go to My Reservations and click Cancel. The seat will be restored automatically.</div>
+      <div style="padding:1.3rem 2rem;border-bottom:1px solid rgba(15,31,61,0.06);">
+        <h4 style="font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;margin-bottom:0.3rem;">How long does approval take?</h4>
+        <p style="font-size:0.83rem;opacity:0.55;line-height:1.65;margin:0;">It depends on the space owner — usually within a few hours. Premium members get auto-confirmation instantly with no waiting.</p>
       </div>
-      <div>
-        <div style="font-weight:600;font-size:0.88rem;margin-bottom:0.3rem;">How do I become a space owner?</div>
-        <div style="font-size:0.82rem;opacity:0.55;">Contact us via email or phone. Our admin team will set up your account and link it to your space.</div>
+      <div style="padding:1.3rem 2rem;border-bottom:1px solid rgba(15,31,61,0.06);">
+        <h4 style="font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;margin-bottom:0.3rem;">What is Premium membership?</h4>
+        <p style="font-size:0.83rem;opacity:0.55;line-height:1.65;margin:0;">Premium (₱99/month) gives you auto-confirmed reservations, 10% discounts on paid spaces, and WiFi speed badges for all space cards.</p>
+      </div>
+      <div style="padding:1.3rem 2rem;border-bottom:1px solid rgba(15,31,61,0.06);">
+        <h4 style="font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;margin-bottom:0.3rem;">Can I cancel my reservation?</h4>
+        <p style="font-size:0.83rem;opacity:0.55;line-height:1.65;margin:0;">Yes. Go to My Reservations in your dashboard and click Cancel. The seat count will be restored automatically.</p>
+      </div>
+      <div style="padding:1.3rem 2rem;border-bottom:1px solid rgba(15,31,61,0.06);">
+        <h4 style="font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;margin-bottom:0.3rem;">How do I become a space owner?</h4>
+        <p style="font-size:0.83rem;opacity:0.55;line-height:1.65;margin:0;">Contact us via email or phone. Our admin team will verify your space and set up an owner account linked to your location.</p>
+      </div>
+      <div style="padding:1.3rem 2rem;">
+        <h4 style="font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;margin-bottom:0.3rem;">Is my payment information safe?</h4>
+        <p style="font-size:0.83rem;opacity:0.55;line-height:1.65;margin:0;">Studify uses a mock payment system for demonstration purposes. No real card data is stored or processed.</p>
       </div>
     </div>
   </div>
-  <footer class="site-footer" style="margin-top:4rem;"><div class="footer-bottom" style="border-top:none;"><div class="footer-bottom-copy">© 2026 Studify. All rights reserved.</div></div></footer>
+  <div class="page-footer-bar"><p>© 2026 Studify. All rights reserved. Developed by BSCpE-3A – Team Logic Works – DYCI</p></div>
 </div>
-
 
 <!-- ═══════════════ FEATURE: STUDY SPACE FINDER ═══════════════ -->
 <div class="page" id="featureFinderPage" style="padding-top:64px;">
@@ -3060,7 +3148,7 @@ document.getElementById('resDate').value=new Date().toISOString().split('T')[0];
     </div>
     <div style="text-align:center;"><button class="btn-primary" onclick="goHome();setTimeout(()=>scrollToSection('places'),300)">Browse Spaces Now →</button></div>
   </div>
-  <footer class="site-footer" style="margin-top:4rem;"><div class="footer-bottom" style="border-top:none;"><div class="footer-bottom-copy">© 2026 Studify. All rights reserved.</div></div></footer>
+  <div class="page-footer-bar"><p>© 2026 Studify. All rights reserved. Developed by BSCpE-3A – Team Logic Works – DYCI</p></div>
 </div>
 
 <!-- ═══════════════ FEATURE: REAL-TIME AVAILABILITY ═══════════════ -->
@@ -3094,7 +3182,7 @@ document.getElementById('resDate').value=new Date().toISOString().split('T')[0];
     </div>
     <div style="text-align:center;"><button class="btn-primary" onclick="goHome();setTimeout(()=>scrollToSection('places'),300)">See Live Availability →</button></div>
   </div>
-  <footer class="site-footer" style="margin-top:4rem;"><div class="footer-bottom" style="border-top:none;"><div class="footer-bottom-copy">© 2026 Studify. All rights reserved.</div></div></footer>
+  <div class="page-footer-bar"><p>© 2026 Studify. All rights reserved. Developed by BSCpE-3A – Team Logic Works – DYCI</p></div>
 </div>
 
 <!-- ═══════════════ FEATURE: ONLINE RESERVATION ═══════════════ -->
@@ -3128,7 +3216,7 @@ document.getElementById('resDate').value=new Date().toISOString().split('T')[0];
     </div>
     <div style="text-align:center;"><button class="btn-primary" onclick="goHome();setTimeout(()=>scrollToSection('places'),300)">Make a Reservation →</button></div>
   </div>
-  <footer class="site-footer" style="margin-top:4rem;"><div class="footer-bottom" style="border-top:none;"><div class="footer-bottom-copy">© 2026 Studify. All rights reserved.</div></div></footer>
+  <div class="page-footer-bar"><p>© 2026 Studify. All rights reserved. Developed by BSCpE-3A – Team Logic Works – DYCI</p></div>
 </div>
 
 <!-- ═══════════════ FEATURE: RATINGS ═══════════════ -->
@@ -3166,7 +3254,7 @@ document.getElementById('resDate').value=new Date().toISOString().split('T')[0];
     </div>
     <div style="text-align:center;"><button class="btn-primary" onclick="currentUser ? showUserDash() : openAuth('login')">Rate a Space →</button></div>
   </div>
-  <footer class="site-footer" style="margin-top:4rem;"><div class="footer-bottom" style="border-top:none;"><div class="footer-bottom-copy">© 2026 Studify. All rights reserved.</div></div></footer>
+  <div class="page-footer-bar"><p>© 2026 Studify. All rights reserved. Developed by BSCpE-3A – Team Logic Works – DYCI</p></div>
 </div>
 
 <!-- ═══════════════ FEATURE: PRIORITY BOOKING ═══════════════ -->
@@ -3200,7 +3288,7 @@ document.getElementById('resDate').value=new Date().toISOString().split('T')[0];
     </div>
     <div style="text-align:center;"><button class="btn-primary" style="background:linear-gradient(135deg,#f59e0b,#d97706);" onclick="openUpgradeModal()">⭐ Upgrade to Premium →</button></div>
   </div>
-  <footer class="site-footer" style="margin-top:4rem;"><div class="footer-bottom" style="border-top:none;"><div class="footer-bottom-copy">© 2026 Studify. All rights reserved.</div></div></footer>
+  <div class="page-footer-bar"><p>© 2026 Studify. All rights reserved. Developed by BSCpE-3A – Team Logic Works – DYCI</p></div>
 </div>
 
 <!-- ═══════════════ FEATURE: FAST WIFI ═══════════════ -->
@@ -3234,7 +3322,7 @@ document.getElementById('resDate').value=new Date().toISOString().split('T')[0];
       <button class="btn-primary" style="background:linear-gradient(135deg,#f59e0b,#d97706);" onclick="openUpgradeModal()">⭐ Upgrade to Premium →</button>
     </div>
   </div>
-  <footer class="site-footer" style="margin-top:4rem;"><div class="footer-bottom" style="border-top:none;"><div class="footer-bottom-copy">© 2026 Studify. All rights reserved.</div></div></footer>
+  <div class="page-footer-bar"><p>© 2026 Studify. All rights reserved. Developed by BSCpE-3A – Team Logic Works – DYCI</p></div>
 </div>
 
 </body>
