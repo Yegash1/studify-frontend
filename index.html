@@ -699,9 +699,9 @@ tr:hover td{background:rgba(15,31,61,0.02);}
   </a>
   <ul class="nav-links" id="navLinks">
     <li id="navLandingLinks" style="display:contents">
-      <li><a onclick="goHome();setTimeout(()=>scrollToSection('how'),100)">How It Works</a></li>
-      <li><a onclick="goHome();setTimeout(()=>scrollToSection('features'),100)">Features</a></li>
-      <li><a onclick="goHome();setTimeout(()=>scrollToSection('places'),100)">Browse Spaces</a></li>
+      <li><a onclick="goHomeAndScroll('how')">How It Works</a></li>
+      <li><a onclick="goHomeAndScroll('features')">Features</a></li>
+      <li><a onclick="goHomeAndScroll('places')">Browse Spaces</a></li>
     </li>
     <li id="navAuthBtn"><a class="nav-cta" onclick="openAuth('login')">Get Started</a></li>
     <li id="navPremiumBtn" style="display:none"><a class="nav-premium-btn" onclick="openUpgradeModal()">⭐ Go Premium</a></li>
@@ -724,9 +724,9 @@ tr:hover td{background:rgba(15,31,61,0.02);}
 <!-- MOBILE MENU -->
 <div class="mobile-menu" id="mobileMenu">
   <a onclick="goHome();closeMobileMenu()">🏠 Home</a>
-  <a onclick="goHome();setTimeout(()=>scrollToSection('how'),100);closeMobileMenu()">📋 How It Works</a>
-  <a onclick="goHome();setTimeout(()=>scrollToSection('features'),100);closeMobileMenu()">⚡ Features</a>
-  <a onclick="goHome();setTimeout(()=>scrollToSection('places'),100);closeMobileMenu()">🔍 Browse Spaces</a>
+  <a onclick="goHomeAndScroll('how')">📋 How It Works</a>
+  <a onclick="goHomeAndScroll('features')">⚡ Features</a>
+  <a onclick="goHomeAndScroll('places')">🔍 Browse Spaces</a>
   <a id="mobileAuthBtn" onclick="openAuth('login');closeMobileMenu()">🔑 Get Started</a>
   <a id="mobileDashBtn" style="display:none" onclick="showUserDash();closeMobileMenu()">📅 My Reservations</a>
   <a id="mobileAdminBtn" style="display:none" onclick="showAdminDash();closeMobileMenu()">🛡️ Admin Panel</a>
@@ -843,7 +843,7 @@ tr:hover td{background:rgba(15,31,61,0.02);}
           <li><a onclick="showFeatureFinderPage()">Study Space Finder</a></li>
           <li><a onclick="showFeatureRealtimePage()">Real-Time Availability</a></li>
           <li><a onclick="showFeatureReservationPage()">Online Reservation</a></li>
-          <li><a onclick="goHome();setTimeout(()=>scrollToSection('why'),100)">Ratings & Feedback</a></li>
+          <li><a onclick="goHomeAndScroll('why')">Ratings & Feedback</a></li>
           <li><a onclick="showFeaturePriorityPage()">Priority Booking ⭐</a></li>
           <li><a onclick="showFeatureWifiPage()">Fast WiFi Spaces 📶</a></li>
         </ul>
@@ -894,7 +894,7 @@ tr:hover td{background:rgba(15,31,61,0.02);}
         <div class="dash-greeting">Good day, <span id="dashName">Student</span>! 👋</div>
         <p style="opacity:0.5;font-size:0.88rem;margin-top:0.3rem;">Here's your study space overview.</p>
       </div>
-      <button class="btn-primary" onclick="goHome();setTimeout(()=>scrollToSection('places'),300)">+ Browse Spaces</button>
+      <button class="btn-primary" onclick="goHomeAndScroll('places')">+ Browse Spaces</button>
     </div>
     <div class="dash-cards">
       <div class="dash-card"><div class="dash-card-label">Total Reservations</div><div class="dash-card-val" id="totalRes">0</div><div class="dash-card-sub">All time bookings</div></div>
@@ -1416,13 +1416,35 @@ function showToast(msg, type='success') {
   t.className = 'toast show ' + type;
   setTimeout(() => t.className = 'toast', 3200);
 }
-function scrollToSection(id) { document.getElementById(id)?.scrollIntoView({behavior:'smooth'}); }
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  const top = el.getBoundingClientRect().top + window.pageYOffset - 70;
+  window.scrollTo({top, behavior:'smooth'});
+}
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo({top:0});
 }
 function goHome() { showPage('landingPage'); closeMobileMenu(); window.scrollTo({top:0}); }
+function goHomeAndScroll(sectionId) {
+  closeMobileMenu();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('landingPage').classList.add('active');
+  window.scrollTo({top:0});
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      setTimeout(()=>{
+        const el = document.getElementById(sectionId);
+        if(el){
+          const top = el.getBoundingClientRect().top + window.pageYOffset - 70;
+          window.scrollTo({top, behavior:'smooth'});
+        }
+      }, 150);
+    });
+  });
+}
 function showAboutPage()      { showPage('aboutPage');            window.scrollTo({top:0}); }
 function showFeatureFinderPage()    { showPage('featureFinderPage');    window.scrollTo({top:0}); }
 function showFeatureRealtimePage()  { showPage('featureRealtimePage');  window.scrollTo({top:0}); }
@@ -3146,7 +3168,7 @@ document.getElementById('resDate').value=new Date().toISOString().split('T')[0];
         <p style="font-size:0.85rem;opacity:0.55;line-height:1.6;">Only show spaces rated 3★, 4★ or 5★ so you always find a quality spot.</p>
       </div>
     </div>
-    <div style="text-align:center;"><button class="btn-primary" onclick="goHome();closeMobileMenu();setTimeout(()=>scrollToSection('places'),500)">Browse Spaces Now →</button></div>
+    <div style="text-align:center;"><button class="btn-primary" onclick="goHomeAndScroll('places')">Browse Spaces Now →</button></div>
   </div>
   <div class="page-footer-bar"><p>© 2026 Studify. All rights reserved. Developed by BSCpE-3A – Team Logic Works – DYCI</p></div>
 </div>
@@ -3180,7 +3202,7 @@ document.getElementById('resDate').value=new Date().toISOString().split('T')[0];
       <div style="background:#fef9c3;border-radius:14px;padding:1.5rem;text-align:center;"><div style="font-size:1.8rem;margin-bottom:0.5rem;">🟡</div><strong>Busy</strong><div style="font-size:0.8rem;opacity:0.6;margin-top:0.3rem;">3 or fewer seats left</div></div>
       <div style="background:#fee2e2;border-radius:14px;padding:1.5rem;text-align:center;"><div style="font-size:1.8rem;margin-bottom:0.5rem;">🔴</div><strong>Full</strong><div style="font-size:0.8rem;opacity:0.6;margin-top:0.3rem;">No seats available</div></div>
     </div>
-    <div style="text-align:center;"><button class="btn-primary" onclick="goHome();closeMobileMenu();setTimeout(()=>scrollToSection('places'),500)">See Live Availability →</button></div>
+    <div style="text-align:center;"><button class="btn-primary" onclick="goHomeAndScroll('places')">See Live Availability →</button></div>
   </div>
   <div class="page-footer-bar"><p>© 2026 Studify. All rights reserved. Developed by BSCpE-3A – Team Logic Works – DYCI</p></div>
 </div>
@@ -3214,7 +3236,7 @@ document.getElementById('resDate').value=new Date().toISOString().split('T')[0];
         <p style="font-size:0.85rem;opacity:0.55;line-height:1.6;">The space owner reviews and confirms or rejects your booking. You get an email notification either way.</p>
       </div>
     </div>
-    <div style="text-align:center;"><button class="btn-primary" onclick="goHome();closeMobileMenu();setTimeout(()=>scrollToSection('places'),500)">Make a Reservation →</button></div>
+    <div style="text-align:center;"><button class="btn-primary" onclick="goHomeAndScroll('places')">Make a Reservation →</button></div>
   </div>
   <div class="page-footer-bar"><p>© 2026 Studify. All rights reserved. Developed by BSCpE-3A – Team Logic Works – DYCI</p></div>
 </div>
