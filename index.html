@@ -1422,7 +1422,7 @@ function showPage(id) {
   document.getElementById(id).classList.add('active');
   window.scrollTo({top:0});
 }
-function goHome() { showPage('landingPage'); }
+function goHome() { showPage('landingPage'); closeMobileMenu(); window.scrollTo({top:0}); }
 function showAboutPage()      { showPage('aboutPage');            window.scrollTo({top:0}); }
 function showFeatureFinderPage()    { showPage('featureFinderPage');    window.scrollTo({top:0}); }
 function showFeatureRealtimePage()  { showPage('featureRealtimePage');  window.scrollTo({top:0}); }
@@ -3146,7 +3146,7 @@ document.getElementById('resDate').value=new Date().toISOString().split('T')[0];
         <p style="font-size:0.85rem;opacity:0.55;line-height:1.6;">Only show spaces rated 3★, 4★ or 5★ so you always find a quality spot.</p>
       </div>
     </div>
-    <div style="text-align:center;"><button class="btn-primary" onclick="goHome();setTimeout(()=>scrollToSection('places'),300)">Browse Spaces Now →</button></div>
+    <div style="text-align:center;"><button class="btn-primary" onclick="goHome();closeMobileMenu();setTimeout(()=>scrollToSection('places'),500)">Browse Spaces Now →</button></div>
   </div>
   <div class="page-footer-bar"><p>© 2026 Studify. All rights reserved. Developed by BSCpE-3A – Team Logic Works – DYCI</p></div>
 </div>
@@ -3180,7 +3180,7 @@ document.getElementById('resDate').value=new Date().toISOString().split('T')[0];
       <div style="background:#fef9c3;border-radius:14px;padding:1.5rem;text-align:center;"><div style="font-size:1.8rem;margin-bottom:0.5rem;">🟡</div><strong>Busy</strong><div style="font-size:0.8rem;opacity:0.6;margin-top:0.3rem;">3 or fewer seats left</div></div>
       <div style="background:#fee2e2;border-radius:14px;padding:1.5rem;text-align:center;"><div style="font-size:1.8rem;margin-bottom:0.5rem;">🔴</div><strong>Full</strong><div style="font-size:0.8rem;opacity:0.6;margin-top:0.3rem;">No seats available</div></div>
     </div>
-    <div style="text-align:center;"><button class="btn-primary" onclick="goHome();setTimeout(()=>scrollToSection('places'),300)">See Live Availability →</button></div>
+    <div style="text-align:center;"><button class="btn-primary" onclick="goHome();closeMobileMenu();setTimeout(()=>scrollToSection('places'),500)">See Live Availability →</button></div>
   </div>
   <div class="page-footer-bar"><p>© 2026 Studify. All rights reserved. Developed by BSCpE-3A – Team Logic Works – DYCI</p></div>
 </div>
@@ -3214,7 +3214,7 @@ document.getElementById('resDate').value=new Date().toISOString().split('T')[0];
         <p style="font-size:0.85rem;opacity:0.55;line-height:1.6;">The space owner reviews and confirms or rejects your booking. You get an email notification either way.</p>
       </div>
     </div>
-    <div style="text-align:center;"><button class="btn-primary" onclick="goHome();setTimeout(()=>scrollToSection('places'),300)">Make a Reservation →</button></div>
+    <div style="text-align:center;"><button class="btn-primary" onclick="goHome();closeMobileMenu();setTimeout(()=>scrollToSection('places'),500)">Make a Reservation →</button></div>
   </div>
   <div class="page-footer-bar"><p>© 2026 Studify. All rights reserved. Developed by BSCpE-3A – Team Logic Works – DYCI</p></div>
 </div>
@@ -3252,7 +3252,7 @@ document.getElementById('resDate').value=new Date().toISOString().split('T')[0];
       <div style="font-weight:700;font-size:1rem;">Your review helps other students!</div>
       <div style="font-size:0.85rem;opacity:0.65;margin-top:0.3rem;">Only verified users who actually reserved a space can leave a rating.</div>
     </div>
-    <div style="text-align:center;"><button class="btn-primary" onclick="currentUser ? showUserDash() : openAuth('login')">Rate a Space →</button></div>
+    <div style="text-align:center;"><button class="btn-primary" onclick="closeMobileMenu();currentUser ? showUserDash() : openAuth('login')">Rate a Space →</button></div>
   </div>
   <div class="page-footer-bar"><p>© 2026 Studify. All rights reserved. Developed by BSCpE-3A – Team Logic Works – DYCI</p></div>
 </div>
