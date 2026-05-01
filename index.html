@@ -469,7 +469,7 @@ tr:hover td{background:rgba(15,31,61,0.02);}
 
 /* ── NEW FOOTER ── */
 .site-footer{background:var(--navy);color:rgba(255,255,255,0.55);padding:4rem 5% 0;}
-.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.4fr;gap:3rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,0.1);}
+.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:3rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,0.1);}
 .footer-brand .logo-wrap{display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;}
 .footer-brand .logo-wrap img{width:38px;height:38px;border-radius:8px;object-fit:contain;}
 .footer-brand .logo-wrap span{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:var(--accent);}
@@ -483,9 +483,6 @@ tr:hover td{background:rgba(15,31,61,0.02);}
 .footer-contact-icon{width:32px;height:32px;background:rgba(255,255,255,0.07);border-radius:8px;display:grid;place-items:center;font-size:0.9rem;flex-shrink:0;margin-top:0.1rem;}
 .footer-contact-label{font-size:0.72rem;opacity:0.45;margin-bottom:0.15rem;text-transform:uppercase;letter-spacing:0.06em;}
 .footer-contact-value{font-size:0.82rem;color:rgba(255,255,255,0.75);}
-.footer-col.contact-us{display:flex;flex-direction:column;align-items:center;text-align:center;}
-.footer-col.contact-us .footer-contact-item{flex-direction:column;align-items:center;text-align:center;gap:0.5rem;}
-.footer-col.contact-us .footer-contact-icon{margin-top:0;margin-bottom:0.4rem;}
 .footer-bottom{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 0;flex-wrap:wrap;gap:0.8rem;}
 .footer-bottom-copy{font-size:0.75rem;opacity:0.4;}
 .footer-members{display:flex;gap:0.4rem;flex-wrap:wrap;}
@@ -842,7 +839,7 @@ tr:hover td{background:rgba(15,31,61,0.02);}
           <li><a onclick="showSupportPage()">Support</a></li>
         </ul>
       </div>
-      <div class="footer-col contact-us">
+      <div class="footer-col">
         <h4>Contact Us</h4>
         <div class="footer-contact-item">
           <div class="footer-contact-icon">✉️</div>
@@ -1370,12 +1367,12 @@ tr:hover td{background:rgba(15,31,61,0.02);}
 // ═══════════════════════════════════════════════════════════
 let PLACES = [
   // ── Study Places ──
-  {id:1,cat:'study',name:'Malolos City Library',loc:'Sto. Rosario St., Malolos City, Bulacan',rating:5,reviews:142,avail:'open',seats:20,tags:['Quiet Zone','Free WiFi','Air-Conditioned','Power Outlets'],hours:'Open until 8:00 PM',emoji:'📖',bg:'linear-gradient(135deg,#c8e6e6,#a8d5d5)',price:'Free'},
-  {id:2,cat:'study',name:'Bulacan State University Library',loc:'Malolos City, Bulacan (BSU Main Campus)',rating:5,reviews:98,avail:'busy',seats:4,tags:['Academic Resources','Printing','Group Study Rooms','Wi-Fi'],hours:'Open until 5:00 PM',emoji:'🏫',bg:'linear-gradient(135deg,#d4e8c8,#b8d8a0)',price:'Free'},
-  {id:3,cat:'study',name:'Balagtas Public Library',loc:'Poblacion, Balagtas, Bulacan',rating:4,reviews:47,avail:'open',seats:15,tags:['Free Entry','Quiet','Air-Conditioned'],hours:'Open until 5:00 PM',emoji:'📚',bg:'linear-gradient(135deg,#fde8c8,#f8d0a0)',price:'Free'},
-  {id:4,cat:'study',name:'Bocaue Study Hub',loc:'Rizal St., Bocaue, Bulacan',rating:4,reviews:61,avail:'open',seats:18,tags:['Free WiFi','Lockers','Private Booths','Outlets'],hours:'Open until 9:00 PM',emoji:'🎓',bg:'linear-gradient(135deg,#e8e0f8,#d0c0f0)',price:'Free'},
-  {id:5,cat:'study',name:'Meycauayan Learning Center',loc:'M.H. del Pilar St., Meycauayan City, Bulacan',rating:4,reviews:53,avail:'open',seats:12,tags:['Quiet Zone','Free WiFi','Whiteboards'],hours:'Open until 8:00 PM',emoji:'📗',bg:'linear-gradient(135deg,#d0f0e0,#a8e0c0)',price:'Free'},
-  {id:6,cat:'study',name:'Sta. Maria Reading Room',loc:'Bagbaguin, Sta. Maria, Bulacan',rating:3,reviews:29,avail:'open',seats:10,tags:['Free Entry','Quiet','Fans'],hours:'Open until 5:30 PM',emoji:'📝',bg:'linear-gradient(135deg,#f0e8d8,#e0d8c0)',price:'Free'},
+  {id:1,cat:'study',name:'Malolos City Library',loc:'Sto. Rosario St., Malolos City, Bulacan',rating:5,reviews:142,avail:'open',seats:20,tags:['Quiet Zone','Free WiFi','Air-Conditioned','Power Outlets'],hours:'₱15/hour',emoji:'📖',bg:'linear-gradient(135deg,#c8e6e6,#a8d5d5)',price:'₱15/hr'},
+  {id:2,cat:'study',name:'Bulacan State University Library',loc:'Malolos City, Bulacan (BSU Main Campus)',rating:5,reviews:98,avail:'busy',seats:4,tags:['Academic Resources','Printing','Group Study Rooms','Wi-Fi'],hours:'₱10/hour',emoji:'🏫',bg:'linear-gradient(135deg,#d4e8c8,#b8d8a0)',price:'₱10/hr'},
+  {id:3,cat:'study',name:'Balagtas Public Library',loc:'Poblacion, Balagtas, Bulacan',rating:4,reviews:47,avail:'open',seats:15,tags:['Quiet Zone','Air-Conditioned'],hours:'₱10/hour',emoji:'📚',bg:'linear-gradient(135deg,#fde8c8,#f8d0a0)',price:'₱10/hr'},
+  {id:4,cat:'study',name:'Bocaue Study Hub',loc:'Rizal St., Bocaue, Bulacan',rating:4,reviews:61,avail:'open',seats:18,tags:['Free WiFi','Lockers','Private Booths','Outlets'],hours:'₱20/hour',emoji:'🎓',bg:'linear-gradient(135deg,#e8e0f8,#d0c0f0)',price:'₱20/hr'},
+  {id:5,cat:'study',name:'Meycauayan Learning Center',loc:'M.H. del Pilar St., Meycauayan City, Bulacan',rating:4,reviews:53,avail:'open',seats:12,tags:['Quiet Zone','Free WiFi','Whiteboards'],hours:'₱15/hour',emoji:'📗',bg:'linear-gradient(135deg,#d0f0e0,#a8e0c0)',price:'₱15/hr'},
+  {id:6,cat:'study',name:'Sta. Maria Reading Room',loc:'Bagbaguin, Sta. Maria, Bulacan',rating:3,reviews:29,avail:'open',seats:10,tags:['Quiet','Fans'],hours:'₱10/hour',emoji:'📝',bg:'linear-gradient(135deg,#f0e8d8,#e0d8c0)',price:'₱10/hr'},
   // ── Computer Shops ──
   {id:7,cat:'computer',name:'NetZone Bocaue',loc:'Poblacion, Bocaue, Bulacan',rating:5,reviews:187,avail:'open',seats:14,tags:['Fast Internet','Gaming PCs','Headsets','Printing'],hours:'₱25/hour',emoji:'💻',bg:'linear-gradient(135deg,#c8d8f8,#a8c0f0)',price:'₱25/hr'},
   {id:8,cat:'computer',name:'CyberHub Balagtas',loc:'Zone 2, Balagtas, Bulacan',rating:4,reviews:74,avail:'busy',seats:3,tags:['Printing','Scanning','MS Office','Air-Con'],hours:'₱20/hour',emoji:'🖥️',bg:'linear-gradient(135deg,#d8f0f8,#b0e0f0)',price:'₱20/hr'},
@@ -1383,11 +1380,11 @@ let PLACES = [
   {id:10,cat:'computer',name:'TechStop Meycauayan',loc:'Bagong Buhay Ave., Meycauayan City, Bulacan',rating:3,reviews:42,avail:'open',seats:8,tags:['Budget-Friendly','Printing','Photocopy'],hours:'₱18/hour',emoji:'⌨️',bg:'linear-gradient(135deg,#e8e8e8,#d8d8d8)',price:'₱18/hr'},
   {id:11,cat:'computer',name:'PixelNet Sta. Maria',loc:'Pulong Buhangin, Sta. Maria, Bulacan',rating:4,reviews:55,avail:'full',seats:0,tags:['High-Speed Net','Gaming','Printing','24/7'],hours:'₱22/hour',emoji:'🎮',bg:'linear-gradient(135deg,#f0d8f8,#e0b8f0)',price:'₱22/hr'},
   // ── Cafés ──
-  {id:12,cat:'cafe',name:'Kape Bulacan',loc:'Catmon, Malolos City, Bulacan',rating:5,reviews:224,avail:'open',seats:11,tags:['Study-Friendly','Free WiFi','Power Outlets','Cozy'],hours:'Open until 10:00 PM',emoji:'☕',bg:'linear-gradient(135deg,#f8e8d0,#f0d0a8)',price:'Min. order'},
-  {id:13,cat:'cafe',name:'The Study Corner Café',loc:'Wawa, Bocaue, Bulacan',rating:5,reviews:163,avail:'busy',seats:2,tags:['Free WiFi','Quiet Nooks','Book Corner','Power Outlets'],hours:'Open until 11:00 PM',emoji:'🫖',bg:'linear-gradient(135deg,#f0e8d8,#e0d0b8)',price:'Min. order'},
-  {id:14,cat:'cafe',name:'SipNStudy Balagtas',loc:'Balagtas Town Center, Balagtas, Bulacan',rating:4,reviews:91,avail:'open',seats:13,tags:['Milk Tea','Study Tables','Chill Music','Free WiFi'],hours:'Open until 10:00 PM',emoji:'🧋',bg:'linear-gradient(135deg,#f8f0d8,#f0e0b0)',price:'Min. order'},
-  {id:15,cat:'cafe',name:'Brew & Focus Meycauayan',loc:'Malhacan, Meycauayan City, Bulacan',rating:4,reviews:78,avail:'open',seats:9,tags:['Specialty Coffee','Fast WiFi','Quiet Hours','Outlets'],hours:'Open until 9:00 PM',emoji:'🍵',bg:'linear-gradient(135deg,#e8f0e0,#d0e8c0)',price:'Min. order'},
-  {id:16,cat:'cafe',name:'Garden Brew Sta. Maria',loc:'Caypombo, Sta. Maria, Bulacan',rating:3,reviews:34,avail:'open',seats:7,tags:['Outdoor Seating','Budget Menu','Free WiFi'],hours:'Open until 8:00 PM',emoji:'🌿',bg:'linear-gradient(135deg,#e0f0e0,#c0e0c0)',price:'Min. order'},
+  {id:12,cat:'cafe',name:'Kape Bulacan',loc:'Catmon, Malolos City, Bulacan',rating:5,reviews:224,avail:'open',seats:11,tags:['Study-Friendly','Free WiFi','Power Outlets','Cozy'],hours:'₱80/hour',emoji:'☕',bg:'linear-gradient(135deg,#f8e8d0,#f0d0a8)',price:'₱80/hr'},
+  {id:13,cat:'cafe',name:'The Study Corner Café',loc:'Wawa, Bocaue, Bulacan',rating:5,reviews:163,avail:'busy',seats:2,tags:['Free WiFi','Quiet Nooks','Book Corner','Power Outlets'],hours:'₱75/hour',emoji:'🫖',bg:'linear-gradient(135deg,#f0e8d8,#e0d0b8)',price:'₱75/hr'},
+  {id:14,cat:'cafe',name:'SipNStudy Balagtas',loc:'Balagtas Town Center, Balagtas, Bulacan',rating:4,reviews:91,avail:'open',seats:13,tags:['Milk Tea','Study Tables','Chill Music','Free WiFi'],hours:'₱65/hour',emoji:'🧋',bg:'linear-gradient(135deg,#f8f0d8,#f0e0b0)',price:'₱65/hr'},
+  {id:15,cat:'cafe',name:'Brew & Focus Meycauayan',loc:'Malhacan, Meycauayan City, Bulacan',rating:4,reviews:78,avail:'open',seats:9,tags:['Specialty Coffee','Fast WiFi','Quiet Hours','Outlets'],hours:'₱70/hour',emoji:'🍵',bg:'linear-gradient(135deg,#e8f0e0,#d0e8c0)',price:'₱70/hr'},
+  {id:16,cat:'cafe',name:'Garden Brew Sta. Maria',loc:'Caypombo, Sta. Maria, Bulacan',rating:3,reviews:34,avail:'open',seats:7,tags:['Outdoor Seating','Budget Menu','Free WiFi'],hours:'₱60/hour',emoji:'🌿',bg:'linear-gradient(135deg,#e0f0e0,#c0e0c0)',price:'₱60/hr'},
 ];
 
 // Pre-seeded admin account
@@ -1721,6 +1718,22 @@ function closeResModal(){document.getElementById('resOverlay').classList.remove(
 document.getElementById('resOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('resOverlay'))closeResModal();});
 ['resDate','resStart','resDuration','resPersons'].forEach(id=>document.getElementById(id).addEventListener('change',updateResSummary));
 
+// Price map: ensures backend data always has real prices (backend may still have old Free/Min.order values)
+const PRICE_OVERRIDES = {
+  1:'₱15/hr', 2:'₱10/hr', 3:'₱10/hr', 4:'₱20/hr', 5:'₱15/hr', 6:'₱10/hr',
+  7:'₱25/hr', 8:'₱20/hr', 9:'₱25/hr', 10:'₱18/hr', 11:'₱22/hr',
+  12:'₱80/hr', 13:'₱75/hr', 14:'₱65/hr', 15:'₱70/hr', 16:'₱60/hr'
+};
+function normalizePlaces(arr) {
+  return arr.map(p => {
+    const override = PRICE_OVERRIDES[p.id];
+    if(override) {
+      const hrStr = override; // e.g. ₱15/hr
+      return {...p, price: hrStr, hours: hrStr.replace('/hr','/hour')};
+    }
+    return p;
+  });
+}
 function calcPrice(place, dur, persons) {
   if(!place) return {total:'Free', perHour:null, isFree:true};
   const priceStr = place.price || place.hours || '';
@@ -1994,7 +2007,7 @@ async function renderAdminDash(){
       fetch(`${API}/api/reservations`, {headers:{'Authorization':`Bearer ${token}`}}),
       fetch(`${API}/api/auth/users`, {headers:{'Authorization':`Bearer ${token}`}})
     ]);
-    if(spacesRes.ok) PLACES = await spacesRes.json();
+    if(spacesRes.ok) PLACES = normalizePlaces(await spacesRes.json());
     if(resRes.ok) reservations = await resRes.json();
     if(usersRes.ok) {
       const apiUsers = await usersRes.json();
@@ -2851,7 +2864,7 @@ async function loadSpaces() {
       const res = await fetch(`${API}/api/spaces?${params}`, {signal: AbortSignal.timeout(15000)});
       if(!res.ok) throw new Error('Server error');
       const spaces = await res.json();
-      PLACES = spaces;
+      PLACES = normalizePlaces(spaces);
       applyAllFilters();
       return;
     } catch(e) {
