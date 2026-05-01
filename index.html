@@ -1290,11 +1290,14 @@ th{color:var(--teal)!important;opacity:1!important;}
           <span class="admin-table-title">🚫 Blacklisted Users</span>
         </div>
         <div style="background:var(--white);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;border:1px solid rgba(15,31,61,0.08);">
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:1rem;">Blacklist a User</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:0.4rem;">Blacklist a User</div>
+          <div style="font-size:0.8rem;opacity:0.5;margin-bottom:1rem;">Only users who have made a reservation at your space appear here.</div>
           <div style="display:flex;gap:0.8rem;flex-wrap:wrap;align-items:flex-end;">
             <div style="flex:1;min-width:200px;">
-              <label style="display:block;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;opacity:0.6;margin-bottom:0.4rem;">User Email</label>
-              <input type="email" id="blacklistEmail" placeholder="user@example.com" style="width:100%;padding:0.7rem 1rem;border:1.5px solid rgba(15,31,61,0.14);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--navy);background:var(--bg);outline:none;">
+              <label style="display:block;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;opacity:0.6;margin-bottom:0.4rem;">Select User</label>
+              <select id="blacklistUserSelect" style="width:100%;padding:0.7rem 1rem;border:1.5px solid rgba(15,31,61,0.14);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--navy);background:var(--bg);outline:none;">
+                <option value="">— Select a user —</option>
+              </select>
             </div>
             <div style="flex:1;min-width:200px;">
               <label style="display:block;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;opacity:0.6;margin-bottom:0.4rem;">Reason</label>
@@ -1305,7 +1308,7 @@ th{color:var(--teal)!important;opacity:1!important;}
         </div>
         <div style="overflow-x:auto">
           <table id="blacklistTable">
-            <thead><tr><th>Email</th><th>Reason</th><th>Date Blacklisted</th><th>Action</th></tr></thead>
+            <thead><tr><th>Name</th><th>Reason</th><th>Date Blacklisted</th><th>Action</th></tr></thead>
             <tbody id="blacklistBody">
               <tr><td colspan="4" style="text-align:center;opacity:0.4;padding:2rem">No blacklisted users yet.</td></tr>
             </tbody>
@@ -2762,7 +2765,7 @@ function switchOwnerTab(sectionId, btn) {
   document.getElementById(sectionId).classList.add('active');
   btn.classList.add('active');
   if(sectionId === 'resSection') loadOwnerReservations();
-  if(sectionId === 'blacklistSection') renderBlacklist();
+  if(sectionId === 'blacklistSection') { renderBlacklist(); loadOwnerReservations(); }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2770,31 +2773,49 @@ function switchOwnerTab(sectionId, btn) {
 // ═══════════════════════════════════════════════════════════
 let ownerBlacklist = [];
 
+function populateBlacklistDropdown(reservations) {
+  const select = document.getElementById('blacklistUserSelect');
+  if(!select) return;
+  // collect unique users from reservations, excluding already blacklisted
+  const seen = new Set();
+  const blacklistedNames = new Set(ownerBlacklist.map(b => b.name));
+  const opts = reservations
+    .filter(r => {
+      const name = r.userName || r.user_name || '';
+      if(!name || seen.has(name) || blacklistedNames.has(name)) return false;
+      seen.add(name);
+      return true;
+    })
+    .map(r => {
+      const name = r.userName || r.user_name || '';
+      return `<option value="${name}">${name}</option>`;
+    });
+  select.innerHTML = '<option value="">— Select a user —</option>' + opts.join('');
+}
+
 function addToBlacklist() {
-  const email = (document.getElementById('blacklistEmail').value || '').trim().toLowerCase();
+  const name = (document.getElementById('blacklistUserSelect').value || '').trim();
   const reason = (document.getElementById('blacklistReason').value || '').trim();
-  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    showToast('Please enter a valid email address.', 'error'); return;
-  }
-  if(ownerBlacklist.find(b => b.email === email)) {
+  if(!name) { showToast('Please select a user.', 'error'); return; }
+  if(ownerBlacklist.find(b => b.name === name)) {
     showToast('This user is already blacklisted.', 'warn'); return;
   }
   ownerBlacklist.push({
-    email,
+    name,
     reason: reason || 'No reason provided',
     date: new Date().toLocaleDateString('en-PH', {year:'numeric', month:'short', day:'numeric'})
   });
-  document.getElementById('blacklistEmail').value = '';
+  document.getElementById('blacklistUserSelect').value = '';
   document.getElementById('blacklistReason').value = '';
   renderBlacklist();
-  showToast(`🚫 ${email} has been blacklisted.`, 'warn');
+  showToast(`🚫 ${name} has been blacklisted.`, 'warn');
 }
 
-function removeFromBlacklist(email) {
-  if(!confirm(`Remove ${email} from blacklist?`)) return;
-  ownerBlacklist = ownerBlacklist.filter(b => b.email !== email);
+function removeFromBlacklist(name) {
+  if(!confirm(`Remove ${name} from blacklist?`)) return;
+  ownerBlacklist = ownerBlacklist.filter(b => b.name !== name);
   renderBlacklist();
-  showToast(`✅ ${email} removed from blacklist.`);
+  showToast(`✅ ${name} removed from blacklist.`);
 }
 
 function renderBlacklist() {
@@ -2805,10 +2826,10 @@ function renderBlacklist() {
     return;
   }
   tbody.innerHTML = ownerBlacklist.map(b => `<tr>
-    <td><strong>${b.email}</strong></td>
+    <td><strong>${b.name}</strong></td>
     <td>${b.reason}</td>
     <td>${b.date}</td>
-    <td><button class="btn-tbl btn-tbl-approve" onclick="removeFromBlacklist('${b.email}')">✅ Remove</button></td>
+    <td><button class="btn-tbl btn-tbl-approve" onclick="removeFromBlacklist('${b.name.replace(/'/g,"\\'")}')">✅ Remove</button></td>
   </tr>`).join('');
 }
 
@@ -2824,6 +2845,7 @@ async function loadOwnerReservations() {
     if(!res.ok){ tbody.innerHTML='<tr><td colspan="8" style="text-align:center;opacity:0.4;padding:2rem">Could not load reservations.</td></tr>'; return; }
     const data = await res.json();
     if(!data.length){ tbody.innerHTML='<tr><td colspan="8" style="text-align:center;opacity:0.4;padding:2rem">No reservations yet for your space.</td></tr>'; return; }
+    populateBlacklistDropdown(data);
     tbody.innerHTML = data.slice().reverse().map(r => {
       const d = new Date(r.date+'T12:00:00').toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
       const actions = r.status==='pending' ? `
