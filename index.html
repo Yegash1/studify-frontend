@@ -1315,6 +1315,7 @@ th{color:var(--teal)!important;opacity:1!important;}
       <button class="owner-tab-btn active" onclick="switchOwnerTab('logSection', this)">📋 Activity Log</button>
       <button class="owner-tab-btn" onclick="switchOwnerTab('resSection', this)">📅 Reservations</button>
       <button class="owner-tab-btn" onclick="switchOwnerTab('blacklistSection', this)">🚫 Blacklist</button>
+      <button class="owner-tab-btn" onclick="switchOwnerTab('analyticsSection', this);loadOwnerAnalytics()">📊 Analytics</button>
     </div>
 
     <div class="owner-section active" id="logSection">
@@ -1346,6 +1347,28 @@ th{color:var(--teal)!important;opacity:1!important;}
       </div>
     </div>
 
+
+    <div class="owner-section" id="analyticsSection">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem;">
+        <div class="owner-stat"><div class="owner-stat-val" id="anTotalBookings">—</div><div class="owner-stat-label">Total Bookings</div></div>
+        <div class="owner-stat"><div class="owner-stat-val" id="anConfirmed">—</div><div class="owner-stat-label">Confirmed</div></div>
+        <div class="owner-stat"><div class="owner-stat-val" id="anRevenue">—</div><div class="owner-stat-label">Total Revenue (₱)</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+        <div class="owner-log">
+          <div class="owner-log-header"><span>Revenue by Day</span></div>
+          <div style="padding:1.2rem;" id="revenueChart"><p style="opacity:0.4;font-size:0.85rem;">No data yet.</p></div>
+        </div>
+        <div class="owner-log">
+          <div class="owner-log-header"><span>Peak Booking Hours</span></div>
+          <div style="padding:1.2rem;" id="hoursChart"><p style="opacity:0.4;font-size:0.85rem;">No data yet.</p></div>
+        </div>
+      </div>
+      <div class="owner-log" style="margin-top:1.5rem;">
+        <div class="owner-log-header"><span>Booking Status Breakdown</span></div>
+        <div style="padding:1.2rem;display:flex;gap:1rem;flex-wrap:wrap;" id="statusChart"><p style="opacity:0.4;font-size:0.85rem;">No data yet.</p></div>
+      </div>
+    </div>
     <div class="owner-section" id="blacklistSection">
       <div class="owner-res-table-wrap">
         <div class="admin-table-header">
@@ -2918,6 +2941,68 @@ function renderOwnerLog() {
       <div style="flex:1">${l.msg}</div>
       <div class="log-time">${l.time}</div>
     </div>`).join('');
+}
+
+
+async function loadOwnerAnalytics() {
+  if (!ownerSpace) return;
+  const token = sessionStorage.getItem('studify_token');
+  try {
+    const res  = await fetch(`${API}/api/reservations/analytics/${ownerSpace.id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (!res.ok) { showToast(data.error || 'Failed to load analytics', 'error'); return; }
+
+    document.getElementById('anTotalBookings').textContent = data.total_bookings;
+    document.getElementById('anConfirmed').textContent     = data.confirmed_bookings;
+    document.getElementById('anRevenue').textContent       = '₱' + data.total_revenue.toLocaleString();
+
+    // Revenue by day — simple bar chart
+    const revEl = document.getElementById('revenueChart');
+    if (!data.revenue_by_day.length) { revEl.innerHTML = '<p style="opacity:0.4;font-size:0.85rem;">No revenue data yet.</p>'; }
+    else {
+      const max = Math.max(...data.revenue_by_day.map(d => d.revenue));
+      revEl.innerHTML = data.revenue_by_day.slice(-10).map(d => `
+        <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;">
+          <div style="font-size:0.72rem;opacity:0.5;width:72px;flex-shrink:0;">${d.date.slice(5)}</div>
+          <div style="flex:1;background:rgba(15,31,61,0.07);border-radius:6px;height:18px;">
+            <div style="width:${max ? Math.round((d.revenue/max)*100) : 0}%;background:var(--teal);border-radius:6px;height:18px;"></div>
+          </div>
+          <div style="font-size:0.72rem;font-weight:700;width:52px;text-align:right;">₱${d.revenue.toLocaleString()}</div>
+        </div>`).join('');
+    }
+
+    // Bookings by hour
+    const hrEl = document.getElementById('hoursChart');
+    if (!data.bookings_by_hour.length) { hrEl.innerHTML = '<p style="opacity:0.4;font-size:0.85rem;">No booking data yet.</p>'; }
+    else {
+      const maxH = Math.max(...data.bookings_by_hour.map(d => d.count));
+      hrEl.innerHTML = data.bookings_by_hour.map(d => {
+        const label = d.hour === 0 ? '12am' : d.hour < 12 ? d.hour+'am' : d.hour === 12 ? '12pm' : (d.hour-12)+'pm';
+        return `
+        <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;">
+          <div style="font-size:0.72rem;opacity:0.5;width:36px;flex-shrink:0;">${label}</div>
+          <div style="flex:1;background:rgba(15,31,61,0.07);border-radius:6px;height:18px;">
+            <div style="width:${maxH ? Math.round((d.count/maxH)*100) : 0}%;background:#3b82f6;border-radius:6px;height:18px;"></div>
+          </div>
+          <div style="font-size:0.72rem;font-weight:700;width:24px;text-align:right;">${d.count}</div>
+        </div>`;
+      }).join('');
+    }
+
+    // Status breakdown pills
+    const stEl = document.getElementById('statusChart');
+    const colors = { confirmed:'#10b981', pending:'#f59e0b', cancelled:'#ef4444', rejected:'#6b7280' };
+    stEl.innerHTML = Object.entries(data.status_breakdown).map(([s, c]) => `
+      <div style="background:${colors[s]||'#888'}18;border:1.5px solid ${colors[s]||'#888'}44;border-radius:12px;padding:0.8rem 1.4rem;text-align:center;">
+        <div style="font-size:1.4rem;font-weight:800;color:${colors[s]||'#888'};">${c}</div>
+        <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;opacity:0.6;">${s}</div>
+      </div>`).join('');
+
+  } catch(e) {
+    showToast('Failed to load analytics', 'error');
+  }
 }
 
 function switchOwnerTab(sectionId, btn) {
