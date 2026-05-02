@@ -1833,7 +1833,14 @@ document.getElementById('loginBtn').addEventListener('click', async ()=>{
       body: JSON.stringify({email, password: pass})
     });
     const data = await res.json();
-    if(!res.ok){showError('login-general-err', data.error || 'Login failed.');return;}
+    if(!res.ok){
+      if(res.status === 403){
+        showError('login-general-err', 'Please verify your email before logging in. Check your inbox.');
+      } else {
+        showError('login-general-err', data.error || 'Login failed.');
+      }
+      return;
+    }
     sessionStorage.setItem('studify_token', data.token);
     loginSuccess(data.user);
   } catch(e) {
@@ -1865,8 +1872,8 @@ document.getElementById('signupBtn').addEventListener('click', async ()=>{
     });
     const data = await res.json();
     if(!res.ok){showError('signup-email-err', data.error || 'Registration failed.');return;}
-    sessionStorage.setItem('studify_token', data.token);
-    loginSuccess(data.user);
+    closeAuth();
+    showToast('Account created! Please check your email to verify your account.', 'success');
   } catch(e) {
     if(users[email]){showError('signup-email-err','Account already exists. Please log in.');return;}
     const user={firstName:first,lastName:last,email,password:pass,role:'user'};
@@ -1944,6 +1951,29 @@ function handleGoogleCredential(response) {
     users[email]=user; loginSuccess(user);
   });
 }
+
+// ── Email verification ──────────────────────────────────────────────
+(async function handleEmailVerification() {
+  const params = new URLSearchParams(window.location.search);
+  const token  = params.get('verify_token');
+  if (!token) return;
+
+  try {
+    const res  = await fetch(`${API}/api/auth/verify-email?token=${token}`);
+    const data = await res.json();
+    // Clean the token out of the URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+    if (res.ok) {
+      sessionStorage.setItem('studify_token', data.token);
+      loginSuccess(data.user);
+      showToast('Email verified! Welcome to Studify 🎉', 'success');
+    } else {
+      showToast(data.error || 'Verification failed. The link may have expired.', 'error');
+    }
+  } catch(e) {
+    showToast('Verification failed. Please try again.', 'error');
+  }
+})();
 
 function loginSuccess(user){
   currentUser=user;
