@@ -1834,7 +1834,7 @@ document.getElementById('loginBtn').addEventListener('click', async ()=>{
     });
     const data = await res.json();
     if(!res.ok){showError('login-general-err', data.error || 'Login failed.');return;}
-    localStorage.setItem('studify_token', data.token);
+    sessionStorage.setItem('studify_token', data.token);
     loginSuccess(data.user);
   } catch(e) {
     // fallback to local users if API is down
@@ -1865,7 +1865,7 @@ document.getElementById('signupBtn').addEventListener('click', async ()=>{
     });
     const data = await res.json();
     if(!res.ok){showError('signup-email-err', data.error || 'Registration failed.');return;}
-    localStorage.setItem('studify_token', data.token);
+    sessionStorage.setItem('studify_token', data.token);
     loginSuccess(data.user);
   } catch(e) {
     if(users[email]){showError('signup-email-err','Account already exists. Please log in.');return;}
@@ -1900,7 +1900,7 @@ function googleSignIn(){
           });
           const data = await backendRes.json();
           if(data.token){
-            localStorage.setItem('studify_token', data.token);
+            sessionStorage.setItem('studify_token', data.token);
             loginSuccess(data.user);
           } else {
             showToast('Google sign-in failed. Try again.','error');
@@ -1932,7 +1932,7 @@ function handleGoogleCredential(response) {
     body: JSON.stringify({firstName, lastName, email, googleId})
   }).then(r=>r.json()).then(data=>{
     if(data.token){
-      localStorage.setItem('studify_token', data.token);
+      sessionStorage.setItem('studify_token', data.token);
       loginSuccess(data.user);
     } else {
       // Fallback: create local user
@@ -1948,7 +1948,7 @@ function handleGoogleCredential(response) {
 function loginSuccess(user){
   currentUser=user;
   // Save user to localStorage so login persists on refresh
-  localStorage.setItem('studify_user', JSON.stringify(user));
+  sessionStorage.setItem('studify_user', JSON.stringify(user));
   document.getElementById('authPanelsWrap').classList.add('hide');
   document.getElementById('authSuccess').classList.add('show');
   document.getElementById('successTitle').textContent=`Welcome, ${user.firstName}! 🎉`;
@@ -1970,8 +1970,8 @@ function loginSuccess(user){
 
 function logout(){
   currentUser=null;
-  localStorage.removeItem('studify_user');
-  localStorage.removeItem('studify_token');
+  sessionStorage.removeItem('studify_user');
+  sessionStorage.removeItem('studify_token');
   updateNav(); goHome(); showToast('Logged out successfully.','');
 }
 
@@ -2176,7 +2176,7 @@ async function finalizeReservation(){
   btn.disabled=true;
   btn.textContent='Processing...';
 
-  const token = localStorage.getItem('studify_token');
+  const token = sessionStorage.getItem('studify_token');
   try {
     const res = await fetch(`${API}/api/reservations/`, {
       method: 'POST',
@@ -2235,7 +2235,7 @@ async function renderUserDash(){
   document.getElementById('profileLastName').value  = currentUser.lastName  || '';
   document.getElementById('profileEmail').value     = currentUser.email     || '';
 
-  const token = localStorage.getItem('studify_token');
+  const token = sessionStorage.getItem('studify_token');
   let myRes = reservations.filter(r=>r.userEmail===currentUser.email);
   try {
     const res = await fetch(`${API}/api/reservations/mine`, {headers:{'Authorization':`Bearer ${token}`}});
@@ -2301,7 +2301,7 @@ function switchUserTab(sectionId, btn) {
 }
 
 async function saveProfile() {
-  const token = localStorage.getItem('studify_token');
+  const token = sessionStorage.getItem('studify_token');
   const firstName   = document.getElementById('profileFirstName').value.trim();
   const lastName    = document.getElementById('profileLastName').value.trim();
   const email       = document.getElementById('profileEmail').value.trim();
@@ -2326,8 +2326,8 @@ async function saveProfile() {
     const data = await res.json();
     if(!res.ok) { showToast(data.error || 'Update failed.','error'); return; }
     currentUser = data.user;
-    if(data.token) localStorage.setItem('studify_token', data.token);
-    localStorage.setItem('studify_user', JSON.stringify(currentUser));
+    if(data.token) sessionStorage.setItem('studify_token', data.token);
+    sessionStorage.setItem('studify_user', JSON.stringify(currentUser));
     document.getElementById('profileCurrentPw').value = '';
     document.getElementById('profileNewPw').value = '';
     showToast('✅ Profile updated!');
@@ -2338,7 +2338,7 @@ async function saveProfile() {
 }
 
 async function cancelMyRes(id){
-  const token = localStorage.getItem('studify_token');
+  const token = sessionStorage.getItem('studify_token');
   try {
     const res = await fetch(`${API}/api/reservations/${id}/cancel`, {
       method: 'PATCH',
@@ -2363,7 +2363,7 @@ document.querySelectorAll('.admin-tab').forEach(tab=>{
 });
 
 async function renderAdminDash(){
-  const token = localStorage.getItem('studify_token');
+  const token = sessionStorage.getItem('studify_token');
   try {
     const [spacesRes, resRes, usersRes] = await Promise.all([
       fetch(`${API}/api/spaces`),
@@ -2424,14 +2424,14 @@ function renderAdminRes(){
     : '<tr><td colspan="8" style="text-align:center;opacity:0.4;padding:2rem">No reservations found.</td></tr>';
 }
 async function adminCancelRes(id){
-  const token=localStorage.getItem('studify_token');
+  const token=sessionStorage.getItem('studify_token');
   try{
     const res=await fetch(`${API}/api/reservations/${id}/cancel`,{method:'PATCH',headers:{'Authorization':`Bearer ${token}`}});
     if(res.ok){renderAdminDash();showToast('Reservation cancelled.','warn');}
   }catch(e){const r=reservations.find(r=>r.id===id);if(r){r.status='cancelled';renderAdminDash();showToast('Cancelled.','warn');}}
 }
 async function adminConfirmRes(id){
-  const token=localStorage.getItem('studify_token');
+  const token=sessionStorage.getItem('studify_token');
   try{
     const res=await fetch(`${API}/api/reservations/${id}/confirm`,{method:'PATCH',headers:{'Authorization':`Bearer ${token}`}});
     if(res.ok){renderAdminDash();showToast('Reservation confirmed!');}
@@ -2549,7 +2549,7 @@ async function setAvail(id, status){
 }
 
 async function updateSpaceOnServer(id, data){
-  const token = localStorage.getItem('studify_token');
+  const token = sessionStorage.getItem('studify_token');
   try {
     await fetch(`${API}/api/spaces/${id}`, {
       method: 'PUT',
@@ -2857,7 +2857,7 @@ async function ownerSetStatus(status) {
 }
 
 async function syncSeatToServer(available, status) {
-  const token = localStorage.getItem('studify_token');
+  const token = sessionStorage.getItem('studify_token');
   try {
     await fetch(`${API}/api/spaces/${ownerSpace.id}`, {
       method: 'PUT',
@@ -2973,7 +2973,7 @@ function renderBlacklist() {
 
 async function loadOwnerReservations() {
   if(!ownerSpace) return;
-  const token = localStorage.getItem('studify_token');
+  const token = sessionStorage.getItem('studify_token');
   const tbody = document.getElementById('ownerResBody');
   tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;opacity:0.4;padding:2rem">Loading...</td></tr>';
   try {
@@ -3010,7 +3010,7 @@ async function loadOwnerReservations() {
 async function ownerConfirmRes(resId) {
   // Disable both buttons immediately to prevent duplicate requests
   document.querySelectorAll('[data-res-id="'+resId+'"]').forEach(b => { b.disabled=true; b.style.opacity='0.4'; });
-  const token = localStorage.getItem('studify_token');
+  const token = sessionStorage.getItem('studify_token');
   try {
     const res = await fetch(`${API}/api/reservations/${resId}/confirm`, {
       method: 'PATCH',
@@ -3024,7 +3024,7 @@ async function ownerConfirmRes(resId) {
 async function ownerRejectRes(resId) {
   // Disable both buttons immediately to prevent duplicate requests
   document.querySelectorAll('[data-res-id="'+resId+'"]').forEach(b => { b.disabled=true; b.style.opacity='0.4'; });
-  const token = localStorage.getItem('studify_token');
+  const token = sessionStorage.getItem('studify_token');
   try {
     const res = await fetch(`${API}/api/reservations/${resId}/reject`, {
       method: 'PATCH',
@@ -3084,7 +3084,7 @@ function pickStar(val) {
 async function submitRating() {
   if(!pendingRating.stars){ showToast('Please select a star rating first!','error'); return; }
   const comment = document.getElementById('ratingComment').value.trim();
-  const token   = localStorage.getItem('studify_token');
+  const token   = sessionStorage.getItem('studify_token');
   try {
     const res = await fetch(`${API}/api/ratings`, {
       method: 'POST',
@@ -3220,7 +3220,7 @@ async function processPremiumPayment() {
   document.getElementById('cardForm').classList.remove('show');
   document.getElementById('upgradeSpinner').classList.add('show');
   // call backend to upgrade role
-  const token = localStorage.getItem('studify_token');
+  const token = sessionStorage.getItem('studify_token');
   try {
     await fetch(`${API}/api/auth/upgrade`, {
       method: 'POST',
@@ -3232,7 +3232,7 @@ async function processPremiumPayment() {
   await new Promise(r=>setTimeout(r,1800));
   // flip role locally
   currentUser.role = 'premium';
-  localStorage.setItem('studify_user', JSON.stringify(currentUser));
+  sessionStorage.setItem('studify_user', JSON.stringify(currentUser));
   closeUpgradeModal();
   updateNav();
   applyAllFilters();
@@ -3302,48 +3302,69 @@ try {
 // ═══════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════
-// ── RESTORE SESSION ON REFRESH ──────────────────────────────────
+// ── SESSION-BASED AUTH (survives refresh, dies on tab close) ────
+// sessionStorage is used for all tokens — it is cleared automatically
+// by the browser when the tab or window is closed, giving us true
+// session-based auth with no extra work needed.
 (async function restoreSession() {
-  const savedUser  = localStorage.getItem('studify_user');
-  const savedToken = localStorage.getItem('studify_token');
-  if(!savedUser || !savedToken) return;
-  try {
-    currentUser = JSON.parse(savedUser);
-    if(!currentUser || !currentUser.role) {
-      localStorage.removeItem('studify_user');
-      localStorage.removeItem('studify_token');
-      return;
-    }
-    updateNav();
-    const role = currentUser.role;
-    if(role === 'admin') showAdminDash();
-    else if(role === 'owner') showOwnerDash();
-    else showUserDash();
-    applyAllFilters();
+  const savedUser  = sessionStorage.getItem('studify_user');
+  const savedToken = sessionStorage.getItem('studify_token');
 
-    try {
-      const res = await fetch(`${API}/api/auth/me`, {
-        headers: {'Authorization': `Bearer ${savedToken}`},
-        signal: AbortSignal.timeout(15000)
-      });
-      if(res.ok) {
-        const fresh = await res.json();
-        if(fresh && fresh.role) {
-          currentUser = fresh;
-          localStorage.setItem('studify_user', JSON.stringify(fresh));
-          updateNav();
-          if(fresh.role === 'admin') renderAdminDash();
-          else if(fresh.role === 'owner') { /* already showing */ }
-          else renderUserDash();
-        }
+  // No saved session → fresh visit, stay on home page
+  if(!savedUser || !savedToken) return;
+
+  let parsed;
+  try { parsed = JSON.parse(savedUser); } catch(e) {
+    sessionStorage.removeItem('studify_user');
+    sessionStorage.removeItem('studify_token');
+    return;
+  }
+  if(!parsed || !parsed.role) {
+    sessionStorage.removeItem('studify_user');
+    sessionStorage.removeItem('studify_token');
+    return;
+  }
+
+  // Session data exists → this is a page refresh within the same tab.
+  // Restore immediately from sessionStorage (fast, no flicker).
+  currentUser = parsed;
+  updateNav();
+  const role = currentUser.role;
+  if(role === 'admin')      showAdminDash();
+  else if(role === 'owner') showOwnerDash();
+  else                      showUserDash();
+  applyAllFilters();
+
+  // Silently refresh user data from server in background.
+  // If server rejects the token, clear session and return to home.
+  try {
+    const res = await fetch(`${API}/api/auth/me`, {
+      headers: {'Authorization': `Bearer ${savedToken}`},
+      signal: AbortSignal.timeout(10000)
+    });
+    if(res.ok) {
+      const fresh = await res.json();
+      if(fresh && fresh.role) {
+        currentUser = fresh;
+        sessionStorage.setItem('studify_user', JSON.stringify(fresh));
+        updateNav();
+        if(fresh.role === 'admin')      renderAdminDash();
+        else if(fresh.role === 'owner') { /* owner dash loads on show */ }
+        else                            renderUserDash();
       }
-    } catch(e) {
-      console.log('Background verify skipped - keeping session from localStorage');
+    } else {
+      // Token expired or invalid — log out silently
+      currentUser = null;
+      sessionStorage.removeItem('studify_user');
+      sessionStorage.removeItem('studify_token');
+      updateNav();
+      showPage('homePage');
+      showToast('Your session has expired. Please log in again.', 'warn');
     }
   } catch(e) {
-    console.log('Session parse error - clearing');
-    localStorage.removeItem('studify_user');
-    localStorage.removeItem('studify_token');
+    // Server unreachable (cold start etc.) — keep session from cache,
+    // do NOT redirect. User stays on dashboard and can keep working.
+    console.log('Background verify skipped — session kept from cache');
   }
 })();
 
@@ -3353,14 +3374,14 @@ try {
   let _timer;
   function resetTimer() {
     clearTimeout(_timer);
-    if(!localStorage.getItem('studify_token')) return;
+    if(!sessionStorage.getItem('studify_token')) return;
     _timer = setTimeout(() => {
       if(!currentUser) return;
       showToast('⏰ Session expired due to inactivity. Please log in again.', 'warn');
       setTimeout(() => {
         currentUser = null;
-        localStorage.removeItem('studify_user');
-        localStorage.removeItem('studify_token');
+        sessionStorage.removeItem('studify_user');
+        sessionStorage.removeItem('studify_token');
         updateNav();
         showPage('homePage');
       }, 2500);
@@ -3475,7 +3496,7 @@ window.addEventListener('scroll',()=>{
       </div>
       <div style="background:var(--white);border-radius:18px;padding:1.8rem 2rem;border:1px solid rgba(15,31,61,0.08);display:flex;gap:1.5rem;align-items:flex-start;">
         <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;color:rgba(15,31,61,0.08);flex-shrink:0;line-height:1;min-width:44px;">04</div>
-        <div><h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.4rem;">Cookies & Local Storage</h3><p style="font-size:0.85rem;opacity:0.55;line-height:1.7;margin:0;">Studify stores your session token in browser localStorage to keep you logged in. No third-party tracking cookies are used.</p></div>
+        <div><h3 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:0.4rem;">Cookies & Local Storage</h3><p style="font-size:0.85rem;opacity:0.55;line-height:1.7;margin:0;">Studify stores your session token in browser session storage to keep you logged in during your visit. Your session ends automatically when you close the tab. No third-party tracking cookies are used.</p></div>
       </div>
       <div style="background:var(--white);border-radius:18px;padding:1.8rem 2rem;border:1px solid rgba(15,31,61,0.08);display:flex;gap:1.5rem;align-items:flex-start;">
         <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;color:rgba(15,31,61,0.08);flex-shrink:0;line-height:1;min-width:44px;">05</div>
