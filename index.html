@@ -586,7 +586,9 @@ tr:hover td{background:rgba(15,31,61,0.02);}
   section.section-block{padding:3rem 5%;}
 
   /* FILTERS */
-  .star-filter{margin-left:0;width:100%;}
+  .star-filter{margin-left:0;width:100%;flex-wrap:wrap;gap:0.5rem;}
+  .star-filter select{width:100%;}
+  .star-filter label{width:100%;}
   .filter-group{width:100%;}
   .filter-btn{font-size:0.75rem;padding:0.4rem 0.8rem;}
   .location-search-wrap{flex-direction:column;}
@@ -1005,6 +1007,14 @@ th{color:var(--teal)!important;opacity:1!important;}
           <option value="4">4★ &amp; up</option>
           <option value="5">5★ only</option>
         </select>
+        <label style="margin-left:1rem;">💰 Max Price:</label>
+        <select id="priceFilter" onchange="applyAllFilters()">
+          <option value="0">Any Price</option>
+          <option value="20">Under ₱20/hr</option>
+          <option value="50">Under ₱50/hr</option>
+          <option value="80">Under ₱80/hr</option>
+          <option value="90">Under ₱90/hr</option>
+        </select>
       </div>
     </div>
     <div class="location-search-wrap">
@@ -1090,9 +1100,61 @@ th{color:var(--teal)!important;opacity:1!important;}
       <div class="dash-card"><div class="dash-card-label">Upcoming</div><div class="dash-card-val" id="upcomingRes">0</div><div class="dash-card-sub">Confirmed spots</div></div>
       <div class="dash-card"><div class="dash-card-label">Favourite Type</div><div class="dash-card-val" id="favType" style="font-size:1.2rem;">—</div><div class="dash-card-sub">Most visited category</div></div>
     </div>
-    <div class="dash-section-title">My Reservations</div>
-    <div class="reservation-list" id="reservationList">
-      <div class="empty-state"><div style="font-size:3rem">📭</div><p>No reservations yet. Browse spaces and book your first spot!</p></div>
+
+    <!-- User dashboard tabs -->
+    <div class="owner-tabs" style="margin-bottom:1.5rem;">
+      <button class="owner-tab-btn active" onclick="switchUserTab('myResSection',this)">📋 My Reservations</button>
+      <button class="owner-tab-btn" onclick="switchUserTab('historySection',this)">🕓 History</button>
+      <button class="owner-tab-btn" onclick="switchUserTab('profileSection',this)">👤 Profile</button>
+    </div>
+
+    <!-- Active reservations -->
+    <div class="owner-section active" id="myResSection">
+      <div class="dash-section-title">Active Reservations</div>
+      <div class="reservation-list" id="reservationList">
+        <div class="empty-state"><div style="font-size:3rem">📭</div><p>No reservations yet. Browse spaces and book your first spot!</p></div>
+      </div>
+    </div>
+
+    <!-- History: all past/cancelled -->
+    <div class="owner-section" id="historySection">
+      <div class="dash-section-title">Reservation History</div>
+      <div class="reservation-list" id="historyList">
+        <div class="empty-state"><div style="font-size:3rem">🕓</div><p>No history yet.</p></div>
+      </div>
+    </div>
+
+    <!-- Profile editing -->
+    <div class="owner-section" id="profileSection">
+      <div class="dash-section-title">My Profile</div>
+      <div style="background:var(--white);border-radius:20px;padding:2rem;max-width:520px;border:1px solid rgba(15,31,61,0.08);">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+          <div>
+            <label style="display:block;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;opacity:0.6;margin-bottom:0.4rem;">First Name</label>
+            <input id="profileFirstName" type="text" style="width:100%;padding:0.7rem 1rem;border:1.5px solid rgba(15,31,61,0.14);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--navy);background:var(--bg);outline:none;">
+          </div>
+          <div>
+            <label style="display:block;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;opacity:0.6;margin-bottom:0.4rem;">Last Name</label>
+            <input id="profileLastName" type="text" style="width:100%;padding:0.7rem 1rem;border:1.5px solid rgba(15,31,61,0.14);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--navy);background:var(--bg);outline:none;">
+          </div>
+        </div>
+        <div style="margin-bottom:1rem;">
+          <label style="display:block;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;opacity:0.6;margin-bottom:0.4rem;">Email</label>
+          <input id="profileEmail" type="email" style="width:100%;padding:0.7rem 1rem;border:1.5px solid rgba(15,31,61,0.14);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--navy);background:var(--bg);outline:none;">
+        </div>
+        <div style="border-top:1px solid rgba(15,31,61,0.08);padding-top:1rem;margin-top:0.5rem;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;margin-bottom:0.8rem;opacity:0.7;">Change Password <span style="font-weight:400;font-size:0.78rem;">(leave blank to keep current)</span></div>
+          <div style="margin-bottom:0.8rem;">
+            <label style="display:block;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;opacity:0.6;margin-bottom:0.4rem;">Current Password</label>
+            <input id="profileCurrentPw" type="password" placeholder="Enter current password" style="width:100%;padding:0.7rem 1rem;border:1.5px solid rgba(15,31,61,0.14);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--navy);background:var(--bg);outline:none;">
+          </div>
+          <div>
+            <label style="display:block;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;opacity:0.6;margin-bottom:0.4rem;">New Password</label>
+            <input id="profileNewPw" type="password" placeholder="Min. 6 characters" style="width:100%;padding:0.7rem 1rem;border:1.5px solid rgba(15,31,61,0.14);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--navy);background:var(--bg);outline:none;">
+          </div>
+        </div>
+        <button class="btn-primary" style="margin-top:1.5rem;width:100%;" onclick="saveProfile()">💾 Save Changes</button>
+      </div>
     </div>
   </div>
 </div>
@@ -2167,45 +2229,114 @@ async function finalizeReservation(){
 async function renderUserDash(){
   if(!currentUser) return;
   document.getElementById('dashName').textContent=currentUser.firstName;
+
+  // Pre-fill profile fields
+  document.getElementById('profileFirstName').value = currentUser.firstName || '';
+  document.getElementById('profileLastName').value  = currentUser.lastName  || '';
+  document.getElementById('profileEmail').value     = currentUser.email     || '';
+
   const token = localStorage.getItem('studify_token');
   let myRes = reservations.filter(r=>r.userEmail===currentUser.email);
   try {
-    const res = await fetch(`${API}/api/reservations/mine`, {
-      headers: {'Authorization': `Bearer ${token}`}
-    });
+    const res = await fetch(`${API}/api/reservations/mine`, {headers:{'Authorization':`Bearer ${token}`}});
     if(res.ok) { myRes = await res.json(); reservations = myRes; }
   } catch(e) { console.log('Using local reservations'); }
-  document.getElementById('totalRes').textContent=myRes.length;
-  document.getElementById('upcomingRes').textContent=myRes.filter(r=>r.status==='confirmed').length;
+
+  // Stats
+  const active = myRes.filter(r=>r.status==='confirmed'||r.status==='pending');
+  document.getElementById('totalRes').textContent = myRes.length;
+  document.getElementById('upcomingRes').textContent = myRes.filter(r=>r.status==='confirmed').length;
   const cc={study:0,computer:0,cafe:0};
   myRes.forEach(r=>{const cat=r.placeCat||r.cat;if(cc[cat]!==undefined)cc[cat]++;});
   const fav=Object.entries(cc).sort((a,b)=>b[1]-a[1])[0];
   const fl={study:'📚 Study',computer:'💻 Computer',cafe:'☕ Café'};
   document.getElementById('favType').textContent=fav[1]>0?fl[fav[0]]:'—';
+
+  // Active reservations list
   const list=document.getElementById('reservationList');
-  if(!myRes.length){list.innerHTML='<div class="empty-state"><div style="font-size:3rem">📭</div><p>No reservations yet. Browse spaces and book your first spot!</p></div>';return;}
-  list.innerHTML=myRes.slice().reverse().map(r=>{
-    const dateStr = r.date || '';
-    const d = dateStr ? new Date(dateStr+'T12:00:00').toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric',year:'numeric'}) : '—';
-    const startStr = r.start || r.start_time || '';
-    const dur = r.duration || r.duration_hrs || 1;
-    const emoji = r.placeEmoji || r.place_emoji || '📍';
-    const name = r.placeName || r.place_name || 'Unknown';
-    const notes = r.notes || '';
-    return `<div class="reservation-item">
-      <div class="res-emoji">${emoji}</div>
-      <div class="res-info">
-        <div class="res-name">${name}</div>
-        <div class="res-meta">📅 ${d} &nbsp;|&nbsp; 🕐 ${startStr} &nbsp;|&nbsp; ⏱ ${dur}hr${dur!==1?'s':''}</div>
-        ${notes?`<div class="res-meta">📝 ${notes}</div>`:''}
-      </div>
-      <span class="res-status ${r.status}">${r.status}</span>
-      ${(r.status==='confirmed'||r.status==='pending')?`<button class="btn-cancel-res" onclick="cancelMyRes(${r.id})">Cancel</button>`:''}
-      ${r.status==='confirmed'?`<button class="btn-rate" onclick="openRatingModal(${r.placeId||r.space_id},'${(r.placeName||r.place_name||'').replace(/'/g,"\'")}','${(r.placeLoc||r.place_loc||'').replace(/'/g,"\'")}')">⭐ Rate</button>`:''}
-      ${r.status==='cancelled'&&r.userRating?`<span class="rated-badge">⭐ Rated ${r.userRating}/5</span>`:''}
-    </div>`;
-  }).join('');
+  const activeRes = myRes.filter(r=>r.status==='confirmed'||r.status==='pending');
+  if(!activeRes.length){
+    list.innerHTML='<div class="empty-state"><div style="font-size:3rem">📭</div><p>No active reservations. Browse spaces and book your first spot!</p></div>';
+  } else {
+    list.innerHTML = activeRes.map(r => _renderResItem(r)).join('');
+  }
+
+  // History list (cancelled, rejected)
+  const histList = document.getElementById('historyList');
+  const pastRes  = myRes.filter(r=>r.status==='cancelled'||r.status==='rejected');
+  if(!pastRes.length){
+    histList.innerHTML='<div class="empty-state"><div style="font-size:3rem">🕓</div><p>No past reservations yet.</p></div>';
+  } else {
+    histList.innerHTML = pastRes.map(r => _renderResItem(r)).join('');
+  }
 }
+
+function _renderResItem(r) {
+  const dateStr = r.date || '';
+  const d = dateStr ? new Date(dateStr+'T12:00:00').toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric',year:'numeric'}) : '—';
+  const startStr = r.start || r.start_time || '';
+  const dur = r.duration || r.duration_hrs || 1;
+  const emoji = r.placeEmoji || r.place_emoji || '📍';
+  const name  = r.placeName  || r.place_name  || 'Unknown';
+  const notes = r.notes || '';
+  const price = r.totalPrice || r.total_price || '';
+  return `<div class="reservation-item">
+    <div class="res-emoji">${emoji}</div>
+    <div class="res-info">
+      <div class="res-name">${name}</div>
+      <div class="res-meta">📅 ${d} &nbsp;|&nbsp; 🕐 ${startStr} &nbsp;|&nbsp; ⏱ ${dur}hr${dur!==1?'s':''} ${price?'&nbsp;|&nbsp; 💰 '+price:''}</div>
+      ${notes?`<div class="res-meta">📝 ${notes}</div>`:''}
+    </div>
+    <span class="res-status ${r.status}">${r.status}</span>
+    ${(r.status==='confirmed'||r.status==='pending')?`<button class="btn-cancel-res" onclick="cancelMyRes(${r.id})">Cancel</button>`:''}
+    ${r.status==='confirmed'?`<button class="btn-rate" onclick="openRatingModal(${r.placeId||r.space_id},'${(r.placeName||'').replace(/'/g,"\\'")}','${(r.placeLoc||'').replace(/'/g,"\\'")}')">⭐ Rate</button>`:''}
+  </div>`;
+}
+
+function switchUserTab(sectionId, btn) {
+  document.querySelectorAll('#userDashPage .owner-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('#userDashPage .owner-tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(sectionId).classList.add('active');
+  btn.classList.add('active');
+}
+
+async function saveProfile() {
+  const token = localStorage.getItem('studify_token');
+  const firstName   = document.getElementById('profileFirstName').value.trim();
+  const lastName    = document.getElementById('profileLastName').value.trim();
+  const email       = document.getElementById('profileEmail').value.trim();
+  const currentPw   = document.getElementById('profileCurrentPw').value;
+  const newPw       = document.getElementById('profileNewPw').value;
+
+  if(!firstName || !lastName || !email) { showToast('Name and email are required.','error'); return; }
+
+  const payload = { firstName, lastName, email };
+  if(newPw) {
+    if(!currentPw) { showToast('Enter your current password to change it.','error'); return; }
+    payload.currentPassword = currentPw;
+    payload.newPassword = newPw;
+  }
+
+  try {
+    const res = await fetch(`${API}/api/auth/profile`, {
+      method: 'PATCH',
+      headers: {'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if(!res.ok) { showToast(data.error || 'Update failed.','error'); return; }
+    currentUser = data.user;
+    if(data.token) localStorage.setItem('studify_token', data.token);
+    localStorage.setItem('studify_user', JSON.stringify(currentUser));
+    document.getElementById('profileCurrentPw').value = '';
+    document.getElementById('profileNewPw').value = '';
+    showToast('✅ Profile updated!');
+    renderUserDash();
+  } catch(e) {
+    showToast('Could not connect to server.','error');
+  }
+}
+
 async function cancelMyRes(id){
   const token = localStorage.getItem('studify_token');
   try {
@@ -2575,15 +2706,22 @@ function findNearest() {
 }
 
 function applyAllFilters() {
-  const searchQ = (document.getElementById('locationSearch')?.value || '').toLowerCase().trim();
+  const searchQ  = (document.getElementById('locationSearch')?.value || '').toLowerCase().trim();
+  const maxPrice = parseInt(document.getElementById('priceFilter')?.value || '0');
   let filtered = PLACES.filter(p => {
-    const catOk = activeCat === 'all' || p.cat === activeCat;
+    const catOk  = activeCat === 'all' || p.cat === activeCat;
     const starOk = p.rating >= minStar;
-    const locOk = !searchQ || 
-      (p.loc||'').toLowerCase().includes(searchQ) || 
+    const locOk  = !searchQ ||
+      (p.loc||'').toLowerCase().includes(searchQ) ||
       (p.name||'').toLowerCase().includes(searchQ);
     const wifiOk = !wifiFilterActive || getWifiStrength(p)==='fast';
-    return catOk && starOk && locOk && wifiOk;
+    // Price filter: extract numeric value from price string e.g. "₱20/hr"
+    let priceOk = true;
+    if(maxPrice > 0) {
+      const priceNum = parseInt((p.price||'').replace(/[^\d]/g,''));
+      priceOk = isNaN(priceNum) ? true : priceNum <= maxPrice;
+    }
+    return catOk && starOk && locOk && wifiOk && priceOk;
   });
   // sort by distance if GPS available
   if(userLat && userLng) {
@@ -3170,7 +3308,6 @@ try {
   const savedToken = localStorage.getItem('studify_token');
   if(!savedUser || !savedToken) return;
   try {
-    // STEP 1: Restore immediately from localStorage — no API call needed
     currentUser = JSON.parse(savedUser);
     if(!currentUser || !currentUser.role) {
       localStorage.removeItem('studify_user');
@@ -3178,18 +3315,12 @@ try {
       return;
     }
     updateNav();
-
-    // STEP 2: Show correct dashboard RIGHT AWAY before any API call
     const role = currentUser.role;
     if(role === 'admin') showAdminDash();
     else if(role === 'owner') showOwnerDash();
     else showUserDash();
-    // Re-render cards with correct premium/WiFi state immediately
-    applyAllFilters();
-    // Re-render cards with correct premium/wifi state
     applyAllFilters();
 
-    // STEP 3: Silently verify in background — NEVER log out on failure
     try {
       const res = await fetch(`${API}/api/auth/me`, {
         headers: {'Authorization': `Bearer ${savedToken}`},
@@ -3201,16 +3332,12 @@ try {
           currentUser = fresh;
           localStorage.setItem('studify_user', JSON.stringify(fresh));
           updateNav();
-          // Silently refresh data only — never redirect
           if(fresh.role === 'admin') renderAdminDash();
           else if(fresh.role === 'owner') { /* already showing */ }
           else renderUserDash();
         }
       }
-      // IMPORTANT: Do NOT log out on 401/422 — token may just be slow
-      // Admin/owner stay logged in from localStorage regardless
     } catch(e) {
-      // Network error — stay logged in, don't touch currentUser
       console.log('Background verify skipped - keeping session from localStorage');
     }
   } catch(e) {
@@ -3218,6 +3345,31 @@ try {
     localStorage.removeItem('studify_user');
     localStorage.removeItem('studify_token');
   }
+})();
+
+// ── SESSION TIMEOUT (30 min inactivity) ─────────────────────────
+(function setupSessionTimeout() {
+  const TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+  let _timer;
+  function resetTimer() {
+    clearTimeout(_timer);
+    if(!localStorage.getItem('studify_token')) return;
+    _timer = setTimeout(() => {
+      if(!currentUser) return;
+      showToast('⏰ Session expired due to inactivity. Please log in again.', 'warn');
+      setTimeout(() => {
+        currentUser = null;
+        localStorage.removeItem('studify_user');
+        localStorage.removeItem('studify_token');
+        updateNav();
+        showPage('homePage');
+      }, 2500);
+    }, TIMEOUT_MS);
+  }
+  ['mousemove','keydown','click','scroll','touchstart'].forEach(e =>
+    document.addEventListener(e, resetTimer, {passive: true})
+  );
+  resetTimer();
 })();
 
 loadSpaces();
