@@ -2048,7 +2048,7 @@ function handleGoogleCredential(response) {
 // ── Email verification ──────────────────────────────────────────────
 (async function handleEmailVerification() {
   const params = new URLSearchParams(window.location.search);
-  const token  = params.get('verify_token');
+  const token  = params.get('verify_token') || params.get('token');
   if (!token) return;
 
   try {
@@ -2070,7 +2070,7 @@ function handleGoogleCredential(response) {
 // ── Reset password via URL token ────────────────────────────────────
 (function handleResetToken() {
   const params = new URLSearchParams(window.location.search);
-  const token  = params.get('reset_token');
+  const token  = params.get('reset_token') || params.get('token');
   if (!token) return;
   window._pendingResetToken = token;
   window.history.replaceState({}, document.title, window.location.pathname);
