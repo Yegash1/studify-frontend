@@ -1966,10 +1966,8 @@ document.getElementById('signupBtn').addEventListener('click', async ()=>{
       loginSuccess(data.user);
     }
   } catch(e) {
-    if(users[email]){showError('signup-email-err','Account already exists. Please log in.');return;}
-    const user={firstName:first,lastName:last,email,password:pass,role:'user'};
-    users[email]=user;
-    loginSuccess(user);
+  console.error('Register error:', e);
+  showError('signup-general-err', 'Could not connect to the server. Please try again in a moment.');
   } finally {
     btn.disabled = false; btn.textContent = 'Create My Account →';
   }
