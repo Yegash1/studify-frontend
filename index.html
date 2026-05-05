@@ -1925,8 +1925,10 @@ document.getElementById('loginBtn').addEventListener('click', async ()=>{
     sessionStorage.setItem('studify_token', data.token);
     loginSuccess(data.user);
   } catch(e) {
-  console.error('Login error:', e);
-  showError('login-general-err', 'Could not connect to the server. Please try again in a moment.');
+    // fallback to local users if API is down
+    if(!users[email]){showError('login-general-err','No account found. Please sign up.');return;}
+    if(users[email].password!==pass){showError('login-general-err','Incorrect password.');return;}
+    loginSuccess(users[email]);
   }
 });
 
@@ -1964,8 +1966,10 @@ document.getElementById('signupBtn').addEventListener('click', async ()=>{
       loginSuccess(data.user);
     }
   } catch(e) {
-  console.error('Register error:', e);
-  showError('signup-general-err', 'Could not connect to the server. Please try again in a moment.');
+    if(users[email]){showError('signup-email-err','Account already exists. Please log in.');return;}
+    const user={firstName:first,lastName:last,email,password:pass,role:'user'};
+    users[email]=user;
+    loginSuccess(user);
   } finally {
     btn.disabled = false; btn.textContent = 'Create My Account →';
   }
