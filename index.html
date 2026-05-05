@@ -1476,6 +1476,7 @@ th{color:var(--teal)!important;opacity:1!important;}
           <div class="auth-sub">Log in to find and reserve your study space.</div>
           <div class="form-group"><label>Email Address</label><input type="email" id="login-email" placeholder="you@example.com"><div class="form-error" id="login-email-err"></div></div>
           <div class="form-group"><label>Password</label><div class="pw-wrap"><input type="password" id="login-pass" placeholder="••••••••"><button type="button" class="pw-toggle" onclick="togglePw('login-pass',this)" aria-label="Show password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div><div class="form-error" id="login-pass-err"></div></div>
+          <div style="text-align:right;margin-top:-0.4rem;margin-bottom:0.8rem;"><a onclick="switchTab('forgot')" style="font-size:0.78rem;color:var(--teal);cursor:pointer;font-weight:600;">Forgot password?</a></div>
           <div class="form-error" id="login-general-err" style="margin-bottom:0.5rem;"></div>
           <button class="btn-auth" id="loginBtn">Log In →</button>
           <div class="auth-divider">or</div>
@@ -1503,6 +1504,36 @@ th{color:var(--teal)!important;opacity:1!important;}
             Continue with Google
           </button>
           <div class="auth-switch">Already have an account? <a id="goLogin">Log in</a></div>
+        </div>
+        <!-- VERIFY PENDING PANEL -->
+        <div class="auth-panel" id="panel-verify-pending">
+          <div style="text-align:center;padding:1rem 0;">
+            <div style="font-size:3rem;margin-bottom:1rem;">📧</div>
+            <div class="auth-title" style="font-size:1.3rem;">Check your email</div>
+            <div class="auth-sub" style="margin-bottom:1.5rem;">We sent a verification link to <strong id="verifyPendingEmail"></strong>. Click it to activate your account.</div>
+            <div style="background:rgba(26,138,138,0.08);border:1.5px solid rgba(26,138,138,0.2);border-radius:12px;padding:1rem;font-size:0.82rem;opacity:0.75;margin-bottom:1.5rem;line-height:1.6;">
+              Didn't get it? Check your spam folder, or resend below.
+            </div>
+            <button class="btn-auth" style="background:var(--teal);" id="resendVerifyBtn" onclick="resendVerification()">Resend verification email</button>
+            <div class="auth-switch" style="margin-top:1rem;"><a onclick="switchTab('login')" style="cursor:pointer;">← Back to login</a></div>
+          </div>
+        </div>
+        <!-- FORGOT PASSWORD PANEL -->
+        <div class="auth-panel" id="panel-forgot">
+          <div class="auth-title" style="font-size:1.3rem;">Forgot password?</div>
+          <div class="auth-sub">Enter your email and we'll send you a reset link.</div>
+          <div class="form-group"><label>Email Address</label><input type="email" id="forgot-email" placeholder="you@example.com"><div class="form-error" id="forgot-email-err"></div></div>
+          <div class="form-error" id="forgot-general-err" style="margin-bottom:0.5rem;"></div>
+          <button class="btn-auth" id="forgotBtn" onclick="sendForgotPassword()">Send reset link →</button>
+          <div class="auth-switch" style="margin-top:1rem;"><a onclick="switchTab('login')" style="cursor:pointer;">← Back to login</a></div>
+        </div>
+        <!-- RESET PASSWORD PANEL -->
+        <div class="auth-panel" id="panel-reset">
+          <div class="auth-title" style="font-size:1.3rem;">Set new password</div>
+          <div class="auth-sub">Choose a strong password for your account.</div>
+          <div class="form-group"><label>New Password</label><div class="pw-wrap"><input type="password" id="reset-pass" placeholder="At least 6 characters"><button type="button" class="pw-toggle" onclick="togglePw('reset-pass',this)" aria-label="Show password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div><div class="form-error" id="reset-pass-err"></div></div>
+          <div class="form-error" id="reset-general-err" style="margin-bottom:0.5rem;"></div>
+          <button class="btn-auth" id="resetBtn" onclick="submitResetPassword()">Reset password →</button>
         </div>
       </div>
       <div class="auth-success" id="authSuccess">
@@ -1883,6 +1914,13 @@ document.getElementById('loginBtn').addEventListener('click', async ()=>{
       body: JSON.stringify({email, password: pass})
     });
     const data = await res.json();
+    if(res.status === 403) {
+      // Unverified email — show verify-pending panel with resend option
+      window._pendingVerifyEmail = email;
+      document.getElementById('verifyPendingEmail').textContent = email;
+      switchTab('verify-pending');
+      return;
+    }
     if(!res.ok){showError('login-general-err', data.error || 'Login failed.');return;}
     sessionStorage.setItem('studify_token', data.token);
     loginSuccess(data.user);
@@ -1907,6 +1945,8 @@ document.getElementById('signupBtn').addEventListener('click', async ()=>{
   if(pass.length<6){showError('signup-pass-err','At least 6 characters required.');ok=false;}
   if(!terms){showError('signup-general-err','Please agree to the Terms of Service.');ok=false;}
   if(!ok) return;
+  const btn = document.getElementById('signupBtn');
+  btn.disabled = true; btn.textContent = 'Creating account…';
   try {
     const res = await fetch(`${API}/api/auth/register`, {
       method: 'POST',
@@ -1915,13 +1955,23 @@ document.getElementById('signupBtn').addEventListener('click', async ()=>{
     });
     const data = await res.json();
     if(!res.ok){showError('signup-email-err', data.error || 'Registration failed.');return;}
-    sessionStorage.setItem('studify_token', data.token);
-    loginSuccess(data.user);
+    // Show verify-pending panel instead of logging in directly
+    if(data.requiresVerification) {
+      document.getElementById('verifyPendingEmail').textContent = email;
+      window._pendingVerifyEmail = email;
+      switchTab('verify-pending');
+    } else {
+      // fallback if backend skips verification
+      sessionStorage.setItem('studify_token', data.token);
+      loginSuccess(data.user);
+    }
   } catch(e) {
     if(users[email]){showError('signup-email-err','Account already exists. Please log in.');return;}
     const user={firstName:first,lastName:last,email,password:pass,role:'user'};
     users[email]=user;
     loginSuccess(user);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Create My Account →';
   }
 });
 
@@ -2004,7 +2054,6 @@ function handleGoogleCredential(response) {
   try {
     const res  = await fetch(`${API}/api/auth/verify-email?token=${token}`);
     const data = await res.json();
-    // Clean the token out of the URL
     window.history.replaceState({}, document.title, window.location.pathname);
     if (res.ok) {
       sessionStorage.setItem('studify_token', data.token);
@@ -2017,6 +2066,91 @@ function handleGoogleCredential(response) {
     showToast('Verification failed. Please try again.', 'error');
   }
 })();
+
+// ── Reset password via URL token ────────────────────────────────────
+(function handleResetToken() {
+  const params = new URLSearchParams(window.location.search);
+  const token  = params.get('reset_token');
+  if (!token) return;
+  window._pendingResetToken = token;
+  window.history.replaceState({}, document.title, window.location.pathname);
+  // Open the auth modal on the reset panel
+  document.getElementById('authOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('authSuccess').classList.remove('show');
+  document.getElementById('authPanelsWrap').classList.remove('hide');
+  switchTab('reset');
+})();
+
+// ── Forgot password ─────────────────────────────────────────────────
+async function sendForgotPassword() {
+  clearErrors();
+  const email = document.getElementById('forgot-email').value.trim();
+  if(!isValidEmail(email)){showError('forgot-email-err','Please enter a valid email.');return;}
+  const btn = document.getElementById('forgotBtn');
+  btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    await fetch(`${API}/api/auth/forgot-password`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({email})
+    });
+  } catch(e) {}
+  // Always show success message so we don't leak registered emails
+  btn.disabled = false; btn.textContent = 'Send reset link →';
+  document.getElementById('panel-forgot').innerHTML = `
+    <div style="text-align:center;padding:1rem 0;">
+      <div style="font-size:3rem;margin-bottom:1rem;">📬</div>
+      <div class="auth-title" style="font-size:1.3rem;">Check your email</div>
+      <div class="auth-sub" style="margin-bottom:1.5rem;">If <strong>${email}</strong> is registered, a reset link is on its way.</div>
+      <div class="auth-switch"><a onclick="switchTab('login')" style="cursor:pointer;">← Back to login</a></div>
+    </div>`;
+}
+
+// ── Reset password submit ───────────────────────────────────────────
+async function submitResetPassword() {
+  clearErrors();
+  const pass  = document.getElementById('reset-pass').value;
+  const token = window._pendingResetToken || '';
+  if(!token){showError('reset-general-err','Invalid reset link. Please request a new one.');return;}
+  if(pass.length < 6){showError('reset-pass-err','At least 6 characters required.');return;}
+  const btn = document.getElementById('resetBtn');
+  btn.disabled = true; btn.textContent = 'Resetting…';
+  try {
+    const res  = await fetch(`${API}/api/auth/reset-password`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({token, password: pass})
+    });
+    const data = await res.json();
+    if(!res.ok){showError('reset-general-err', data.error || 'Reset failed. Try requesting a new link.');return;}
+    window._pendingResetToken = null;
+    sessionStorage.setItem('studify_token', data.token);
+    loginSuccess(data.user);
+    showToast('Password reset! Welcome back 🎉', 'success');
+  } catch(e) {
+    showError('reset-general-err','Something went wrong. Please try again.');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Reset password →';
+  }
+}
+
+// ── Resend verification email ───────────────────────────────────────
+async function resendVerification() {
+  const email = window._pendingVerifyEmail || document.getElementById('login-email').value.trim();
+  if(!email){showToast('Please enter your email first.','error');return;}
+  const btn = document.getElementById('resendVerifyBtn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Sending…'; }
+  try {
+    await fetch(`${API}/api/auth/resend-verification`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({email})
+    });
+  } catch(e) {}
+  showToast('Verification email sent! Check your inbox.', 'success');
+  if(btn){ btn.disabled = false; btn.textContent = 'Resend verification email'; }
+}
 
 function loginSuccess(user){
   currentUser=user;
