@@ -1925,10 +1925,8 @@ document.getElementById('loginBtn').addEventListener('click', async ()=>{
     sessionStorage.setItem('studify_token', data.token);
     loginSuccess(data.user);
   } catch(e) {
-    // fallback to local users if API is down
-    if(!users[email]){showError('login-general-err','No account found. Please sign up.');return;}
-    if(users[email].password!==pass){showError('login-general-err','Incorrect password.');return;}
-    loginSuccess(users[email]);
+  console.error('Login error:', e);
+  showError('login-general-err', 'Could not connect to the server. Please try again in a moment.');
   }
 });
 
