@@ -112,7 +112,9 @@ footer strong{color:var(--white);}
 .filter-btn.cat-computer.active{background:var(--teal);border-color:var(--teal);}
 .filter-btn.cat-library.active{background:var(--blue);border-color:var(--blue);}
 .filter-btn.cat-cafe.active{background:var(--coral);border-color:var(--coral);}
-.star-filter{display:flex;align-items:center;gap:0.4rem;margin-left:auto;background:var(--white);border:1.5px solid rgba(15,31,61,0.18);border-radius:100px;padding:0.4rem 1rem;font-size:0.82rem;font-weight:500;}
+.star-filter{display:flex;align-items:center;gap:0.8rem;margin-left:auto;background:var(--white);border:1.5px solid rgba(15,31,61,0.18);border-radius:100px;padding:0.4rem 1rem;font-size:0.82rem;font-weight:500;flex-wrap:wrap;}
+.star-filter-item{display:flex;align-items:center;gap:0.4rem;}
+.star-filter-item+.star-filter-item{border-left:1px solid rgba(15,31,61,0.12);padding-left:0.8rem;}
 .star-filter label{color:var(--navy);opacity:0.6;white-space:nowrap;}
 .star-filter select{border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;color:var(--navy);cursor:pointer;outline:none;}
 .places-count{font-size:0.82rem;opacity:0.5;margin-bottom:1.5rem;}
@@ -184,6 +186,13 @@ footer strong{color:var(--white);}
 .auth-success p{font-size:0.88rem;opacity:0.55;line-height:1.6;}
 .form-error{color:#d94f2b;font-size:0.78rem;margin-top:0.3rem;display:none;}
 .form-error.show{display:block;}
+
+/* PASSWORD TOGGLE */
+.pw-wrap{position:relative;}
+.pw-wrap input{width:100%;padding-right:2.8rem;}
+.pw-toggle{position:absolute;right:0.85rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--navy);opacity:0.4;padding:0;display:flex;align-items:center;transition:opacity 0.2s;}
+.pw-toggle:hover{opacity:0.8;}
+.pw-toggle svg{width:18px;height:18px;flex-shrink:0;}
 
 /* USER DASHBOARD */
 .dashboard{padding:7rem 5% 4rem;}
@@ -586,9 +595,10 @@ tr:hover td{background:rgba(15,31,61,0.02);}
   section.section-block{padding:3rem 5%;}
 
   /* FILTERS */
-  .star-filter{margin-left:0;width:100%;flex-wrap:wrap;gap:0.5rem;}
-  .star-filter select{width:100%;}
-  .star-filter label{width:100%;}
+  .star-filter{margin-left:0;width:100%;border-radius:14px;flex-direction:column;align-items:flex-start;gap:0.6rem;padding:0.7rem 1rem;}
+  .star-filter-item{width:100%;justify-content:space-between;}
+  .star-filter-item+.star-filter-item{border-left:none;border-top:1px solid rgba(15,31,61,0.1);padding-left:0;padding-top:0.6rem;}
+  .star-filter select{flex:1;min-width:0;text-align:right;}
   .filter-group{width:100%;}
   .filter-btn{font-size:0.75rem;padding:0.4rem 0.8rem;}
   .location-search-wrap{flex-direction:column;}
@@ -1000,21 +1010,25 @@ th{color:var(--teal)!important;opacity:1!important;}
         <button class="filter-btn cat-wifi" data-wifi="true" id="wifiFilterBtn" onclick="toggleWifiFilter(this)">📶 Fast WiFi</button>
       </div>
       <div class="star-filter">
-        <label>⭐ Min Rating:</label>
-        <select id="starFilter">
-          <option value="0">All Stars</option>
-          <option value="3">3★ &amp; up</option>
-          <option value="4">4★ &amp; up</option>
-          <option value="5">5★ only</option>
-        </select>
-        <label style="margin-left:1rem;">💰 Max Price:</label>
-        <select id="priceFilter" onchange="applyAllFilters()">
-          <option value="0">Any Price</option>
-          <option value="20">Under ₱20/hr</option>
-          <option value="50">Under ₱50/hr</option>
-          <option value="80">Under ₱80/hr</option>
-          <option value="90">Under ₱90/hr</option>
-        </select>
+        <div class="star-filter-item">
+          <label>⭐ Min Rating:</label>
+          <select id="starFilter">
+            <option value="0">All Stars</option>
+            <option value="3">3★ &amp; up</option>
+            <option value="4">4★ &amp; up</option>
+            <option value="5">5★ only</option>
+          </select>
+        </div>
+        <div class="star-filter-item">
+          <label>💰 Max Price:</label>
+          <select id="priceFilter" onchange="applyAllFilters()">
+            <option value="0">Any Price</option>
+            <option value="20">Under ₱20/hr</option>
+            <option value="50">Under ₱50/hr</option>
+            <option value="80">Under ₱80/hr</option>
+            <option value="90">Under ₱90/hr</option>
+          </select>
+        </div>
       </div>
     </div>
     <div class="location-search-wrap">
@@ -1461,7 +1475,7 @@ th{color:var(--teal)!important;opacity:1!important;}
           <div class="auth-title">Welcome back 👋</div>
           <div class="auth-sub">Log in to find and reserve your study space.</div>
           <div class="form-group"><label>Email Address</label><input type="email" id="login-email" placeholder="you@example.com"><div class="form-error" id="login-email-err"></div></div>
-          <div class="form-group"><label>Password</label><input type="password" id="login-pass" placeholder="••••••••"><div class="form-error" id="login-pass-err"></div></div>
+          <div class="form-group"><label>Password</label><div class="pw-wrap"><input type="password" id="login-pass" placeholder="••••••••"><button type="button" class="pw-toggle" onclick="togglePw('login-pass',this)" aria-label="Show password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div><div class="form-error" id="login-pass-err"></div></div>
           <div class="form-error" id="login-general-err" style="margin-bottom:0.5rem;"></div>
           <button class="btn-auth" id="loginBtn">Log In →</button>
           <div class="auth-divider">or</div>
@@ -1479,7 +1493,7 @@ th{color:var(--teal)!important;opacity:1!important;}
             <div class="form-group"><label>Last Name</label><input type="text" id="signup-last" placeholder="dela Cruz"></div>
           </div>
           <div class="form-group"><label>Email Address</label><input type="email" id="signup-email" placeholder="you@example.com"><div class="form-error" id="signup-email-err"></div></div>
-          <div class="form-group"><label>Password</label><input type="password" id="signup-pass" placeholder="At least 6 characters"><div class="form-error" id="signup-pass-err"></div></div>
+          <div class="form-group"><label>Password</label><div class="pw-wrap"><input type="password" id="signup-pass" placeholder="At least 6 characters"><button type="button" class="pw-toggle" onclick="togglePw('signup-pass',this)" aria-label="Show password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div><div class="form-error" id="signup-pass-err"></div></div>
           <div class="form-check"><input type="checkbox" id="terms"><label for="terms">I agree to Studify's Terms of Service and Privacy Policy</label></div>
           <div class="form-error" id="signup-general-err" style="margin-bottom:0.5rem;"></div>
           <button class="btn-auth" id="signupBtn">Create My Account →</button>
@@ -1677,6 +1691,19 @@ th{color:var(--teal)!important;opacity:1!important;}
 <div class="toast" id="toast"></div>
 
 <script>
+// ═══════════════════════════════════════════════════════════
+// PASSWORD TOGGLE
+// ═══════════════════════════════════════════════════════════
+function togglePw(id, btn) {
+  const inp = document.getElementById(id);
+  const showing = inp.type === 'text';
+  inp.type = showing ? 'password' : 'text';
+  btn.innerHTML = showing
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+  btn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+}
+
 // ═══════════════════════════════════════════════════════════
 // DATA
 // ═══════════════════════════════════════════════════════════
