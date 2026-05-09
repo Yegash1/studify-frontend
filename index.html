@@ -1620,6 +1620,7 @@ th{color:var(--teal)!important;opacity:1!important;}
         </select>
       </div>
       <div class="form-group"><label>Tags (comma-separated)</label><input type="text" id="editTags" placeholder="Free WiFi, Quiet Zone, Air-Con"></div>
+      <div class="form-group"><label>Owner Email <span style="opacity:0.5;font-weight:400;">(optional)</span></label><input type="email" id="editOwnerEmail" placeholder="owner@example.com"><div style="font-size:0.72rem;opacity:0.45;margin-top:0.35rem;line-height:1.5;">If the owner has an account, they'll be linked instantly. Otherwise the email is saved and auto-linked on their first login.</div></div>
       <div class="modal-actions">
         <button class="btn-modal-cancel" onclick="closePlaceModal()">Cancel</button>
         <button class="btn-save" onclick="savePlaceModal()">Save Space</button>
@@ -2814,6 +2815,7 @@ function openAddPlaceModal(){
   document.getElementById('editHours').value='';
   document.getElementById('editAvail').value='open';
   document.getElementById('editTags').value='';
+  document.getElementById('editOwnerEmail').value='';
   document.getElementById('placeModalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
@@ -2829,11 +2831,12 @@ function openEditPlaceModal(id){
   document.getElementById('editHours').value=p.hours;
   document.getElementById('editAvail').value=p.avail;
   document.getElementById('editTags').value=(p.tags||[]).join(', ');
+  document.getElementById('editOwnerEmail').value=p.owner_email||'';
   document.getElementById('placeModalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
 function closePlaceModal(){document.getElementById('placeModalOverlay').classList.remove('open');document.body.style.overflow='';}
-function savePlaceModal(){
+async function savePlaceModal(){
   const id=document.getElementById('editPlaceId').value;
   const name=document.getElementById('editName').value.trim();
   const cat=document.getElementById('editCat').value;
@@ -2850,7 +2853,33 @@ function savePlaceModal(){
     if(p){Object.assign(p,{name,cat,loc,seats,rating,hours,avail,tags,emoji:emojis[cat]});}
     showToast('Space updated!');
   } else {
-    PLACES.push({id:nextPlaceId++,cat,name,loc,rating,reviews:0,avail,seats,tags,hours,emoji:emojis[cat],bg:BG_COLORS[nextPlaceId%BG_COLORS.length],price:hours});
+    const ownerEmail = document.getElementById('editOwnerEmail').value.trim();
+    const token = sessionStorage.getItem('studify_token');
+    try {
+      const res = await fetch(`${API}/api/spaces/`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json','Authorization':`Bearer ${token}`},
+        body: JSON.stringify({
+          name, category:cat, location:loc, seats, rating,
+          hours, status:avail, tags, emoji:emojis[cat], price:hours,
+          owner_email: ownerEmail || null
+        })
+      });
+      const saved = await res.json();
+      if(res.ok){
+        PLACES.push(Object.assign({}, saved, {
+          id: saved.id || nextPlaceId++,
+          emoji: emojis[cat],
+          bg: BG_COLORS[nextPlaceId % BG_COLORS.length],
+          price: hours,
+          owner_email: ownerEmail || null
+        }));
+      } else {
+        PLACES.push({id:nextPlaceId++,cat,name,loc,seats,rating,hours,avail,tags,emoji:emojis[cat],bg:BG_COLORS[nextPlaceId%BG_COLORS.length],price:hours,owner_email:ownerEmail||null});
+      }
+    } catch(e) {
+      PLACES.push({id:nextPlaceId++,cat,name,loc,seats,rating,hours,avail,tags,emoji:emojis[cat],bg:BG_COLORS[nextPlaceId%BG_COLORS.length],price:hours,owner_email:ownerEmail||null});
+    }
     showToast('New space added!');
   }
   closePlaceModal(); renderAdminDash(); renderPlaces();
