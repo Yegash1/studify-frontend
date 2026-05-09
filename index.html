@@ -898,6 +898,23 @@ th{color:var(--teal)!important;opacity:1!important;}
 ::-webkit-scrollbar-thumb:hover{background:rgba(15,31,61,0.35);}
 
 /* ── NAV scroll trigger via JS ── */
+
+/* ── CANCEL CONFIRMATION MODAL ── */
+.cancel-confirm-overlay{position:fixed;inset:0;z-index:1001;background:rgba(10,16,32,0.65);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.25s;}
+.cancel-confirm-overlay.open{opacity:1;pointer-events:all;}
+.cancel-confirm-modal{background:var(--white);border-radius:22px;width:100%;max-width:400px;margin:1rem;box-shadow:0 32px 80px rgba(10,16,32,0.28);transform:translateY(20px) scale(0.97);transition:transform 0.25s;overflow:hidden;}
+.cancel-confirm-overlay.open .cancel-confirm-modal{transform:translateY(0) scale(1);}
+.cancel-confirm-head{background:var(--coral);padding:1.5rem 2rem;}
+.cancel-confirm-head h3{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;color:white;margin:0;}
+.cancel-confirm-head p{font-size:0.82rem;color:rgba(255,255,255,0.75);margin-top:0.3rem;margin-bottom:0;}
+.cancel-confirm-body{padding:1.6rem 2rem 2rem;}
+.cancel-confirm-body p{font-size:0.9rem;color:var(--navy);opacity:0.7;line-height:1.6;margin-bottom:1.5rem;}
+.cancel-confirm-actions{display:flex;gap:0.8rem;}
+.btn-confirm-cancel{flex:1;padding:0.85rem;background:var(--coral);color:white;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-confirm-cancel:hover{background:#b93d22;transform:translateY(-1px);}
+.btn-keep-res{flex:1;padding:0.85rem;background:rgba(15,31,61,0.07);color:var(--navy);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;transition:background 0.2s;}
+.btn-keep-res:hover{background:rgba(15,31,61,0.13);}
+@media(max-width:600px){.cancel-confirm-overlay{align-items:flex-end;}.cancel-confirm-modal{border-radius:22px 22px 0 0;margin:0;max-width:100%;}}
 </style>
 </head>
 <body>
@@ -1620,7 +1637,6 @@ th{color:var(--teal)!important;opacity:1!important;}
         </select>
       </div>
       <div class="form-group"><label>Tags (comma-separated)</label><input type="text" id="editTags" placeholder="Free WiFi, Quiet Zone, Air-Con"></div>
-      <div class="form-group"><label>Owner Email <span style="opacity:0.5;font-weight:400;">(optional)</span></label><input type="email" id="editOwnerEmail" placeholder="owner@example.com"><div style="font-size:0.72rem;opacity:0.45;margin-top:0.35rem;line-height:1.5;">If the owner has an account, they'll be linked instantly. Otherwise the email is saved and auto-linked on their first login.</div></div>
       <div class="modal-actions">
         <button class="btn-modal-cancel" onclick="closePlaceModal()">Cancel</button>
         <button class="btn-save" onclick="savePlaceModal()">Save Space</button>
@@ -1715,6 +1731,23 @@ th{color:var(--teal)!important;opacity:1!important;}
         <div style="font-size:2rem;margin-bottom:0.8rem;">⏳</div>
         <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:var(--navy);">Processing payment...</div>
         <div style="font-size:0.8rem;opacity:0.5;margin-top:0.3rem;">Please wait a moment</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CANCEL CONFIRMATION MODAL -->
+<div class="cancel-confirm-overlay" id="cancelConfirmOverlay">
+  <div class="cancel-confirm-modal">
+    <div class="cancel-confirm-head">
+      <h3>⚠️ Cancel Reservation?</h3>
+      <p>This action cannot be undone.</p>
+    </div>
+    <div class="cancel-confirm-body">
+      <p>Are you sure you want to cancel this reservation? The seat will be freed up and you'll need to re-book if you change your mind.</p>
+      <div class="cancel-confirm-actions">
+        <button class="btn-keep-res" onclick="closeCancelConfirm()">Keep It</button>
+        <button class="btn-confirm-cancel" onclick="confirmCancel()">Yes, Cancel</button>
       </div>
     </div>
   </div>
@@ -2496,7 +2529,7 @@ function _renderResItem(r) {
       ${notes?`<div class="res-meta">📝 ${notes}</div>`:''}
     </div>
     <span class="res-status ${r.status}">${r.status}</span>
-    ${(r.status==='confirmed'||r.status==='pending')?`<button class="btn-cancel-res" onclick="cancelMyRes(${r.id})">Cancel</button>`:''}
+    ${(r.status==='confirmed'||r.status==='pending')?`<button class="btn-cancel-res" onclick="openCancelConfirm(${r.id},'user')">Cancel</button>`:''}
     ${r.status==='confirmed'?`<button class="btn-rate" onclick="openRatingModal(${r.placeId||r.space_id},'${(r.placeName||'').replace(/'/g,"\\'")}','${(r.placeLoc||'').replace(/'/g,"\\'")}')">⭐ Rate</button>`:''}
   </div>`;
 }
@@ -2815,7 +2848,6 @@ function openAddPlaceModal(){
   document.getElementById('editHours').value='';
   document.getElementById('editAvail').value='open';
   document.getElementById('editTags').value='';
-  document.getElementById('editOwnerEmail').value='';
   document.getElementById('placeModalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
@@ -2831,12 +2863,11 @@ function openEditPlaceModal(id){
   document.getElementById('editHours').value=p.hours;
   document.getElementById('editAvail').value=p.avail;
   document.getElementById('editTags').value=(p.tags||[]).join(', ');
-  document.getElementById('editOwnerEmail').value=p.owner_email||'';
   document.getElementById('placeModalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
 function closePlaceModal(){document.getElementById('placeModalOverlay').classList.remove('open');document.body.style.overflow='';}
-async function savePlaceModal(){
+function savePlaceModal(){
   const id=document.getElementById('editPlaceId').value;
   const name=document.getElementById('editName').value.trim();
   const cat=document.getElementById('editCat').value;
@@ -2853,33 +2884,7 @@ async function savePlaceModal(){
     if(p){Object.assign(p,{name,cat,loc,seats,rating,hours,avail,tags,emoji:emojis[cat]});}
     showToast('Space updated!');
   } else {
-    const ownerEmail = document.getElementById('editOwnerEmail').value.trim();
-    const token = sessionStorage.getItem('studify_token');
-    try {
-      const res = await fetch(`${API}/api/spaces/`, {
-        method: 'POST',
-        headers: {'Content-Type':'application/json','Authorization':`Bearer ${token}`},
-        body: JSON.stringify({
-          name, category:cat, location:loc, seats, rating,
-          hours, status:avail, tags, emoji:emojis[cat], price:hours,
-          owner_email: ownerEmail || null
-        })
-      });
-      const saved = await res.json();
-      if(res.ok){
-        PLACES.push(Object.assign({}, saved, {
-          id: saved.id || nextPlaceId++,
-          emoji: emojis[cat],
-          bg: BG_COLORS[nextPlaceId % BG_COLORS.length],
-          price: hours,
-          owner_email: ownerEmail || null
-        }));
-      } else {
-        PLACES.push({id:nextPlaceId++,cat,name,loc,seats,rating,hours,avail,tags,emoji:emojis[cat],bg:BG_COLORS[nextPlaceId%BG_COLORS.length],price:hours,owner_email:ownerEmail||null});
-      }
-    } catch(e) {
-      PLACES.push({id:nextPlaceId++,cat,name,loc,seats,rating,hours,avail,tags,emoji:emojis[cat],bg:BG_COLORS[nextPlaceId%BG_COLORS.length],price:hours,owner_email:ownerEmail||null});
-    }
+    PLACES.push({id:nextPlaceId++,cat,name,loc,rating,reviews:0,avail,seats,tags,hours,emoji:emojis[cat],bg:BG_COLORS[nextPlaceId%BG_COLORS.length],price:hours});
     showToast('New space added!');
   }
   closePlaceModal(); renderAdminDash(); renderPlaces();
@@ -3287,7 +3292,7 @@ async function loadOwnerReservations() {
       const actions = r.status==='pending' ? `
         <div class="tbl-actions">
           <button class="btn-tbl btn-tbl-approve" data-res-id="${r.id}" onclick="ownerConfirmRes(${r.id})">✅ Confirm</button>
-          <button class="btn-tbl btn-tbl-cancel"  data-res-id="${r.id}" onclick="ownerRejectRes(${r.id})">❌ Reject</button>
+          <button class="btn-tbl btn-tbl-cancel"  data-res-id="${r.id}" onclick="openCancelConfirm(${r.id},'owner-reject')">❌ Reject</button>
         </div>` : `<span class="tbl-status ${r.status}">${r.status}</span>`;
       return `<tr>
         <td><strong>${r.userName}</strong></td>
@@ -3699,6 +3704,42 @@ document.getElementById('resDate').value=new Date().toISOString().split('T')[0];
 window.addEventListener('scroll',()=>{
   document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 10);
 }, {passive:true});
+
+// ═══════════════════════════════════════════════════════════
+// CANCEL CONFIRMATION MODAL
+// ═══════════════════════════════════════════════════════════
+let _pendingCancelId = null;
+let _pendingCancelType = 'user';
+
+function openCancelConfirm(id, type='user') {
+  _pendingCancelId = id;
+  _pendingCancelType = type;
+  document.getElementById('cancelConfirmOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCancelConfirm() {
+  document.getElementById('cancelConfirmOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  _pendingCancelId = null;
+}
+
+async function confirmCancel() {
+  const id = _pendingCancelId;
+  const type = _pendingCancelType;
+  closeCancelConfirm();
+  if(type === 'admin') {
+    await adminCancelRes(id);
+  } else if(type === 'owner-reject') {
+    await ownerRejectRes(id);
+  } else {
+    await cancelMyRes(id);
+  }
+}
+
+document.getElementById('cancelConfirmOverlay').addEventListener('click', e => {
+  if(e.target === document.getElementById('cancelConfirmOverlay')) closeCancelConfirm();
+});
 </script>
 
 <!-- ═══════════════ ABOUT PAGE ═══════════════ -->
