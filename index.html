@@ -2000,6 +2000,31 @@ th{color:var(--teal)!important;opacity:1!important;}
   </div>
 </div>
 
+<!-- VIEW PROOF MODAL -->
+<div class="proof-overlay" id="viewProofOverlay">
+  <div class="proof-modal">
+    <div class="proof-head" style="background:var(--navy);">
+      <div>
+        <h3>📎 Payment Proof</h3>
+        <p id="viewProofStudentName">Submitted by student</p>
+      </div>
+      <button class="proof-close" onclick="closeViewProofModal()">✕</button>
+    </div>
+    <div class="proof-body">
+      <div class="proof-label">Reference Number / Screenshot Link</div>
+      <div id="viewProofValue" style="background:var(--bg);border:2px solid rgba(15,31,61,0.12);border-radius:12px;padding:0.9rem 1rem;font-size:0.95rem;color:var(--navy);word-break:break-all;line-height:1.6;"></div>
+      <div id="viewProofLinkWrap" style="display:none;margin-top:0.8rem;">
+        <a id="viewProofLink" href="#" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:0.4rem;color:var(--teal);font-size:0.85rem;font-weight:600;text-decoration:none;">🔗 Open Screenshot Link</a>
+      </div>
+      <div class="proof-hint" style="margin-top:0.8rem;">Review the reference number or open the screenshot link to verify this payment.</div>
+      <div class="proof-actions">
+        <button class="btn-proof-cancel" onclick="closeViewProofModal()">Close</button>
+        <button class="btn-proof-submit" id="viewProofCopyBtn" onclick="copyViewProof()" style="background:var(--navy);">📋 Copy</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -3636,7 +3661,7 @@ async function loadOwnerReservations() {
       const d = new Date(r.date+'T12:00:00').toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
       const methodLabel = r.paymentMethod === 'gcash' ? '💙 GCash' : r.paymentMethod === 'maya' ? '💚 Maya' : '💵 On Arrival';
       const proofHtml = r.paymentProof
-        ? `<span title="${r.paymentProof}" style="font-size:0.7rem;color:var(--teal);cursor:pointer;" onclick="alert('Proof: ${(r.paymentProof||'').replace(/'/g,'')}')">📎 View Proof</span>`
+        ? `<span style="font-size:0.7rem;color:var(--teal);cursor:pointer;font-weight:600;" onclick="openViewProofModal('${(r.paymentProof||'').replace(/'/g,'&apos;').replace(/"/g,'&quot;')}', '${(r.userName||'').replace(/'/g,'&apos;')}')">📎 View Proof</span>`
         : '<span style="opacity:0.3;font-size:0.75rem;">—</span>';
 
       let actions = '';
@@ -3751,6 +3776,38 @@ function closeProofModal() {
   _submitPayResId = null;
 }
 
+function openViewProofModal(proof, studentName) {
+  const val = document.getElementById('viewProofValue');
+  const linkWrap = document.getElementById('viewProofLinkWrap');
+  const link = document.getElementById('viewProofLink');
+  val.textContent = proof;
+  document.getElementById('viewProofStudentName').textContent = studentName ? `Submitted by ${studentName}` : 'Submitted by student';
+  const isLink = /^https?:\/\//i.test(proof);
+  if(isLink) {
+    link.href = proof;
+    linkWrap.style.display = 'block';
+  } else {
+    linkWrap.style.display = 'none';
+  }
+  document.getElementById('viewProofCopyBtn').textContent = '📋 Copy';
+  document.getElementById('viewProofOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeViewProofModal() {
+  document.getElementById('viewProofOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function copyViewProof() {
+  const text = document.getElementById('viewProofValue').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('viewProofCopyBtn');
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => btn.textContent = '📋 Copy', 2000);
+  });
+}
+
 function updateProofBtn() {
   const val = document.getElementById('proofInput').value.trim();
   document.getElementById('btnProofSubmit').disabled = val.length < 5;
@@ -3786,6 +3843,9 @@ async function submitPaymentProof(resId, proof) {
 
 document.getElementById('proofOverlay').addEventListener('click', e => {
   if(e.target === document.getElementById('proofOverlay')) closeProofModal();
+});
+document.getElementById('viewProofOverlay').addEventListener('click', e => {
+  if(e.target === document.getElementById('viewProofOverlay')) closeViewProofModal();
 });
 
 function openBulkModal(mode) {
