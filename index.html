@@ -2724,14 +2724,14 @@ async function finalizeReservation(){
       btn.disabled=false; btn.classList.remove('loading');
       return;
     }
-    showReceipt(pricing, date, dur);
+    showReceipt(pricing, date, dur, data);
     closeResModal();
   } catch(e) {
     showToast('Could not connect to server.','error');
     btn.disabled=false; btn.classList.remove('loading');
   }
 }
-function showReceipt(pricing, date, dur){
+function showReceipt(pricing, date, dur, resData){
   document.getElementById('paymentBody').style.display   = 'none';
   document.getElementById('paymentHeader').style.display = 'none';
 
@@ -2747,13 +2747,25 @@ function showReceipt(pricing, date, dur){
   const bookingId = 'STD-' + Date.now().toString(36).toUpperCase().slice(-6);
   document.getElementById('receiptBookingId').textContent = 'Booking ID: ' + bookingId;
 
-  const isPending = selectedPaymentMethod !== 'on_arrival' && selectedPaymentMethod !== 'cash';
-  document.getElementById('receiptSub').innerHTML = isPending
-    ? 'Your booking request has been sent!<br>You\'ll receive payment instructions via email <strong>after the owner approves</strong>.'
-    : 'Your booking request has been sent!<br>The owner will review and confirm it shortly. <strong>Pay on arrival.</strong>';
+  const isAutoConfirmed = resData && resData.auto_confirmed;
+  const isOnArrival = selectedPaymentMethod === 'on_arrival' || selectedPaymentMethod === 'cash';
+
+  if (isAutoConfirmed) {
+    if (isOnArrival) {
+      document.getElementById('receiptSub').innerHTML = '⭐ <strong>Auto-confirmed!</strong> Your Premium membership skipped the queue.<br>Just show up and pay on arrival.';
+    } else {
+      document.getElementById('receiptSub').innerHTML = '⭐ <strong>Auto-confirmed!</strong> Your Premium membership skipped the queue.<br>Please send payment via the selected method to complete your booking.';
+    }
+    showToast('⭐ Booking auto-confirmed! Premium perk applied.');
+  } else if (!isOnArrival) {
+    document.getElementById('receiptSub').innerHTML = 'Your booking request has been sent!<br>You\'ll receive payment instructions via email <strong>after the owner approves</strong>.';
+    showToast('✅ Booking request sent! Waiting for owner approval.');
+  } else {
+    document.getElementById('receiptSub').innerHTML = 'Your booking request has been sent!<br>The owner will review and confirm it shortly. <strong>Pay on arrival.</strong>';
+    showToast('✅ Booking request sent! Waiting for owner approval.');
+  }
 
   document.getElementById('paymentReceipt').classList.add('show');
-  showToast('✅ Booking request sent! Waiting for owner approval.');
   // refresh dashboard in background
   setTimeout(()=>{ try{ showUserDash(); }catch(e){} }, 400);
 }
