@@ -2000,31 +2000,6 @@ th{color:var(--teal)!important;opacity:1!important;}
   </div>
 </div>
 
-<!-- VIEW PROOF MODAL -->
-<div class="proof-overlay" id="viewProofOverlay">
-  <div class="proof-modal">
-    <div class="proof-head" style="background:var(--navy);">
-      <div>
-        <h3>📎 Payment Proof</h3>
-        <p id="viewProofStudentName">Submitted by student</p>
-      </div>
-      <button class="proof-close" onclick="closeViewProofModal()">✕</button>
-    </div>
-    <div class="proof-body">
-      <div class="proof-label">Reference Number / Screenshot Link</div>
-      <div id="viewProofValue" style="background:var(--bg);border:2px solid rgba(15,31,61,0.12);border-radius:12px;padding:0.9rem 1rem;font-size:0.95rem;color:var(--navy);word-break:break-all;line-height:1.6;"></div>
-      <div id="viewProofLinkWrap" style="display:none;margin-top:0.8rem;">
-        <a id="viewProofLink" href="#" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:0.4rem;color:var(--teal);font-size:0.85rem;font-weight:600;text-decoration:none;">🔗 Open Screenshot Link</a>
-      </div>
-      <div class="proof-hint" style="margin-top:0.8rem;">Review the reference number or open the screenshot link to verify this payment.</div>
-      <div class="proof-actions">
-        <button class="btn-proof-cancel" onclick="closeViewProofModal()">Close</button>
-        <button class="btn-proof-submit" id="viewProofCopyBtn" onclick="copyViewProof()" style="background:var(--navy);">📋 Copy</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div class="toast" id="toast"></div>
 
 <script>
@@ -2540,81 +2515,9 @@ function startReserve(placeId){
   document.getElementById('resOverlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
-function startReserve(placeId){
-  if(!currentUser){openAuth('login');showToast('Please log in to reserve.','error');return;}
-  if(currentUser.role==='admin'){showToast('Admins cannot make reservations. Use a user account.','warn');return;}
-  pendingPlace=PLACES.find(p=>p.id===placeId);
-  if(!pendingPlace) return;
-  document.getElementById('resModalTitle').textContent=pendingPlace.name;
-  document.getElementById('resModalSub').textContent=`📍 ${pendingPlace.loc}`;
-  const today=new Date().toISOString().split('T')[0];
-  document.getElementById('resDate').min=today;
-  document.getElementById('resDate').value=today;
-  updateResSummary();
-  document.getElementById('resOverlay').classList.add('open');
-  document.body.style.overflow='hidden';
-  // Load taken slots for today immediately, then on every date change
-  updateSlotAvailability();
-}
 function closeResModal(){document.getElementById('resOverlay').classList.remove('open');document.body.style.overflow='';}
 document.getElementById('resOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('resOverlay'))closeResModal();});
 ['resDate','resStart','resDuration','resPersons'].forEach(id=>document.getElementById(id).addEventListener('change',updateResSummary));
-document.getElementById('resDate').addEventListener('change', updateSlotAvailability);
-
-// TIME SLOT HOURS (must match the select options order)
-const SLOT_HOURS = {'7:00 AM':7,'8:00 AM':8,'9:00 AM':9,'10:00 AM':10,'11:00 AM':11,'12:00 PM':12,'1:00 PM':13,'2:00 PM':14,'3:00 PM':15,'4:00 PM':16,'5:00 PM':17,'6:00 PM':18};
-
-async function updateSlotAvailability(){
-  if(!pendingPlace) return;
-  const date = document.getElementById('resDate').value;
-  if(!date) return;
-  const select = document.getElementById('resStart');
-  const token = sessionStorage.getItem('studify_token');
-  try {
-    const res = await fetch(`${API}/api/reservations/space/${pendingPlace.id}`, {
-      headers: {'Authorization': `Bearer ${token}`}
-    });
-    if(!res.ok) return;
-    const allRes = await res.json();
-    const totalSeats = pendingPlace.total_seats || pendingPlace.seats || 10;
-    // For each slot, sum persons of active reservations that overlap with it
-    const takenMap = {}; // slot label -> persons booked
-    allRes.filter(r => r.date === date && ['pending','confirmed','awaiting_payment','payment_review'].includes(r.status))
-      .forEach(r => {
-        const dur = parseInt(r.duration) || 1;
-        const startHr = SLOT_HOURS[r.start];
-        if(startHr == null) return;
-        const persons = parseInt(r.persons) || 1;
-        for(let h = startHr; h < startHr + dur; h++){
-          // Find which slot keys overlap this hour
-          Object.entries(SLOT_HOURS).forEach(([label, slotHr]) => {
-            // A slot at slotHr is blocked if its first hour overlaps this reservation's hours
-            if(slotHr === h) takenMap[label] = (takenMap[label] || 0) + persons;
-          });
-        }
-      });
-    // Update the select options
-    const currentVal = select.value;
-    Array.from(select.options).forEach(opt => {
-      const booked = takenMap[opt.value] || 0;
-      const remaining = totalSeats - booked;
-      if(remaining <= 0){
-        opt.disabled = true;
-        opt.text = opt.value + ' — Full';
-      } else {
-        opt.disabled = false;
-        opt.text = opt.value + (booked > 0 ? ` (${remaining} seat${remaining!==1?'s':''} left)` : '');
-      }
-    });
-    // If currently selected slot is now full, jump to first available
-    const selectedOpt = Array.from(select.options).find(o => o.value === currentVal);
-    if(selectedOpt && selectedOpt.disabled){
-      const first = Array.from(select.options).find(o => !o.disabled);
-      if(first) select.value = first.value;
-    }
-    updateResSummary();
-  } catch(e){ /* silently fail — don't block reservation flow */ }
-}
 
 function calcPrice(place, dur, persons) {
   if(!place) return {total:'Free', perHour:null, isFree:true};
@@ -2794,7 +2697,6 @@ async function finalizeReservation(){
   const persons = parseInt(document.getElementById('resPersons').value)||1;
   const pricing = calcPrice(pendingPlace, dur, persons);
   const date    = document.getElementById('resDate').value;
-  const isPremium = currentUser && currentUser.role === 'premium';
 
   const btn = document.getElementById('btnPayConfirm');
   btn.disabled=true;
@@ -2814,28 +2716,22 @@ async function finalizeReservation(){
         notes:         document.getElementById('resNotes').value,
         totalPrice:    pricing.total,
         paymentMethod: selectedPaymentMethod,
-        isPriority:    isPremium,
       })
     });
     const data = await res.json();
     if(!res.ok){
-      const msg = data.error || 'Reservation failed.';
-      const isConflict = msg.toLowerCase().includes('seat') || msg.toLowerCase().includes('full') || msg.toLowerCase().includes('overlap') || msg.toLowerCase().includes('conflict') || msg.toLowerCase().includes('taken') || msg.toLowerCase().includes('available');
-      showToast((isConflict ? '🪑 ' : '❌ ') + msg, 'error');
+      showToast(data.error || 'Reservation failed.','error');
       btn.disabled=false; btn.classList.remove('loading');
       return;
     }
-    // Check if backend auto-confirmed (premium priority booking)
-    const autoConfirmed = isPremium && (data.status === 'confirmed' || data.autoConfirmed === true);
-    showReceipt(pricing, date, dur, autoConfirmed);
+    showReceipt(pricing, date, dur);
     closeResModal();
-    loadSpaces().catch(() => applyAllFilters());
   } catch(e) {
     showToast('Could not connect to server.','error');
     btn.disabled=false; btn.classList.remove('loading');
   }
 }
-function showReceipt(pricing, date, dur, autoConfirmed){
+function showReceipt(pricing, date, dur){
   document.getElementById('paymentBody').style.display   = 'none';
   document.getElementById('paymentHeader').style.display = 'none';
 
@@ -2843,7 +2739,7 @@ function showReceipt(pricing, date, dur, autoConfirmed){
   document.getElementById('receiptDate').textContent     = date ? new Date(date+'T00:00').toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric',year:'numeric'}) : new Date().toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
   document.getElementById('receiptDuration').textContent = pricing?.breakdown || (dur ? `${dur} hr${dur!==1?'s':''}` : '—');
   document.getElementById('receiptAmount').textContent   = pricing?.total || '—';
-  document.getElementById('receiptRef').textContent      = '—';
+  document.getElementById('receiptRef').textContent      = '—'; // Reference submitted after approval
 
   const methodLabels = { gcash:'💙 GCash', maya:'💚 Maya', on_arrival:'💵 Pay on Arrival', cash:'💵 Pay on Arrival' };
   document.getElementById('receiptPayMethod').innerHTML  = `<span class="method-pill">${methodLabels[selectedPaymentMethod]||'—'}</span>`;
@@ -2851,18 +2747,14 @@ function showReceipt(pricing, date, dur, autoConfirmed){
   const bookingId = 'STD-' + Date.now().toString(36).toUpperCase().slice(-6);
   document.getElementById('receiptBookingId').textContent = 'Booking ID: ' + bookingId;
 
-  if(autoConfirmed) {
-    document.getElementById('receiptSub').innerHTML = '⚡ <strong>Priority Booking Confirmed!</strong><br>Your reservation is auto-confirmed as a Premium member. No waiting needed!';
-    showToast('⚡ Priority reserved! Auto-confirmed as Premium member.');
-  } else {
-    const isPending = selectedPaymentMethod !== 'on_arrival' && selectedPaymentMethod !== 'cash';
-    document.getElementById('receiptSub').innerHTML = isPending
-      ? 'Your booking request has been sent!<br>You\'ll receive payment instructions via email <strong>after the owner approves</strong>.'
-      : 'Your booking request has been sent!<br>The owner will review and confirm it shortly. <strong>Pay on arrival.</strong>';
-    showToast('✅ Booking request sent! Waiting for owner approval.');
-  }
+  const isPending = selectedPaymentMethod !== 'on_arrival' && selectedPaymentMethod !== 'cash';
+  document.getElementById('receiptSub').innerHTML = isPending
+    ? 'Your booking request has been sent!<br>You\'ll receive payment instructions via email <strong>after the owner approves</strong>.'
+    : 'Your booking request has been sent!<br>The owner will review and confirm it shortly. <strong>Pay on arrival.</strong>';
 
   document.getElementById('paymentReceipt').classList.add('show');
+  showToast('✅ Booking request sent! Waiting for owner approval.');
+  // refresh dashboard in background
   setTimeout(()=>{ try{ showUserDash(); }catch(e){} }, 400);
 }
 
@@ -3744,7 +3636,7 @@ async function loadOwnerReservations() {
       const d = new Date(r.date+'T12:00:00').toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
       const methodLabel = r.paymentMethod === 'gcash' ? '💙 GCash' : r.paymentMethod === 'maya' ? '💚 Maya' : '💵 On Arrival';
       const proofHtml = r.paymentProof
-        ? `<span style="font-size:0.7rem;color:var(--teal);cursor:pointer;font-weight:600;" onclick="openViewProofModal('${(r.paymentProof||'').replace(/'/g,'&apos;').replace(/"/g,'&quot;')}', '${(r.userName||'').replace(/'/g,'&apos;')}')">📎 View Proof</span>`
+        ? `<span title="${r.paymentProof}" style="font-size:0.7rem;color:var(--teal);cursor:pointer;" onclick="alert('Proof: ${(r.paymentProof||'').replace(/'/g,'')}')">📎 View Proof</span>`
         : '<span style="opacity:0.3;font-size:0.75rem;">—</span>';
 
       let actions = '';
@@ -3859,29 +3751,6 @@ function closeProofModal() {
   _submitPayResId = null;
 }
 
-function openViewProofModal(proof, studentName) {
-  document.getElementById('viewProofValue').textContent = proof;
-  document.getElementById('viewProofStudentName').textContent = studentName ? `Submitted by ${studentName}` : 'Submitted by student';
-  const isLink = /^https?:\/\//i.test(proof);
-  const linkWrap = document.getElementById('viewProofLinkWrap');
-  if(isLink) { document.getElementById('viewProofLink').href = proof; linkWrap.style.display = 'block'; }
-  else { linkWrap.style.display = 'none'; }
-  document.getElementById('viewProofCopyBtn').textContent = '📋 Copy';
-  document.getElementById('viewProofOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeViewProofModal() {
-  document.getElementById('viewProofOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-function copyViewProof() {
-  navigator.clipboard.writeText(document.getElementById('viewProofValue').textContent).then(() => {
-    const btn = document.getElementById('viewProofCopyBtn');
-    btn.textContent = '✅ Copied!';
-    setTimeout(() => btn.textContent = '📋 Copy', 2000);
-  });
-}
-
 function updateProofBtn() {
   const val = document.getElementById('proofInput').value.trim();
   document.getElementById('btnProofSubmit').disabled = val.length < 5;
@@ -3890,9 +3759,8 @@ function updateProofBtn() {
 function confirmSubmitProof() {
   const proof = document.getElementById('proofInput').value.trim();
   if(!proof || proof.length < 5 || !_submitPayResId) return;
-  const resId = _submitPayResId;
   closeProofModal();
-  submitPaymentProof(resId, proof);
+  submitPaymentProof(_submitPayResId, proof);
 }
 
 async function submitPaymentProof(resId, proof) {
@@ -3917,9 +3785,6 @@ async function submitPaymentProof(resId, proof) {
 
 document.getElementById('proofOverlay').addEventListener('click', e => {
   if(e.target === document.getElementById('proofOverlay')) closeProofModal();
-});
-document.getElementById('viewProofOverlay').addEventListener('click', e => {
-  if(e.target === document.getElementById('viewProofOverlay')) closeViewProofModal();
 });
 
 function openBulkModal(mode) {
@@ -4109,11 +3974,15 @@ async function processPremiumPayment() {
   // call backend to upgrade role
   const token = sessionStorage.getItem('studify_token');
   try {
-    await fetch(`${API}/api/auth/upgrade`, {
+    const res  = await fetch(`${API}/api/auth/upgrade`, {
       method: 'POST',
       headers: {'Content-Type':'application/json','Authorization':`Bearer ${token}`},
       body: JSON.stringify({plan:'premium'})
     });
+    const data = await res.json();
+    // Save the new token — it now carries role: "premium" in the JWT claims
+    if(data.token) sessionStorage.setItem('studify_token', data.token);
+    if(data.user)  sessionStorage.setItem('studify_user', JSON.stringify(data.user));
   } catch(e) {}
   // wait 1.8s for effect
   await new Promise(r=>setTimeout(r,1800));
