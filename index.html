@@ -2536,6 +2536,14 @@ function startReserve(placeId){
   const today=new Date().toISOString().split('T')[0];
   document.getElementById('resDate').min=today;
   document.getElementById('resDate').value=today;
+  // Cap persons select by available seats
+  const maxSeats = pendingPlace.seats || 10;
+  const personsSelect = document.getElementById('resPersons');
+  personsSelect.innerHTML = '';
+  for(let i = 1; i <= Math.min(maxSeats, 10); i++){
+    personsSelect.innerHTML += `<option value="${i}">${i} person${i!==1?'s':''}</option>`;
+  }
+  personsSelect.value = '1';
   updateResSummary();
   document.getElementById('resOverlay').classList.add('open');
   document.body.style.overflow='hidden';
@@ -2586,6 +2594,7 @@ function updateResSummary(){
     <div class="res-summary-row"><span>🕐 Time</span><span>${start}</span></div>
     <div class="res-summary-row"><span>⏱ Duration</span><span>${dur} hour${dur!==1?'s':''}</span></div>
     <div class="res-summary-row"><span>👥 Persons</span><span>${persons} person${persons!==1?'s':''}</span></div>
+    <div class="res-summary-row"><span>💺 Seats Available</span><span>${pendingPlace.seats ?? '?'} of ${pendingPlace.total_seats || pendingPlace.seats || '?'} seats free</span></div>
     <div class="res-summary-row"><span>💰 Total Price</span><span><strong>${pricing.total}</strong></span></div>`;
 }
 
@@ -2745,12 +2754,17 @@ async function finalizeReservation(){
     });
     const data = await res.json();
     if(!res.ok){
-      showToast(data.error || 'Reservation failed.','error');
+      const msg = data.error || 'Reservation failed.';
+      // Make seat/time conflict errors extra clear
+      const isConflict = msg.toLowerCase().includes('seat') || msg.toLowerCase().includes('full') || msg.toLowerCase().includes('overlap') || msg.toLowerCase().includes('conflict') || msg.toLowerCase().includes('taken') || msg.toLowerCase().includes('available');
+      showToast((isConflict ? '🪑 ' : '❌ ') + msg, 'error');
       btn.disabled=false; btn.classList.remove('loading');
       return;
     }
     showReceipt(pricing, date, dur);
     closeResModal();
+    // Refresh spaces so seat counts update on the browse page
+    loadSpaces().catch(() => applyAllFilters());
   } catch(e) {
     showToast('Could not connect to server.','error');
     btn.disabled=false; btn.classList.remove('loading');
@@ -3783,22 +3797,16 @@ function openViewProofModal(proof, studentName) {
   val.textContent = proof;
   document.getElementById('viewProofStudentName').textContent = studentName ? `Submitted by ${studentName}` : 'Submitted by student';
   const isLink = /^https?:\/\//i.test(proof);
-  if(isLink) {
-    link.href = proof;
-    linkWrap.style.display = 'block';
-  } else {
-    linkWrap.style.display = 'none';
-  }
+  if(isLink) { link.href = proof; linkWrap.style.display = 'block'; }
+  else { linkWrap.style.display = 'none'; }
   document.getElementById('viewProofCopyBtn').textContent = '📋 Copy';
   document.getElementById('viewProofOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
-
 function closeViewProofModal() {
   document.getElementById('viewProofOverlay').classList.remove('open');
   document.body.style.overflow = '';
 }
-
 function copyViewProof() {
   const text = document.getElementById('viewProofValue').textContent;
   navigator.clipboard.writeText(text).then(() => {
