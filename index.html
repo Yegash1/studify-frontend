@@ -970,6 +970,30 @@ th{color:var(--teal)!important;opacity:1!important;}
 .btn-keep-res{flex:1;padding:0.85rem;background:rgba(15,31,61,0.07);color:var(--navy);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;transition:background 0.2s;}
 .btn-keep-res:hover{background:rgba(15,31,61,0.13);}
 @media(max-width:600px){.cancel-confirm-overlay{align-items:flex-end;}.cancel-confirm-modal{border-radius:22px 22px 0 0;margin:0;max-width:100%;}}
+
+/* ── SUBMIT PAYMENT PROOF MODAL ── */
+.proof-overlay{position:fixed;inset:0;z-index:1002;background:rgba(10,16,32,0.65);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.25s;}
+.proof-overlay.open{opacity:1;pointer-events:all;}
+.proof-modal{background:var(--white);border-radius:22px;width:100%;max-width:420px;margin:1rem;box-shadow:0 32px 80px rgba(10,16,32,0.28);transform:translateY(20px) scale(0.97);transition:transform 0.25s;overflow:hidden;}
+.proof-overlay.open .proof-modal{transform:translateY(0) scale(1);}
+.proof-head{background:var(--teal);padding:1.5rem 2rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;}
+.proof-head h3{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:white;margin:0;}
+.proof-head p{font-size:0.8rem;color:rgba(255,255,255,0.75);margin:0.3rem 0 0;}
+.proof-close{background:rgba(255,255,255,0.15);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;color:white;font-size:0.85rem;display:grid;place-items:center;flex-shrink:0;transition:background 0.2s;}
+.proof-close:hover{background:rgba(255,255,255,0.28);}
+.proof-body{padding:1.6rem 2rem 2rem;}
+.proof-label{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--navy);opacity:0.45;margin-bottom:0.5rem;}
+.proof-input{width:100%;padding:0.75rem 1rem;border:2px solid rgba(15,31,61,0.12);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.95rem;color:var(--navy);background:white;transition:border-color 0.2s;box-sizing:border-box;}
+.proof-input:focus{outline:none;border-color:var(--teal);}
+.proof-input::placeholder{opacity:0.35;}
+.proof-hint{font-size:0.78rem;color:var(--navy);opacity:0.5;margin-top:0.5rem;line-height:1.5;}
+.proof-actions{display:flex;gap:0.8rem;margin-top:1.4rem;}
+.btn-proof-submit{flex:1;padding:0.85rem;background:var(--teal);color:white;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-proof-submit:hover:not(:disabled){background:var(--navy);transform:translateY(-1px);}
+.btn-proof-submit:disabled{opacity:0.4;cursor:not-allowed;}
+.btn-proof-cancel{flex:1;padding:0.85rem;background:rgba(15,31,61,0.07);color:var(--navy);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;transition:background 0.2s;}
+.btn-proof-cancel:hover{background:rgba(15,31,61,0.13);}
+@media(max-width:600px){.proof-overlay{align-items:flex-end;}.proof-modal{border-radius:22px 22px 0 0;margin:0;max-width:100%;}}
 </style>
 </head>
 <body>
@@ -1949,6 +1973,28 @@ th{color:var(--teal)!important;opacity:1!important;}
       <div class="cancel-confirm-actions">
         <button class="btn-keep-res" onclick="closeCancelConfirm()">Keep It</button>
         <button class="btn-confirm-cancel" onclick="confirmCancel()">Yes, Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Submit Payment Proof Modal -->
+<div class="proof-overlay" id="proofOverlay">
+  <div class="proof-modal">
+    <div class="proof-head">
+      <div>
+        <h3>💳 Submit Payment Proof</h3>
+        <p id="proofModalSub">Send your reference number after paying via GCash or Maya.</p>
+      </div>
+      <button class="proof-close" onclick="closeProofModal()">✕</button>
+    </div>
+    <div class="proof-body">
+      <div class="proof-label">Reference Number or Screenshot Link</div>
+      <input class="proof-input" id="proofInput" type="text" placeholder="e.g. 123456789012 or https://..." oninput="updateProofBtn()" />
+      <div class="proof-hint">Enter your GCash or Maya reference number, or paste a link to your payment screenshot. The owner will verify this before confirming your booking.</div>
+      <div class="proof-actions">
+        <button class="btn-proof-cancel" onclick="closeProofModal()">Cancel</button>
+        <button class="btn-proof-submit" id="btnProofSubmit" onclick="confirmSubmitProof()" disabled>Submit Proof</button>
       </div>
     </div>
   </div>
@@ -3687,10 +3733,34 @@ let _submitPayResId = null;
 
 function openSubmitPaymentModal(resId) {
   _submitPayResId = resId;
-  // Re-use a simple prompt for now
-  const proof = prompt('Enter your GCash/Maya reference number or a link to your payment screenshot:');
-  if(!proof || !proof.trim()) return;
-  submitPaymentProof(resId, proof.trim());
+  // Find the reservation to show context
+  const r = (typeof reservations !== 'undefined' ? reservations : []).find(x => x.id === resId);
+  const method = r ? (r.paymentMethod || r.payment_method || '') : '';
+  const methodLabel = method === 'gcash' ? 'GCash' : method === 'maya' ? 'Maya' : 'GCash/Maya';
+  document.getElementById('proofModalSub').textContent = `Enter your ${methodLabel} reference number after sending payment.`;
+  document.getElementById('proofInput').value = '';
+  document.getElementById('btnProofSubmit').disabled = true;
+  document.getElementById('proofOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('proofInput').focus(), 300);
+}
+
+function closeProofModal() {
+  document.getElementById('proofOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  _submitPayResId = null;
+}
+
+function updateProofBtn() {
+  const val = document.getElementById('proofInput').value.trim();
+  document.getElementById('btnProofSubmit').disabled = val.length < 5;
+}
+
+function confirmSubmitProof() {
+  const proof = document.getElementById('proofInput').value.trim();
+  if(!proof || proof.length < 5 || !_submitPayResId) return;
+  closeProofModal();
+  submitPaymentProof(_submitPayResId, proof);
 }
 
 async function submitPaymentProof(resId, proof) {
@@ -3712,6 +3782,10 @@ async function submitPaymentProof(resId, proof) {
     showToast('Could not connect to server.','error');
   }
 }
+
+document.getElementById('proofOverlay').addEventListener('click', e => {
+  if(e.target === document.getElementById('proofOverlay')) closeProofModal();
+});
 
 function openBulkModal(mode) {
   bulkMode = mode;
