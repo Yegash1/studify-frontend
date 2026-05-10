@@ -1743,10 +1743,13 @@ th{color:var(--teal)!important;opacity:1!important;}
       </div>
       <div class="form-group"><label>Location</label><input type="text" id="editLoc" placeholder="e.g. Main Campus, Bldg A"></div>
       <div class="form-row">
-        <div class="form-group"><label>Available Seats</label><input type="number" id="editSeats" min="0" placeholder="20"></div>
-        <div class="form-group"><label>Rating (1-5)</label><input type="number" id="editRating" min="1" max="5" placeholder="4"></div>
+        <div class="form-group"><label>Total Seats</label><input type="number" id="editSeats" min="1" placeholder="20"></div>
+        <div class="form-group"><label>Rating (1-5)</label><input type="number" id="editRating" min="1" max="5" step="0.1" placeholder="4.0"></div>
       </div>
-      <div class="form-group"><label>Hours / Price</label><input type="text" id="editHours" placeholder="e.g. Open until 9:00 PM"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Hours</label><input type="text" id="editHours" placeholder="e.g. 8:00 AM – 9:00 PM"></div>
+        <div class="form-group"><label>Price</label><input type="text" id="editPrice" placeholder="e.g. ₱20/hr or Free"></div>
+      </div>
       <div class="form-group"><label>Availability</label>
         <select id="editAvail">
           <option value="open">🟢 Open</option>
@@ -1754,7 +1757,16 @@ th{color:var(--teal)!important;opacity:1!important;}
           <option value="full">🔴 Full</option>
         </select>
       </div>
+      <div class="form-group"><label>Emoji</label><input type="text" id="editEmoji" placeholder="e.g. 📚" maxlength="4"></div>
       <div class="form-group"><label>Tags (comma-separated)</label><input type="text" id="editTags" placeholder="Free WiFi, Quiet Zone, Air-Con"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Owner Name</label><input type="text" id="editOwnerName" placeholder="e.g. Maria Santos"></div>
+        <div class="form-group"><label>Owner Email</label><input type="email" id="editOwnerEmail" placeholder="owner@email.com"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>GCash Number</label><input type="text" id="editGcash" placeholder="e.g. 0917-123-4567"></div>
+        <div class="form-group"><label>Maya Number</label><input type="text" id="editMaya" placeholder="e.g. 0915-123-4567"></div>
+      </div>
       <div class="modal-actions">
         <button class="btn-modal-cancel" onclick="closePlaceModal()">Cancel</button>
         <button class="btn-save" onclick="savePlaceModal()">Save Space</button>
@@ -1979,6 +1991,27 @@ th{color:var(--teal)!important;opacity:1!important;}
 </div>
 
 <!-- Submit Payment Proof Modal -->
+<div class="proof-overlay" id="rejectOverlay">
+  <div class="proof-modal">
+    <div class="proof-head">
+      <div>
+        <h3>❌ Reject Payment Proof</h3>
+        <p id="rejectModalSub">Give a reason so the student knows what to fix.</p>
+      </div>
+      <button class="proof-close" onclick="closeRejectModal()">✕</button>
+    </div>
+    <div class="proof-body">
+      <div class="proof-label">Reason for rejection</div>
+      <input class="proof-input" id="rejectReasonInput" type="text" placeholder="e.g. Screenshot unclear, wrong amount…" oninput="updateRejectBtn()" />
+      <div class="proof-hint">This message will be shown to the student so they can resubmit the correct proof.</div>
+      <div class="proof-actions">
+        <button class="btn-proof-cancel" onclick="closeRejectModal()">Cancel</button>
+        <button class="btn-proof-submit" id="btnRejectSubmit" onclick="confirmRejectPayment()" disabled>Reject Proof</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="proof-overlay" id="proofOverlay">
   <div class="proof-modal">
     <div class="proof-head">
@@ -3138,7 +3171,7 @@ function renderAdminUsers(){
     (u.firstName+' '+u.lastName).toLowerCase().includes(q)||u.email.toLowerCase().includes(q)
   );
   document.getElementById('adminUsersBody').innerHTML=rows.map(u=>{
-    const count=reservations.filter(r=>r.userEmail===u.email).length;
+    const count=reservations.filter(r=>r.userId===u.id).length;
     return `<tr>
       <td>${u.firstName} ${u.lastName}</td>
       <td>${u.email}</td>
@@ -3160,8 +3193,14 @@ function openAddPlaceModal(){
   document.getElementById('editSeats').value='';
   document.getElementById('editRating').value='4';
   document.getElementById('editHours').value='';
+  document.getElementById('editPrice').value='';
   document.getElementById('editAvail').value='open';
+  document.getElementById('editEmoji').value='';
   document.getElementById('editTags').value='';
+  document.getElementById('editOwnerName').value='';
+  document.getElementById('editOwnerEmail').value='';
+  document.getElementById('editGcash').value='';
+  document.getElementById('editMaya').value='';
   document.getElementById('placeModalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
@@ -3170,37 +3209,67 @@ function openEditPlaceModal(id){
   document.getElementById('placeModalTitle').textContent='Edit Space';
   document.getElementById('editPlaceId').value=p.id;
   document.getElementById('editName').value=p.name;
-  document.getElementById('editCat').value=p.cat;
-  document.getElementById('editLoc').value=p.loc;
-  document.getElementById('editSeats').value=p.seats;
-  document.getElementById('editRating').value=p.rating;
-  document.getElementById('editHours').value=p.hours;
-  document.getElementById('editAvail').value=p.avail;
+  document.getElementById('editCat').value=p.cat||p.category||'study';
+  document.getElementById('editLoc').value=p.loc||p.location||'';
+  document.getElementById('editSeats').value=p.seats||p.total_seats||'';
+  document.getElementById('editRating').value=p.rating||4;
+  document.getElementById('editHours').value=p.hours||'';
+  document.getElementById('editPrice').value=p.price||'';
+  document.getElementById('editAvail').value=p.avail||p.status||'open';
+  document.getElementById('editEmoji').value=p.emoji||'';
   document.getElementById('editTags').value=(p.tags||[]).join(', ');
+  document.getElementById('editOwnerName').value=p.ownerName||p.owner_name||'';
+  document.getElementById('editOwnerEmail').value=p.ownerEmail||p.owner_email||'';
+  document.getElementById('editGcash').value=p.gcash||p.gcash_number||'';
+  document.getElementById('editMaya').value=p.maya||p.maya_number||'';
   document.getElementById('placeModalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
 function closePlaceModal(){document.getElementById('placeModalOverlay').classList.remove('open');document.body.style.overflow='';}
-function savePlaceModal(){
+async function savePlaceModal(){
   const id=document.getElementById('editPlaceId').value;
   const name=document.getElementById('editName').value.trim();
   const cat=document.getElementById('editCat').value;
   const loc=document.getElementById('editLoc').value.trim();
-  const seats=parseInt(document.getElementById('editSeats').value)||0;
-  const rating=Math.min(5,Math.max(1,parseInt(document.getElementById('editRating').value)||4));
+  const seats=parseInt(document.getElementById('editSeats').value)||10;
+  const rating=Math.min(5,Math.max(1,parseFloat(document.getElementById('editRating').value)||4));
   const hours=document.getElementById('editHours').value.trim();
+  const price=document.getElementById('editPrice').value.trim();
   const avail=document.getElementById('editAvail').value;
+  const emoji=document.getElementById('editEmoji').value.trim()||{study:'📖',computer:'💻',cafe:'☕'}[cat];
   const tags=document.getElementById('editTags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  const owner_name=document.getElementById('editOwnerName').value.trim();
+  const owner_email=document.getElementById('editOwnerEmail').value.trim();
+  const gcash_number=document.getElementById('editGcash').value.trim();
+  const maya_number=document.getElementById('editMaya').value.trim();
   if(!name||!loc){showToast('Name and location are required.','error');return;}
-  const emojis={study:'📖',computer:'💻',cafe:'☕'};
-  if(id){
-    const p=PLACES.find(p=>p.id===parseInt(id));
-    if(p){Object.assign(p,{name,cat,loc,seats,rating,hours,avail,tags,emoji:emojis[cat]});}
-    showToast('Space updated!');
-  } else {
-    PLACES.push({id:nextPlaceId++,cat,name,loc,rating,reviews:0,avail,seats,tags,hours,emoji:emojis[cat],bg:BG_COLORS[nextPlaceId%BG_COLORS.length],price:hours});
-    showToast('New space added!');
+  const saveBtn=document.querySelector('#placeModalOverlay .btn-save');
+  const origText=saveBtn.textContent;
+  saveBtn.disabled=true; saveBtn.textContent='Saving…';
+  const payload={name,category:cat,location:loc,seats,rating,hours,price,status:avail,emoji,tags,owner_name,owner_email,gcash_number,maya_number};
+  const token=sessionStorage.getItem('studify_token');
+  try{
+    if(id){
+      // EDIT
+      const res=await fetch(`${API}/api/spaces/${id}`,{method:'PUT',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify(payload)});
+      if(!res.ok){const d=await res.json();showToast(d.error||'Update failed.','error');saveBtn.disabled=false;saveBtn.textContent=origText;return;}
+      const updated=await res.json();
+      const idx=PLACES.findIndex(p=>p.id===parseInt(id));
+      if(idx!==-1){PLACES[idx]={...PLACES[idx],...updated,cat:updated.category,loc:updated.location,avail:updated.status,seats:updated.available??updated.seats,gcash:updated.gcash_number,maya:updated.maya_number,ownerName:updated.owner_name};}
+      showToast('Space updated!');
+    } else {
+      // ADD
+      const res=await fetch(`${API}/api/spaces/`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify(payload)});
+      if(!res.ok){const d=await res.json();showToast(d.error||'Could not add space.','error');saveBtn.disabled=false;saveBtn.textContent=origText;return;}
+      const created=await res.json();
+      PLACES.push({...created,cat:created.category,loc:created.location,avail:created.status,seats:created.available??seats,gcash:created.gcash_number,maya:created.maya_number,ownerName:created.owner_name,reviews:0,bg:BG_COLORS[PLACES.length%BG_COLORS.length]});
+      showToast('New space added!');
+    }
+  }catch(e){
+    showToast('Could not connect to server.','error');
+    saveBtn.disabled=false;saveBtn.textContent=origText;return;
   }
+  saveBtn.disabled=false;saveBtn.textContent=origText;
   closePlaceModal(); renderAdminDash(); renderPlaces();
 }
 
@@ -3338,11 +3407,12 @@ async function loadOwnerSpace() {
     if(mySpace) {
       ownerSpace = mySpace;
     } else {
-      // fallback: show first space for demo
-      ownerSpace = spaces[0];
+      showToast('No space is assigned to your account yet. Contact admin.', 'error');
+      return;
     }
   } catch(e) {
-    ownerSpace = PLACES[0];
+    showToast('Could not load your space. Check your connection.', 'error');
+    return;
   }
   renderOwnerDash();
 }
@@ -3726,8 +3796,31 @@ async function ownerVerifyPayment(resId) {
 }
 
 async function ownerRejectPayment(resId) {
-  const reason = prompt('Reason for rejecting the payment proof (shown to student):');
-  if(reason === null) return; // cancelled
+  // Open the reject reason modal instead of prompt()
+  _rejectPayResId = resId;
+  document.getElementById('rejectReasonInput').value = '';
+  document.getElementById('btnRejectSubmit').disabled = true;
+  document.getElementById('rejectOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('rejectReasonInput').focus(), 300);
+}
+
+function closeRejectModal() {
+  document.getElementById('rejectOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  _rejectPayResId = null;
+}
+
+function updateRejectBtn() {
+  document.getElementById('btnRejectSubmit').disabled =
+    document.getElementById('rejectReasonInput').value.trim().length < 3;
+}
+
+async function confirmRejectPayment() {
+  const resId  = _rejectPayResId;
+  const reason = document.getElementById('rejectReasonInput').value.trim();
+  closeRejectModal();
+  if(!resId) return;
   document.querySelectorAll('[data-res-id="'+resId+'"]').forEach(b => { b.disabled=true; b.style.opacity='0.4'; });
   const token = sessionStorage.getItem('studify_token');
   try {
@@ -3743,6 +3836,7 @@ async function ownerRejectPayment(resId) {
 
 // ── Student submits payment proof after owner approval ───────────────────────
 let _submitPayResId = null;
+let _rejectPayResId = null;
 
 function openSubmitPaymentModal(resId) {
   _submitPayResId = resId;
