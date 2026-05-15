@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyABE_PxqLyosCf9T50tw0m8au-Wv5M89Oo&libraries=marker" async defer></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{--navy:#0f1f3d;--blue:#1a3a6b;--accent:#e8a020;--teal:#1a8a8a;--coral:#d94f2b;--bg:#f0ede8;--white:#fafaf8;--grid:rgba(15,31,61,0.06);}
@@ -994,6 +995,30 @@ th{color:var(--teal)!important;opacity:1!important;}
 .btn-proof-cancel{flex:1;padding:0.85rem;background:rgba(15,31,61,0.07);color:var(--navy);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;transition:background 0.2s;}
 .btn-proof-cancel:hover{background:rgba(15,31,61,0.13);}
 @media(max-width:600px){.proof-overlay{align-items:flex-end;}.proof-modal{border-radius:22px 22px 0 0;margin:0;max-width:100%;}}
+
+/* ── Map View ── */
+.view-toggle-wrap{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;}
+.view-toggle-btns{display:flex;gap:0.4rem;background:rgba(15,31,61,0.07);border-radius:100px;padding:0.25rem;}
+.view-toggle-btn{background:transparent;border:none;padding:0.4rem 1rem;border-radius:100px;font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;color:var(--navy);opacity:0.6;cursor:pointer;transition:all 0.2s;}
+.view-toggle-btn.active{background:var(--navy);color:var(--white);opacity:1;}
+#studifyMap{width:100%;height:520px;border-radius:20px;overflow:hidden;border:1px solid rgba(15,31,61,0.1);box-shadow:0 8px 32px rgba(15,31,61,0.08);}
+.map-popup{min-width:210px;font-family:'DM Sans',sans-serif;}
+.map-popup-emoji{font-size:2rem;margin-bottom:0.4rem;}
+.map-popup-name{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:#0f1f3d;margin-bottom:0.2rem;}
+.map-popup-loc{font-size:0.78rem;color:#555;margin-bottom:0.4rem;}
+.map-popup-meta{display:flex;gap:0.5rem;align-items:center;margin-bottom:0.6rem;flex-wrap:wrap;}
+.map-popup-cat{font-size:0.7rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:0.15rem 0.5rem;border-radius:100px;}
+.map-popup-cat.study{background:#e8f4f0;color:#1a8a8a;}
+.map-popup-cat.computer{background:#e8edf8;color:#1a3a6b;}
+.map-popup-cat.cafe{background:#fdf3e3;color:#b8780a;}
+.map-popup-price{font-size:0.78rem;font-weight:600;color:#0f1f3d;}
+.map-popup-rating{font-size:0.78rem;color:#e8a020;}
+.map-popup-avail{font-size:0.72rem;font-weight:600;padding:0.15rem 0.5rem;border-radius:100px;}
+.map-popup-avail.open{background:#d4f0e8;color:#1a8a8a;}
+.map-popup-avail.full{background:#fde8e4;color:#d94f2b;}
+.btn-map-reserve{width:100%;background:#0f1f3d;color:#fafaf8;border:none;border-radius:8px;padding:0.55rem 0;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer;margin-top:0.4rem;transition:background 0.2s;}
+.btn-map-reserve:hover{background:#1a3a6b;}
+.btn-map-reserve:disabled{background:#aaa;cursor:not-allowed;}
 </style>
 </head>
 <body>
@@ -1131,8 +1156,17 @@ th{color:var(--teal)!important;opacity:1!important;}
       <input class="location-search" id="locationSearch" placeholder="🔍  Search by location (e.g. Malolos, Bocaue, Balagtas, Meycauayan…)" oninput="applyAllFilters()">
       <button class="btn-gps" id="gpsBtn" onclick="findNearest()">📍 Nearest to Me</button>
     </div>
-    <div class="places-count" id="placesCount">Showing 12 spaces</div>
+    <div class="view-toggle-wrap">
+      <div class="places-count" id="placesCount">Showing 12 spaces</div>
+      <div class="view-toggle-btns">
+        <button class="view-toggle-btn active" id="gridViewBtn" onclick="switchView('grid')">⊞ Grid</button>
+        <button class="view-toggle-btn" id="mapViewBtn" onclick="switchView('map')">🗺 Map</button>
+      </div>
+    </div>
     <div class="places-grid" id="placesGrid"></div>
+    <div id="mapView" style="display:none;">
+      <div id="studifyMap"></div>
+    </div>
   </section>
 
   <section class="section-block">
@@ -3274,6 +3308,184 @@ async function savePlaceModal(){
 }
 
 // ═══════════════════════════════════════════════════════════
+// MAP VIEW — Google Maps
+// ═══════════════════════════════════════════════════════════
+let studifyMap = null;
+let mapMarkers = [];
+let userMapMarker = null;
+let activeMapView = 'grid';
+let infoWindow = null;
+
+function switchView(view) {
+  activeMapView = view;
+  const gridEl = document.getElementById('placesGrid');
+  const mapEl  = document.getElementById('mapView');
+  const gridBtn = document.getElementById('gridViewBtn');
+  const mapBtn  = document.getElementById('mapViewBtn');
+
+  if (view === 'map') {
+    gridEl.style.display = 'none';
+    mapEl.style.display  = 'block';
+    gridBtn.classList.remove('active');
+    mapBtn.classList.add('active');
+    setTimeout(() => { initMap(); renderMapMarkers(); }, 50);
+  } else {
+    mapEl.style.display  = 'none';
+    gridEl.style.display = '';
+    mapBtn.classList.remove('active');
+    gridBtn.classList.add('active');
+  }
+}
+
+function initMap() {
+  if (studifyMap) return;
+  if (typeof google === 'undefined' || !google.maps) {
+    // Google Maps not ready yet — retry in 300ms
+    setTimeout(() => { initMap(); renderMapMarkers(); }, 300);
+    return;
+  }
+  infoWindow = new google.maps.InfoWindow({ maxWidth: 260 });
+  studifyMap = new google.maps.Map(document.getElementById('studifyMap'), {
+    center: { lat: 14.796, lng: 120.896 },
+    zoom: 11,
+    mapTypeControl: true,
+    streetViewControl: true,
+    fullscreenControl: true,
+    styles: [
+      { featureType: 'poi.business', stylers: [{ visibility: 'off' }] },
+      { featureType: 'transit', stylers: [{ visibility: 'simplified' }] }
+    ]
+  });
+}
+
+function getCatColor(cat) {
+  return cat === 'study' ? '#1a8a8a' : cat === 'computer' ? '#1a3a6b' : '#e8a020';
+}
+
+function makeMarkerIcon(p) {
+  const color = getCatColor(p.cat);
+  const emoji = p.emoji || '📍';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="44" viewBox="0 0 36 44">
+    <ellipse cx="18" cy="42" rx="8" ry="3" fill="rgba(0,0,0,0.2)"/>
+    <path d="M18 0 C8 0 0 8 0 18 C0 30 18 44 18 44 C18 44 36 30 36 18 C36 8 28 0 18 0Z" fill="${color}"/>
+    <circle cx="18" cy="17" r="11" fill="white" opacity="0.95"/>
+    <text x="18" y="22" text-anchor="middle" font-size="13">${emoji}</text>
+  </svg>`;
+  return {
+    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
+    scaledSize: new google.maps.Size(36, 44),
+    anchor: new google.maps.Point(18, 44)
+  };
+}
+
+function makePopupHTML(p) {
+  const coords = SPACE_COORDS[p.id];
+  const distLine = (userLat && coords)
+    ? `<div style="font-size:0.75rem;color:#1a8a8a;margin-bottom:0.4rem;">📍 ${getDistanceKm(userLat, userLng, coords.lat, coords.lng).toFixed(1)} km away</div>` : '';
+  const isFull = p.avail === 'full';
+  const catLabel = p.cat === 'study' ? 'Study Place' : p.cat === 'computer' ? 'Computer Shop' : 'Café';
+  const reserveBtn = isFull
+    ? `<button class="btn-map-reserve" disabled>Full</button>`
+    : `<button class="btn-map-reserve" onclick="closeMapPopupAndReserve(${p.id})">Reserve →</button>`;
+  return `<div class="map-popup">
+    <div class="map-popup-emoji">${p.emoji || '📍'}</div>
+    <div class="map-popup-name">${p.name}</div>
+    <div class="map-popup-loc">📍 ${p.loc}</div>
+    ${distLine}
+    <div class="map-popup-meta">
+      <span class="map-popup-cat ${p.cat}">${catLabel}</span>
+      <span class="map-popup-rating">${'★'.repeat(Math.round(p.rating))} ${p.rating}.0</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+      <span class="map-popup-price">${p.price || 'Free'}</span>
+      <span class="map-popup-avail ${isFull ? 'full' : 'open'}">${isFull ? 'Full' : 'Available'}</span>
+    </div>
+    <div style="font-size:0.75rem;color:#777;margin-bottom:0.4rem;">🕐 ${p.hours}</div>
+    ${reserveBtn}
+  </div>`;
+}
+
+function renderMapMarkers() {
+  if (!studifyMap) return;
+  // Clear existing markers
+  mapMarkers.forEach(m => m.setMap(null));
+  mapMarkers = [];
+
+  const searchQ  = (document.getElementById('locationSearch')?.value || '').toLowerCase().trim();
+  const maxPrice = parseInt(document.getElementById('priceFilter')?.value || '0');
+  let filtered = PLACES.filter(p => {
+    const catOk  = activeCat === 'all' || p.cat === activeCat;
+    const starOk = p.rating >= minStar;
+    const locOk  = !searchQ || (p.loc||'').toLowerCase().includes(searchQ) || (p.name||'').toLowerCase().includes(searchQ);
+    const wifiOk = !wifiFilterActive || getWifiStrength(p) === 'fast';
+    let priceOk = true;
+    if (maxPrice > 0) {
+      const priceNum = parseInt((p.price||'').replace(/[^\d]/g,''));
+      priceOk = isNaN(priceNum) ? true : priceNum <= maxPrice;
+    }
+    return catOk && starOk && locOk && wifiOk && priceOk;
+  });
+
+  const bounds = new google.maps.LatLngBounds();
+
+  filtered.forEach(p => {
+    const coords = SPACE_COORDS[p.id];
+    if (!coords) return;
+    const marker = new google.maps.Marker({
+      position: { lat: coords.lat, lng: coords.lng },
+      map: studifyMap,
+      icon: makeMarkerIcon(p),
+      title: p.name,
+      animation: google.maps.Animation.DROP
+    });
+    marker.addListener('click', () => {
+      infoWindow.setContent(makePopupHTML(p));
+      infoWindow.open(studifyMap, marker);
+    });
+    mapMarkers.push(marker);
+    bounds.extend({ lat: coords.lat, lng: coords.lng });
+  });
+
+  // User location marker
+  if (userLat && userLng) {
+    if (userMapMarker) userMapMarker.setMap(null);
+    userMapMarker = new google.maps.Marker({
+      position: { lat: userLat, lng: userLng },
+      map: studifyMap,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 10,
+        fillColor: '#1a8a8a',
+        fillOpacity: 1,
+        strokeColor: '#fff',
+        strokeWeight: 3
+      },
+      title: 'You are here',
+      zIndex: 999
+    });
+    userMapMarker.addListener('click', () => {
+      infoWindow.setContent('<b style="font-family:\'DM Sans\',sans-serif">📍 You are here</b>');
+      infoWindow.open(studifyMap, userMapMarker);
+    });
+    bounds.extend({ lat: userLat, lng: userLng });
+  }
+
+  if (!bounds.isEmpty()) {
+    studifyMap.fitBounds(bounds, { top: 40, right: 40, bottom: 40, left: 40 });
+    // Don't zoom in too far for single markers
+    const listener = google.maps.event.addListener(studifyMap, 'idle', () => {
+      if (studifyMap.getZoom() > 15) studifyMap.setZoom(15);
+      google.maps.event.removeListener(listener);
+    });
+  }
+}
+
+function closeMapPopupAndReserve(id) {
+  if (infoWindow) infoWindow.close();
+  startReserve(id);
+}
+
+// ═══════════════════════════════════════════════════════════
 // LOCATION SEARCH + GPS
 // ═══════════════════════════════════════════════════════════
 let userLat = null, userLng = null;
@@ -3322,6 +3534,7 @@ function findNearest() {
     btn.style.color = '#fff';
     showToast('Location found! Spaces sorted by distance.','success');
     applyAllFilters();
+    if (activeMapView === 'map') renderMapMarkers();
   }, err => {
     btn.classList.remove('loading');
     btn.textContent = '📍 Nearest to Me';
@@ -3381,6 +3594,8 @@ ${(()=>{const pricing=calcPrice(p,1,1);return (currentUser&&currentUser.role==='
         </div>
       </div>
     </div>`}).join('');
+  // Refresh map markers if map is currently visible
+  if (activeMapView === 'map') renderMapMarkers();
 }
 
 // ═══════════════════════════════════════════════════════════
